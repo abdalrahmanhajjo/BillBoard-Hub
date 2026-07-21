@@ -1,35 +1,153 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BillBoard Hub
 
-## Getting Started
+BillBoard Hub is a role-based SaaS dashboard for managing traditional and digital billboard operations.
 
-First, run the development server:
+## Core Stack
+
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- Auth.js (NextAuth v5 beta)
+- MongoDB + Mongoose
+- React Hook Form + Zod
+
+## Application Areas
+
+- Guest
+	- `/login`
+	- `/register`
+	- `/forgot-password`
+- Authenticated Dashboard
+	- `/dashboard/admin/*`
+	- `/dashboard/advertiser/*`
+
+## Architecture
+
+### Frontend
+
+- `src/app`: routes, layouts, route handlers only
+- `src/client/features`: feature-owned UI and client logic
+
+Each feature owns:
+- components
+- hooks
+- pages
+- services
+- types
+- validations
+- utils
+
+### Backend
+
+Module-based MVC under `src/server/modules`:
+
+- `controller`
+- `service`
+- `repository`
+- `actions`
+- `types`
+
+Optional when needed:
+
+- `validator` (only for module-specific schema composition)
+
+Controllers should use shared response/error helpers from `src/server/http/*` to keep API behavior consistent.
+
+Route handlers and server actions must delegate to services. Business logic belongs in services.
+
+### Authorization
+
+- Permission constants: `src/shared/constants/permissions/*`
+- Policy layer: `src/shared/policies/*`
+- Request guard: `src/middleware.ts`
+
+`src/middleware.ts` runs in Edge runtime and performs coarse route/session checks only.
+Role enforcement is handled in server layouts and in the service/policy layer.
+
+This keeps middleware Edge-compatible while preserving strict server-side authorization.
+
+### Database
+
+- Mongoose connection helper: `src/server/db/mongoose.ts`
+- Mongo client for Auth.js adapter: `src/server/db/mongodb-client.ts`
+
+All timestamps should be stored in UTC.
+
+## Authentication Foundation
+
+Implemented foundations:
+
+- Auth.js v5 credentials provider
+- JWT-based sessions for credentials login
+- Role-aware session shaping
+- Inactive-user login rejection
+- Short-lived access token exposed through session (in-memory client usage)
+- Refresh token retained inside server-managed httpOnly session cookie payload
+- Protected dashboard routes
+- Basic auth server actions and API endpoints
+
+API-first auth endpoints for testing:
+
+- `POST /api/v1/auth/login`
+- `POST /api/v1/auth/register`
+- `GET /api/v1/auth/me`
+- `POST /api/v1/auth/refresh`
+- `POST /api/v1/auth/logout`
+
+All endpoints return JSON with `ok` and either `data` or `error`.
+
+Postman collection:
+
+- `postman/BillBoard-Hub-Auth.postman_collection.json`
+
+When testing with Postman, keep cookies enabled so session state is preserved between `login`, `me`, `refresh`, and `logout`.
+
+Key files:
+
+- `src/auth.ts` (facade)
+- `src/server/modules/auth/config.ts`
+- `src/server/modules/auth/callbacks.ts`
+- `src/server/modules/auth/tokens.ts`
+- `src/server/http/api-response.ts`
+- `src/server/http/controller-utils.ts`
+- `src/middleware.ts`
+- `src/server/modules/auth/*`
+- `src/server/modules/users/user.model.ts`
+
+## Local Setup
+
+1. Create `.env.local`:
+
+```env
+MONGODB_URI=<your-mongodb-connection-string>
+MONGODB_DB_NAME=billboard_hub
+AUTH_SECRET=<your-auth-secret>
+NEXTAUTH_URL=http://localhost:3000
+```
+
+2. Install dependencies:
 
 ```bash
 pnpm install
+```
+
+3. Start development server:
+
+```bash
 pnpm dev
 ```
 
-This project uses [pnpm](https://pnpm.io) — the version is pinned via the
-`packageManager` field in `package.json`, so [Corepack](https://nodejs.org/api/corepack.html)
-will use the right one automatically.
+## Quality Checks
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```bash
+pnpm exec tsc --noEmit
+pnpm lint
+```
 
-You can start editing the page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
+## Developer Workflow
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+For detailed contributor instructions and a step-by-step "start a new feature" guide, see:
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `CONTRIBUTING.md`
+- `AGENTS.md`
+- `CLAUDE.md`
