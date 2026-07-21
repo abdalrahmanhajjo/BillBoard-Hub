@@ -46,7 +46,7 @@ export const authController = {
   async me() {
     try {
       const session = await requireSession();
-      const user = await authService.getCurrentUser(session.user.id);
+      const user = await authService.getCurrentUser(session.user.id, session.user);
 
       return apiResponse.ok(
         {

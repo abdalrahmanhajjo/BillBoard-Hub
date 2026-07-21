@@ -4,7 +4,7 @@ import {
   REFRESH_TOKEN_TTL_MS,
   createOpaqueToken,
 } from "@/server/modules/auth/tokens";
-import type { UserRole } from "@/shared/types/user";
+import type { User, UserRole } from "@/shared/types/user";
 import { userService } from "../users/user.service";
 
 export const authCallbacks: NextAuthConfig["callbacks"] = {
@@ -85,7 +85,7 @@ export const authCallbacks: NextAuthConfig["callbacks"] = {
       return false;
     }
 
-    const dbUser = await userService.getById(user.id);
+    const dbUser = await userService.getById(user.id, user as User);
     return !!dbUser?.isActive;
   },
 };
