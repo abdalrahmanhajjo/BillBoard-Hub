@@ -59,6 +59,10 @@ export const userPolicy = {
 
   assertCanUpdateUser(actor: User, targetUserId: string): void {
     if (actor.role === USER_ROLES.ADMIN) {
+      if(actor.id === targetUserId) {
+        assert(actor.role, PERMISSIONS.USERS_UPDATE_SELF);
+        return;
+      }
       assert(actor.role, PERMISSIONS.USERS_UPDATE_ANY);
       return;
     }
