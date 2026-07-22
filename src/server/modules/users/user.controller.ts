@@ -27,10 +27,7 @@ export const userController = {
     try {
       const user = await userService.create(
         parsed.data,
-<<<<<<< Updated upstream
         parsed.data.role,
-=======
->>>>>>> Stashed changes
       );
 
       return apiResponse.ok(user, 201);
