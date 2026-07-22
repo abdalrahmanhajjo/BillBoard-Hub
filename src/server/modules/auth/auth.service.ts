@@ -20,8 +20,7 @@ export const authService = {
 
   async getCurrentUser(
     userId: string,
-    actor: User,
   ): Promise<User | null> {
-    return userService.getById(userId, actor);
+    return userService.getById(userId);
   },
 };
