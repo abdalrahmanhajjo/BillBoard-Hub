@@ -3,16 +3,18 @@ import { userRepository } from "@/server/modules/users/user.repository";
 import { toUser } from "@/server/modules/users/user.utils";
 import { USER_ROLES } from "@/shared/constants/user-roles";
 import type { CreateUserSchemaInput, UpdateUserInfoSchemaInput } from "@/shared/contracts/user/user.schema";
-import type { User, UserRole } from "@/shared/types/user";
+import type { User } from "@/shared/types/user";
+import { authorizationPolicy } from "@/shared/policies";
 
 const SALT_ROUNDS = Number(process.env.SALT_ROUNDS);
 
 export const userService = {
   async create(
     input: CreateUserSchemaInput,
-    role?: UserRole,
+    actor?: User,
   ): Promise<User> {
-    const assignedRole = role ?? USER_ROLES.ADVERTISER;
+    const assignedRole = input.role ?? USER_ROLES.ADVERTISER;
+    authorizationPolicy.user.assertCanAssignRole(actor, assignedRole);
 
     const existing = await userRepository.findByEmail(input.email);
     if (existing) {
@@ -52,7 +54,9 @@ export const userService = {
     return toUser(user);
   },
 
-  async getById(userId: string): Promise<User | null> {
+  async getById(userId: string, actor: User): Promise<User | null> {
+    authorizationPolicy.user.assertCanReadUser(actor, userId);
+
     const user = await userRepository.findById(userId);
     if (!user || !user.isActive) {
       return null;
@@ -63,7 +67,7 @@ export const userService = {
 
   async updateById(
     userId: string,
-    updateData: UpdateUserInfoSchemaInput,
+    updateData: Partial<UpdateUserInfoSchemaInput>,
   ): Promise<User | null> {
 
     const updated = await userRepository.updateById(userId, updateData);
@@ -76,7 +80,10 @@ export const userService = {
 
   async deleteById(
     userId: string,
+    actor: User,
   ): Promise<User | null> {
+    authorizationPolicy.user.assertCanDeleteUser(actor, userId);
+
     const deleted = await userRepository.deleteById(userId);
     if (!deleted) {
       return null;
