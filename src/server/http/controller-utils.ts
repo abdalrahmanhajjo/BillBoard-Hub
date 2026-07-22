@@ -1,8 +1,11 @@
 import { AuthError } from "next-auth";
+import type { Session } from "next-auth";
+import { auth } from "@/auth";
 import { apiResponse } from "@/server/http/api-response";
 import {
   HttpError,
   NotFoundError,
+  UnauthorizedError,
 } from "@/shared/http/http-error";
 
 export function validationMessage(
@@ -10,6 +13,16 @@ export function validationMessage(
   fallbackMessage: string,
 ): string {
   return issues?.[0]?.message ?? fallbackMessage;
+}
+
+export async function requireSession(): Promise<Session> {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    throw new UnauthorizedError("Not authenticated.");
+  }
+
+  return session;
 }
 
 export function handleControllerError(error: unknown, message: string) {

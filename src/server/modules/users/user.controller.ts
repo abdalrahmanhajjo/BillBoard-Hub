@@ -1,7 +1,6 @@
 import { apiResponse } from "@/server/http/api-response";
 import {
   handleControllerError,
-  requireSession,
   validationMessage,
 } from "@/server/http/controller-utils";
 import { NotFoundError } from "@/shared/http/http-error";
@@ -26,11 +25,7 @@ export const userController = {
     }
 
     try {
-      const session = await requireSession();
-      const user = await userService.create(
-        parsed.data,
-        session.user,
-      );
+      const user = await userService.create(parsed.data);
 
       return apiResponse.ok(user, 201);
     } catch (error) {
@@ -52,8 +47,7 @@ export const userController = {
     }
 
     try {
-      const session = await requireSession();
-      const user = await userService.updateById(userId, parsed.data, session.user);
+      const user = await userService.updateById(userId, parsed.data);
 
       if (!user) {
         throw new NotFoundError("User not found.");
@@ -71,8 +65,7 @@ export const userController = {
     }
 
     try {
-      const session = await requireSession();
-      const user = await userService.deleteById(userId, session.user);
+      const user = await userService.deleteById(userId);
 
       if (!user) {
         throw new NotFoundError("User not found.");
@@ -90,8 +83,7 @@ export const userController = {
     }
 
     try {
-      const session = await requireSession();
-      const user = await userService.getById(id, session.user);
+      const user = await userService.getById(id);
 
       if (!user) {
         throw new NotFoundError("User not found.");
