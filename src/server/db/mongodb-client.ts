@@ -1,9 +1,9 @@
-import { MongoClient } from "mongodb";
+import { MongoClient } from 'mongodb';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  throw new Error("Missing MONGODB_URI environment variable.");
+  throw new Error('Missing MONGODB_URI environment variable.');
 }
 
 declare global {
@@ -12,9 +12,8 @@ declare global {
 
 const client = new MongoClient(MONGODB_URI);
 
-export const mongoClientPromise =
-  global.__mongoClientPromise__ ?? client.connect();
+export const mongoClientPromise = global.__mongoClientPromise__ ?? client.connect();
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== 'production') {
   global.__mongoClientPromise__ = mongoClientPromise;
 }

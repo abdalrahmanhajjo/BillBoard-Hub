@@ -1,6 +1,6 @@
-import { model, models, Schema, type InferSchemaType } from "mongoose";
-import { USER_ROLES } from "@/shared/constants/user-roles";
-import { UserRecord } from "./user.types";
+import { model, models, Schema, type InferSchemaType } from 'mongoose';
+import { USER_ROLES } from '@/shared/constants/user-roles';
+import { UserRecord } from './user.types';
 
 const userSchema = new Schema<UserRecord>(
   {
@@ -43,7 +43,7 @@ const userSchema = new Schema<UserRecord>(
   },
   {
     timestamps: true,
-    collection: "users",
+    collection: 'users',
   },
 );
 
@@ -51,4 +51,4 @@ export type UserDocument = InferSchemaType<typeof userSchema> & {
   _id: string;
 };
 
-export const UserModel = models.User || model("User", userSchema);
+export const UserModel = models.User || model('User', userSchema);

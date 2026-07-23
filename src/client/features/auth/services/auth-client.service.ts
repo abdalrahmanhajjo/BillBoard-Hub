@@ -1,5 +1,5 @@
-import type { LoginSchemaInput } from "@/shared/contracts/auth/login.schema";
-import type { RegisterSchemaInput } from "@/shared/contracts/auth/register.schema";
+import type { LoginSchemaInput } from '@/shared/contracts/auth/login.schema';
+import type { RegisterSchemaInput } from '@/shared/contracts/auth/register.schema';
 
 async function parseResponse(response: Response) {
   const payload = await response.json();
@@ -7,7 +7,7 @@ async function parseResponse(response: Response) {
   if (!response.ok) {
     return {
       ok: false,
-      error: payload?.error ?? "Request failed.",
+      error: payload?.error ?? 'Request failed.',
       data: payload?.data,
     };
   }
@@ -21,10 +21,10 @@ async function parseResponse(response: Response) {
 
 export const authClientService = {
   async register(payload: RegisterSchemaInput) {
-    const response = await fetch("/api/v1/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
+    const response = await fetch('/api/v1/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(payload),
     });
 
@@ -32,10 +32,10 @@ export const authClientService = {
   },
 
   async login(payload: LoginSchemaInput) {
-    const response = await fetch("/api/v1/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
+    const response = await fetch('/api/v1/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(payload),
     });
 
@@ -43,27 +43,27 @@ export const authClientService = {
   },
 
   async logout() {
-    const response = await fetch("/api/v1/auth/logout", {
-      method: "POST",
-      credentials: "include",
+    const response = await fetch('/api/v1/auth/logout', {
+      method: 'POST',
+      credentials: 'include',
     });
 
     return parseResponse(response);
   },
 
   async me() {
-    const response = await fetch("/api/v1/auth/me", {
-      method: "GET",
-      credentials: "include",
+    const response = await fetch('/api/v1/auth/me', {
+      method: 'GET',
+      credentials: 'include',
     });
 
     return parseResponse(response);
   },
 
   async refresh() {
-    const response = await fetch("/api/v1/auth/refresh", {
-      method: "POST",
-      credentials: "include",
+    const response = await fetch('/api/v1/auth/refresh', {
+      method: 'POST',
+      credentials: 'include',
     });
 
     return parseResponse(response);

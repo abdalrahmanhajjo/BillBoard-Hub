@@ -1,5 +1,5 @@
-import { USER_ROLES } from "../constants/user-roles";
-import { UpdateUserInfoSchemaInput } from "../contracts/user/user.schema";
+import { USER_ROLES } from '../constants/user-roles';
+import { UpdateUserInfoSchemaInput } from '../contracts/user/user.schema';
 
 export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
@@ -24,4 +24,3 @@ export interface DeleteUserPayload {
 export interface GetUserPayload {
   id: string;
 }
-

@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { DashboardShell } from "@/client/features/dashboard/components/dashboard-shell";
+import Link from 'next/link';
+import { DashboardShell } from '@/client/features/dashboard/components/dashboard-shell';
 
 function Card({ title, description, href }: { title: string; description: string; href: string }) {
   return (
@@ -19,7 +19,11 @@ export function AdminDashboardFeaturePage() {
       title="Admin Dashboard"
       subtitle="Manage platform operations, users, inventory, and performance."
     >
-      <Card title="Users" description="Manage platform users and access." href="/dashboard/admin/users" />
+      <Card
+        title="Users"
+        description="Manage platform users and access."
+        href="/dashboard/admin/users"
+      />
       <Card
         title="Advertisers"
         description="Review and manage advertiser accounts."

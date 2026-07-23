@@ -1,22 +1,17 @@
-import type { User, UserRole } from "@/shared/types/user";
-import { USER_ROLES } from "@/shared/constants/user-roles";
-import { assert } from "../policy-utils";
-import { UnauthorizedError } from "@/shared/http/http-error";
-import { PERMISSIONS } from "@/shared/constants/permissions/permissions";
-
+import type { User, UserRole } from '@/shared/types/user';
+import { USER_ROLES } from '@/shared/constants/user-roles';
+import { assert } from '../policy-utils';
+import { UnauthorizedError } from '@/shared/http/http-error';
+import { PERMISSIONS } from '@/shared/constants/permissions/permissions';
 
 export const userPolicy = {
   assertCanAssignRole(actor: User | undefined, targetRole: UserRole): void {
     if (targetRole === USER_ROLES.ADMIN) {
       if (!actor?.role) {
-        throw new UnauthorizedError("Only admins can create admin users.");
+        throw new UnauthorizedError('Only admins can create admin users.');
       }
 
-      assert(
-        actor.role,
-        PERMISSIONS.USERS_CREATE_ADMIN,
-        "Only admins can create admin users.",
-      );
+      assert(actor.role, PERMISSIONS.USERS_CREATE_ADMIN, 'Only admins can create admin users.');
       return;
     }
 
@@ -24,7 +19,7 @@ export const userPolicy = {
       assert(
         actor.role,
         PERMISSIONS.USERS_CREATE_ADVERTISER,
-        "Role is not allowed to create advertiser users.",
+        'Role is not allowed to create advertiser users.',
       );
     }
   },
@@ -40,7 +35,7 @@ export const userPolicy = {
       return;
     }
 
-    throw new UnauthorizedError("You cannot access this user.");
+    throw new UnauthorizedError('You cannot access this user.');
   },
 
   assertCanDeleteUser(actor: User, targetUserId: string): void {
@@ -54,12 +49,12 @@ export const userPolicy = {
       return;
     }
 
-    throw new UnauthorizedError("You cannot delete this user.");
+    throw new UnauthorizedError('You cannot delete this user.');
   },
 
   assertCanUpdateUser(actor: User, targetUserId: string): void {
     if (actor.role === USER_ROLES.ADMIN) {
-      if(actor.id === targetUserId) {
+      if (actor.id === targetUserId) {
         assert(actor.role, PERMISSIONS.USERS_UPDATE_SELF);
         return;
       }
@@ -72,7 +67,6 @@ export const userPolicy = {
       return;
     }
 
-    throw new UnauthorizedError("You cannot update this user.");
+    throw new UnauthorizedError('You cannot update this user.');
   },
-
 };

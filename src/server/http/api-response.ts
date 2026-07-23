@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
 type ErrorDetails = Record<string, unknown> | undefined;
 
@@ -26,23 +26,23 @@ export const apiResponse = {
     return this.error(message, 400, details);
   },
 
-  unauthorized(message = "Not authenticated.") {
+  unauthorized(message = 'Not authenticated.') {
     return this.error(message, 401);
   },
 
-  forbidden(message = "Forbidden.") {
+  forbidden(message = 'Forbidden.') {
     return this.error(message, 403);
   },
 
-  notFound(message = "Resource not found.") {
+  notFound(message = 'Resource not found.') {
     return this.error(message, 404);
   },
 
-  conflict(message = "Conflict.") {
+  conflict(message = 'Conflict.') {
     return this.error(message, 409);
   },
 
-  internal(message = "Unexpected server error.") {
+  internal(message = 'Unexpected server error.') {
     return this.error(message, 500);
   },
 };

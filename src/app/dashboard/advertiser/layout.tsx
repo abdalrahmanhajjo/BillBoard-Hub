@@ -1,6 +1,6 @@
-import { auth } from "@/auth";
-import { USER_ROLES } from "@/shared/constants/user-roles";
-import { redirect } from "next/navigation";
+import { auth } from '@/auth';
+import { USER_ROLES } from '@/shared/constants/user-roles';
+import { redirect } from 'next/navigation';
 
 export default async function AdvertiserDashboardLayout({
   children,
@@ -10,11 +10,11 @@ export default async function AdvertiserDashboardLayout({
   const session = await auth();
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
   if (session.user.role !== USER_ROLES.ADVERTISER) {
-    redirect("/unauthorized");
+    redirect('/unauthorized');
   }
 
   return <>{children}</>;

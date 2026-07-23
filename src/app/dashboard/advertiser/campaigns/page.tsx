@@ -1,4 +1,4 @@
-import { ModulePlaceholderPage } from "@/client/features/dashboard/components/module-placeholder-page";
+import { ModulePlaceholderPage } from '@/client/features/dashboard/components/module-placeholder-page';
 
 export default function AdvertiserCampaignsPage() {
   return (

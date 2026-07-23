@@ -1,6 +1,6 @@
-import { connectToDatabase } from "@/server/db/mongoose";
-import { UserModel, type UserDocument } from "@/server/modules/users/user.model";
-import type { UserRecord } from "@/server/modules/users/user.types";
+import { connectToDatabase } from '@/server/db/mongoose';
+import { UserModel, type UserDocument } from '@/server/modules/users/user.model';
+import type { UserRecord } from '@/server/modules/users/user.types';
 
 export const userRepository = {
   async findByEmail(email: string): Promise<UserDocument | null> {
@@ -8,12 +8,10 @@ export const userRepository = {
     return UserModel.findOne({ email: email.toLowerCase() }).lean<UserDocument>().exec();
   },
 
-  async findByEmailWithPassword(
-    email: string,
-  ): Promise<UserDocument | null> {
+  async findByEmailWithPassword(email: string): Promise<UserDocument | null> {
     await connectToDatabase();
     return UserModel.findOne({ email: email.toLowerCase() })
-      .select("+passwordHash")
+      .select('+passwordHash')
       .lean<UserDocument>()
       .exec();
   },
@@ -34,10 +32,7 @@ export const userRepository = {
     return UserModel.findById(userId).lean<UserDocument>().exec();
   },
 
-  async updateById(
-    userId: string,
-    updateData: Partial<UserRecord>,
-  ): Promise<UserDocument | null> {
+  async updateById(userId: string, updateData: Partial<UserRecord>): Promise<UserDocument | null> {
     await connectToDatabase();
     return UserModel.findByIdAndUpdate(userId, updateData, { new: true })
       .lean<UserDocument>()
@@ -47,5 +42,5 @@ export const userRepository = {
   async deleteById(userId: string): Promise<UserDocument | null> {
     await connectToDatabase();
     return UserModel.findByIdAndDelete(userId).lean<UserDocument>().exec();
-  }
+  },
 };

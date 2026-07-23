@@ -1,6 +1,6 @@
-import { userController } from "@/server/modules/users/user.controller";
-import { apiResponse } from "@/server/http/api-response";
-import type { DeleteUserPayload, UpdateUserPayload } from "@/shared/types/user";
+import { userController } from '@/server/modules/users/user.controller';
+import { apiResponse } from '@/server/http/api-response';
+import type { DeleteUserPayload, UpdateUserPayload } from '@/shared/types/user';
 
 export async function PUT(request: Request) {
   const payload: UpdateUserPayload = await request.json();
@@ -14,13 +14,11 @@ export async function DELETE(request: Request) {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const userId = searchParams.get("id");
+  const userId = searchParams.get('id');
 
   if (!userId) {
-    return apiResponse.badRequest("Missing id parameter.");
+    return apiResponse.badRequest('Missing id parameter.');
   }
 
   return userController.getUser(userId);
 }
-
-

@@ -1,6 +1,6 @@
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
-import { USER_ROLES } from "@/shared/constants/user-roles";
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
+import { USER_ROLES } from '@/shared/constants/user-roles';
 export default async function AdminDashboardLayout({
   children,
 }: Readonly<{
@@ -9,11 +9,11 @@ export default async function AdminDashboardLayout({
   const session = await auth();
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
   if (session.user.role !== USER_ROLES.ADMIN) {
-    redirect("/unauthorized");
+    redirect('/unauthorized');
   }
 
   return <>{children}</>;

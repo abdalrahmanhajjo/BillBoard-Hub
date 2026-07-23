@@ -1,5 +1,5 @@
-import { Permission } from "@/shared/types/permissions";
-import { PERMISSIONS } from "./permissions";
+import { Permission } from '@/shared/types/permissions';
+import { PERMISSIONS } from './permissions';
 
 export const ADMIN_PERMISSIONS: Permission[] = [
   // User Permissions

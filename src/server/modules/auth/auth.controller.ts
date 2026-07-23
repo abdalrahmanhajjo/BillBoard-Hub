@@ -1,15 +1,15 @@
-import { signIn, signOut } from "@/auth";
-import { authService } from "@/server/modules/auth/auth.service";
-import { apiResponse } from "@/server/http/api-response";
+import { signIn, signOut } from '@/auth';
+import { authService } from '@/server/modules/auth/auth.service';
+import { apiResponse } from '@/server/http/api-response';
 import {
   handleControllerError,
   requireSession,
   validationMessage,
-} from "@/server/http/controller-utils";
-import type { LoginSchemaInput } from "@/shared/contracts/auth/login.schema";
-import { loginSchema } from "@/shared/contracts/auth/login.schema";
-import type { RegisterSchemaInput } from "@/shared/contracts/auth/register.schema";
-import { registerSchema } from "@/shared/contracts/auth/register.schema";
+} from '@/server/http/controller-utils';
+import type { LoginSchemaInput } from '@/shared/contracts/auth/login.schema';
+import { loginSchema } from '@/shared/contracts/auth/login.schema';
+import type { RegisterSchemaInput } from '@/shared/contracts/auth/register.schema';
+import { registerSchema } from '@/shared/contracts/auth/register.schema';
 
 export const authController = {
   async login(payload: LoginSchemaInput) {
@@ -17,12 +17,12 @@ export const authController = {
 
     if (!parsed.success) {
       return apiResponse.badRequest(
-        validationMessage(parsed.error.issues, "Invalid login payload."),
+        validationMessage(parsed.error.issues, 'Invalid login payload.'),
       );
     }
 
     try {
-      await signIn("credentials", {
+      await signIn('credentials', {
         email: parsed.data.email,
         password: parsed.data.password,
         redirect: false,
@@ -30,7 +30,7 @@ export const authController = {
 
       return apiResponse.success(200);
     } catch (error) {
-      return handleControllerError(error, "Unable to sign in right now. Please try again.");
+      return handleControllerError(error, 'Unable to sign in right now. Please try again.');
     }
   },
 
@@ -39,7 +39,7 @@ export const authController = {
       await signOut({ redirect: false });
       return apiResponse.success(200);
     } catch (error) {
-      return handleControllerError(error, "Unable to sign out right now. Please try again.");
+      return handleControllerError(error, 'Unable to sign out right now. Please try again.');
     }
   },
 
@@ -48,16 +48,14 @@ export const authController = {
       const session = await requireSession();
       const user = await authService.getCurrentUser(session.user.id, session.user);
 
-      return apiResponse.ok(
-        {
-          user,
-          accessToken: session.accessToken,
-          accessTokenExpires: session.accessTokenExpires,
-          sessionError: session.error,
-        }
-      );
+      return apiResponse.ok({
+        user,
+        accessToken: session.accessToken,
+        accessTokenExpires: session.accessTokenExpires,
+        sessionError: session.error,
+      });
     } catch (error) {
-      return handleControllerError(error, "Unable to fetch session user right now.");
+      return handleControllerError(error, 'Unable to fetch session user right now.');
     }
   },
 
@@ -65,21 +63,16 @@ export const authController = {
     try {
       const session = await requireSession();
 
-      if (
-        session.error === "RefreshTokenExpired" ||
-        session.error === "RefreshTokenMissing"
-      ) {
+      if (session.error === 'RefreshTokenExpired' || session.error === 'RefreshTokenMissing') {
         return apiResponse.unauthorized(session.error);
       }
 
-      return apiResponse.ok(
-        {
-          accessToken: session.accessToken,
-          accessTokenExpires: session.accessTokenExpires,
-        }
-      );
+      return apiResponse.ok({
+        accessToken: session.accessToken,
+        accessTokenExpires: session.accessTokenExpires,
+      });
     } catch (error) {
-      return handleControllerError(error, "Unable to refresh session right now.");
+      return handleControllerError(error, 'Unable to refresh session right now.');
     }
   },
 
@@ -88,7 +81,7 @@ export const authController = {
 
     if (!parsed.success) {
       return apiResponse.badRequest(
-        validationMessage(parsed.error.issues, "Invalid registration payload."),
+        validationMessage(parsed.error.issues, 'Invalid registration payload.'),
       );
     }
 
@@ -97,7 +90,7 @@ export const authController = {
 
       return apiResponse.ok(user, 201);
     } catch (error) {
-      return handleControllerError(error, "Registration failed.");
+      return handleControllerError(error, 'Registration failed.');
     }
   },
 };

@@ -1,5 +1,5 @@
-import { Permission } from "../../types/permissions";
-import { PERMISSIONS } from "./permissions";
+import { Permission } from '../../types/permissions';
+import { PERMISSIONS } from './permissions';
 
 export const ADVERTISER_PERMISSIONS: Permission[] = [
   // User Permissions

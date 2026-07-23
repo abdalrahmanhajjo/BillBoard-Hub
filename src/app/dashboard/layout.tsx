@@ -1,5 +1,5 @@
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 
 export default async function DashboardLayout({
   children,
@@ -9,7 +9,7 @@ export default async function DashboardLayout({
   const session = await auth();
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
   return <>{children}</>;

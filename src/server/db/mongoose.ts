@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  throw new Error("Missing MONGODB_URI environment variable.");
+  throw new Error('Missing MONGODB_URI environment variable.');
 }
 
 const mongoUri: string = MONGODB_URI;
@@ -29,11 +29,11 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
     return cache.conn;
   }
 
-  console.log("Connecting to MongoDB...");
-  console.log("MongoDB URI:", mongoUri);
+  console.log('Connecting to MongoDB...');
+  console.log('MongoDB URI:', mongoUri);
   if (!cache.promise) {
     cache.promise = mongoose.connect(mongoUri, {
-      dbName: process.env.MONGODB_DB_NAME ?? "billboard-hub",
+      dbName: process.env.MONGODB_DB_NAME ?? 'billboard-hub',
     });
   }
 

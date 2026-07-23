@@ -1,4 +1,4 @@
 export const USER_ROLES = {
-  ADMIN: "admin",
-  ADVERTISER: "advertiser",
+  ADMIN: 'admin',
+  ADVERTISER: 'advertiser',
 } as const;

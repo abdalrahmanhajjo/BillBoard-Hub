@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { DashboardShell } from "@/client/features/dashboard/components/dashboard-shell";
+import Link from 'next/link';
+import { DashboardShell } from '@/client/features/dashboard/components/dashboard-shell';
 
 function Card({ title, description, href }: { title: string; description: string; href: string }) {
   return (

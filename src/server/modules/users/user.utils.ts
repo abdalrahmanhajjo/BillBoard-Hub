@@ -1,5 +1,5 @@
-import { UserDocument } from "./user.model";
-import type { User } from "@/shared/types/user";
+import { UserDocument } from './user.model';
+import type { User } from '@/shared/types/user';
 
 function toUser(user: UserDocument): User {
   return {

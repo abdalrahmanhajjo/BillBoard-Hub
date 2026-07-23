@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
 type DashboardShellProps = {
   title: string;
@@ -7,12 +7,7 @@ type DashboardShellProps = {
   children?: ReactNode;
 };
 
-export function DashboardShell({
-  title,
-  subtitle,
-  actions,
-  children,
-}: DashboardShellProps) {
+export function DashboardShell({ title, subtitle, actions, children }: DashboardShellProps) {
   return (
     <section className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 px-6 py-10">
       <header className="flex flex-col justify-between gap-4 border-b border-zinc-200 pb-6 md:flex-row md:items-end">

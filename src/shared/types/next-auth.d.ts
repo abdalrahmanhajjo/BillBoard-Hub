@@ -1,12 +1,12 @@
-import type { DefaultSession } from "next-auth";
-import type { UserRole } from "@/shared/types/user";
+import type { DefaultSession } from 'next-auth';
+import type { UserRole } from '@/shared/types/user';
 
-declare module "next-auth" {
+declare module 'next-auth' {
   interface Session {
     accessToken?: string;
     accessTokenExpires?: number;
     error?: string;
-    user: import("@/shared/types/user").User & DefaultSession["user"];
+    user: import('@/shared/types/user').User & DefaultSession['user'];
   }
 
   interface User {
@@ -18,7 +18,7 @@ declare module "next-auth" {
   }
 }
 
-declare module "next-auth/jwt" {
+declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
     role: UserRole;
