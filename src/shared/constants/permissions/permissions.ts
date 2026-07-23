@@ -12,4 +12,9 @@ export const PERMISSIONS = {
   // Dashboard Permissions
   DASHBOARD_ACCESS_ADMIN: 'dashboard.access:admin',
   DASHBOARD_ACCESS_ADVERTISER: 'dashboard.access:advertiser',
+
+  // Billboard Permissions
+  BILLBOARDS_READ: 'billboards.read',
+  BILLBOARDS_CREATE: 'billboards.create',
+  BILLBOARDS_UPDATE: 'billboards.update',
 } as const;

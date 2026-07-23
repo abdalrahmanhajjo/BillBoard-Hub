@@ -9,4 +9,7 @@ export const ADVERTISER_PERMISSIONS: Permission[] = [
 
   // Dashboard Permissions
   PERMISSIONS.DASHBOARD_ACCESS_ADVERTISER,
+
+  // Billboard Permissions
+  PERMISSIONS.BILLBOARDS_READ,
 ];
