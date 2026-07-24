@@ -151,6 +151,29 @@
 }
 
 @layer components {
+  .home-atmosphere-content > section {
+    background-color: transparent;
+  }
+
+  .home-atmosphere-content > section:first-child {
+    background-image: none;
+  }
+
+  .home-atmosphere-content > section:nth-child(4),
+  .home-atmosphere-content > section:nth-child(7) {
+    background-color: color-mix(in oklab, #eef4ff 72%, transparent);
+    backdrop-filter: blur(2px);
+  }
+
+  .dark .home-atmosphere {
+    background-color: #09090b;
+  }
+
+  .dark .home-atmosphere-content > section:nth-child(4),
+  .dark .home-atmosphere-content > section:nth-child(7) {
+    background-color: color-mix(in oklab, #172554 30%, transparent);
+  }
+
   .billboard-drawer-form label,
   .billboard-drawer-form span.text-sm {
     @apply text-[11px] font-semibold text-slate-700;

@@ -8,10 +8,11 @@ import { Features } from '@/client/features/home/components/features';
 import { Faq } from '@/client/features/home/components/faq';
 import { Cta } from '@/client/features/home/components/cta';
 import type { HomeData } from '@/client/features/home/home.types';
+import { HomeAtmosphere } from '@/client/features/home/components/home-atmosphere';
 
 export function HomePage({ billboards, marketOverview, stats }: HomeData) {
   return (
-    <>
+    <HomeAtmosphere>
       <Hero marketOverview={marketOverview} stats={stats} />
       <Brands />
       <HowItWorks />
@@ -21,6 +22,6 @@ export function HomePage({ billboards, marketOverview, stats }: HomeData) {
       <Features />
       <Faq />
       <Cta />
-    </>
+    </HomeAtmosphere>
   );
 }

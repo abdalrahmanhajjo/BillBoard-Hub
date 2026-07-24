@@ -57,7 +57,7 @@ export const billboardClientService = {
   },
   async update(billboardId: string, payload: UpdateBillboardSchemaInput) {
     const response = await fetch(`/api/v1/billboards/${billboardId}`, {
-      method: 'PUT',
+      method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify(payload),

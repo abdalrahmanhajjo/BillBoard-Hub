@@ -39,6 +39,7 @@ import {
 import { Textarea } from '@/client/ui/components/ui/textarea';
 import { Card } from '@/client/ui/components/ui/card';
 import { ReserveButton } from '@/client/features/public-catalog/components/reserve-button';
+import { DigitalSpecShowcase } from '@/client/features/public-catalog/components/digital-spec-showcase';
 
 const trafficFormatter = new Intl.NumberFormat('en-US');
 
@@ -114,18 +115,13 @@ export function BillboardDetailsPage({
     },
     {
       icon: Monitor,
-      label: isDigital && spec ? 'Resolution' : 'Display',
-      value:
-        isDigital && spec
-          ? `${spec.resolution.width} × ${spec.resolution.height} px`
-          : isDigital
-            ? 'Digital LED'
-            : 'Printed creative',
+      label: 'Display',
+      value: isDigital ? 'Digital LED' : 'Printed creative',
     },
     {
       icon: Lightbulb,
-      label: isDigital && spec ? 'Brightness' : 'Placement',
-      value: isDigital && spec ? `${spec.brightness} nits` : 'Outdoor roadside',
+      label: 'Placement',
+      value: 'Outdoor roadside',
     },
   ];
 
@@ -148,6 +144,12 @@ export function BillboardDetailsPage({
             <span aria-hidden>/</span>
             <span className="text-zinc-800">{billboard.name}</span>
           </div>
+          {isDigital ? (
+            <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+              <Monitor className="size-3.5" aria-hidden />
+              Digital LED screen
+            </span>
+          ) : null}
           <h1 className="mt-5 max-w-4xl text-4xl leading-[0.98] font-semibold tracking-[-0.045em] text-balance sm:text-5xl lg:text-6xl">
             {billboard.name}
           </h1>
@@ -241,6 +243,8 @@ export function BillboardDetailsPage({
             ))}
           </div>
         </section>
+
+        {isDigital ? <DigitalSpecShowcase spec={spec} /> : null}
 
         <section className="mt-8 grid gap-5 lg:grid-cols-2">
           <Card className="h-full min-h-[640px] gap-0 overflow-hidden rounded-2xl border border-zinc-200 bg-white py-0 ring-0">
