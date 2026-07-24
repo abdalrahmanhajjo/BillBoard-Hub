@@ -46,6 +46,10 @@ const billboardSchema = new Schema<BillboardRecord>(
       required: true,
       min: 0,
     },
+    trafficCount: {
+      type: Number,
+      min: 0,
+    },
     status: {
       type: String,
       enum: Object.values(BILLBOARD_STATUSES),

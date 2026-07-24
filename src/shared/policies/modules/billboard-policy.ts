@@ -14,4 +14,8 @@ export const billboardPolicy = {
   assertCanUpdate(actor: User): void {
     assert(actor.role, PERMISSIONS.BILLBOARDS_UPDATE, 'You cannot update billboards.');
   },
+
+  assertCanDelete(actor: User): void {
+    assert(actor.role, PERMISSIONS.BILLBOARDS_DELETE, 'You cannot archive billboards.');
+  },
 };

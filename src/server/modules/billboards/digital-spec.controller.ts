@@ -22,6 +22,20 @@ export const digitalSpecController = {
     }
   },
 
+  async getPublicDigitalSpec(billboardId: string) {
+    if (!billboardId) {
+      return apiResponse.badRequest('Billboard id is required.');
+    }
+
+    try {
+      const spec = await digitalSpecService.getPublicByBillboard(billboardId);
+
+      return apiResponse.ok({ spec });
+    } catch (error) {
+      return handleControllerError(error, 'Getting digital specification failed.');
+    }
+  },
+
   async upsertDigitalSpec(actor: User, billboardId: string, payload: UpsertDigitalSpecSchemaInput) {
     if (!billboardId) {
       return apiResponse.badRequest('Billboard id is required.');

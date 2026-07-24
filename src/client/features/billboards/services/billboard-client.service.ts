@@ -94,4 +94,13 @@ export const billboardClientService = {
 
     return parseResponse(response);
   },
+
+  async delete(billboardId: string) {
+    const response = await fetch(`/api/v1/billboards/${billboardId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+
+    return parseResponse(response);
+  },
 };

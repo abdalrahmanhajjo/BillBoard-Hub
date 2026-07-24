@@ -41,6 +41,7 @@ export function CreateBillboardForm({ onCreated }: CreateBillboardFormProps) {
       location: { address: '', city: '', country: '' },
       dimensions: { width: '', height: '', unit: DIMENSION_UNITS.METERS },
       monthlyPrice: '',
+      trafficCount: '',
       images: [],
     },
   });
@@ -220,20 +221,42 @@ export function CreateBillboardForm({ onCreated }: CreateBillboardFormProps) {
         </div>
       </div>
 
-      <div className="space-y-1">
-        <label htmlFor="monthlyPrice" className="text-sm font-medium">
-          Monthly Price
-        </label>
-        <input
-          id="monthlyPrice"
-          type="number"
-          step="any"
-          className={inputClassName}
-          {...register('monthlyPrice')}
-        />
-        {errors.monthlyPrice ? (
-          <p className="text-sm text-red-600">{errors.monthlyPrice.message}</p>
-        ) : null}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1">
+          <label htmlFor="monthlyPrice" className="text-sm font-medium">
+            Monthly Price
+          </label>
+          <input
+            id="monthlyPrice"
+            type="number"
+            step="any"
+            className={inputClassName}
+            {...register('monthlyPrice')}
+          />
+          {errors.monthlyPrice ? (
+            <p className="text-sm text-red-600">{errors.monthlyPrice.message}</p>
+          ) : null}
+        </div>
+
+        <div className="space-y-1">
+          <label htmlFor="trafficCount" className="text-sm font-medium">
+            Traffic Count (optional)
+          </label>
+          <input
+            id="trafficCount"
+            type="number"
+            min="0"
+            step="1"
+            className={inputClassName}
+            {...register('trafficCount', {
+              setValueAs: (value) =>
+                value === '' || value === undefined || value === null ? undefined : Number(value),
+            })}
+          />
+          {errors.trafficCount ? (
+            <p className="text-sm text-red-600">{errors.trafficCount.message}</p>
+          ) : null}
+        </div>
       </div>
 
       <div className="space-y-1">

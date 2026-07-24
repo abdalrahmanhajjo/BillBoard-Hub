@@ -31,10 +31,29 @@ export type Billboard = {
   location: BillboardLocation;
   dimensions: BillboardDimensions;
   monthlyPrice: number;
+  trafficCount?: number;
   status: BillboardStatus;
   images: string[];
   createdAt?: string;
   updatedAt?: string;
+};
+
+/**
+ * Public-safe billboard shape for the storefront/catalog. Internal statuses
+ * (reserved/occupied/maintenance) are collapsed into `isAvailable` so the
+ * reason a billboard is unavailable is never exposed to visitors.
+ */
+export type PublicBillboard = {
+  id: string;
+  name: string;
+  description?: string;
+  type: BillboardType;
+  location: BillboardLocation;
+  dimensions: BillboardDimensions;
+  monthlyPrice: number;
+  trafficCount?: number;
+  images: string[];
+  isAvailable: boolean;
 };
 
 export type Resolution = {
@@ -52,4 +71,16 @@ export type DigitalSpec = {
   screenStatus: ScreenStatus;
   createdAt?: string;
   updatedAt?: string;
+};
+
+/**
+ * Public-safe digital spec for the storefront. Operational fields such as
+ * `screenStatus` (on/off/fault) are omitted so live hardware state is never
+ * exposed to visitors — only the marketing-relevant capabilities remain.
+ */
+export type PublicDigitalSpec = {
+  resolution: Resolution;
+  brightness: number;
+  slotDurationSeconds: number;
+  rotatingAdsCount: number;
 };

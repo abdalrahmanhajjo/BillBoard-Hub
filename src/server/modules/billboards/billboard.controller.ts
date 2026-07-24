@@ -42,6 +42,30 @@ export const billboardController = {
     }
   },
 
+  async listPublicBillboards() {
+    try {
+      const billboards = await billboardService.listPublic();
+
+      return apiResponse.ok({ billboards });
+    } catch (error) {
+      return handleControllerError(error, 'Getting billboards failed.');
+    }
+  },
+
+  async getPublicBillboard(billboardId: string) {
+    if (!billboardId) {
+      return apiResponse.badRequest('Billboard id is required.');
+    }
+
+    try {
+      const billboard = await billboardService.getPublicById(billboardId);
+
+      return apiResponse.ok({ billboard });
+    } catch (error) {
+      return handleControllerError(error, 'Getting billboard failed.');
+    }
+  },
+
   async getBillboard(actor: User, billboardId: string) {
     if (!billboardId) {
       return apiResponse.badRequest('Billboard id is required.');
@@ -105,6 +129,19 @@ export const billboardController = {
       return apiResponse.ok(billboard);
     } catch (error) {
       return handleControllerError(error, 'Updating availability failed.');
+    }
+  },
+
+  async deleteBillboard(actor: User, billboardId: string) {
+    if (!billboardId) {
+      return apiResponse.badRequest('Billboard id is required.');
+    }
+
+    try {
+      await billboardService.delete(actor, billboardId);
+      return apiResponse.ok({ deleted: true });
+    } catch (error) {
+      return handleControllerError(error, 'Archiving billboard failed.');
     }
   },
 };
