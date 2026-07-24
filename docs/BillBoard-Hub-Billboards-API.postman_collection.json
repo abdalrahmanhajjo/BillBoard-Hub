@@ -1,0 +1,320 @@
+{
+  "info": {
+    "_postman_id": "b17b0a7d-4c3e-4f2a-9a1e-bb7000000002",
+    "name": "BillBoard Hub Billboards API",
+    "description": "Billboard inventory endpoints for BillBoard Hub (API-first flow).\n\nSetup:\n1. auth > Register (creates an advertiser).\n2. Promote to admin in MongoDB: db.users.updateOne({ email: \"{{adminEmail}}\" }, { $set: { role: \"admin\" } }).\n3. auth > Login (AFTER promoting). Postman keeps the session cookie for {{baseUrl}}.\n4. billboards > Create static / Create digital save {{billboardId}} and {{digitalBillboardId}} automatically.\n\nWrites require an admin session; reads work for admin or advertiser.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "auth",
+      "description": "Session bootstrap for the billboard endpoints. (Full auth surface lives in the BillBoard Hub Auth API collection.)",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"BB\",\n  \"lastName\": \"Admin\",\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\",\n  \"confirmPassword\": \"{{adminPassword}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "description": "Creates an ADVERTISER. Promote to admin in MongoDB before testing write endpoints."
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Sets the session cookie. Run AFTER promoting the user to admin so the session token captures the admin role."
+          }
+        }
+      ]
+    },
+    {
+      "name": "billboards",
+      "item": [
+        {
+          "name": "Create static",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.id) {",
+                  "  pm.collectionVariables.set('billboardId', res.data.id);",
+                  "  console.log('billboardId =', res.data.id);",
+                  "}",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Downtown Static Board\",\n  \"code\": \"DT-STATIC-1\",\n  \"description\": \"Prime static location on the main square\",\n  \"type\": \"static\",\n  \"location\": { \"address\": \"1 Martyrs Square\", \"city\": \"Tripoli\", \"country\": \"Libya\" },\n  \"dimensions\": { \"width\": 6, \"height\": 3, \"unit\": \"m\" },\n  \"monthlyPrice\": 1500,\n  \"status\": \"available\",\n  \"images\": [\"https://example.com/billboard-a.jpg\"]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/billboards",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "billboards"]
+            },
+            "description": "Admin only. Saves data.id into {{billboardId}}."
+          }
+        },
+        {
+          "name": "Create digital",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.id) {",
+                  "  pm.collectionVariables.set('digitalBillboardId', res.data.id);",
+                  "  console.log('digitalBillboardId =', res.data.id);",
+                  "}",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Airport Digital Screen\",\n  \"code\": \"AP-DIG-1\",\n  \"type\": \"digital\",\n  \"location\": { \"address\": \"Airport Road\", \"city\": \"Tripoli\", \"country\": \"Libya\" },\n  \"dimensions\": { \"width\": 10, \"height\": 5, \"unit\": \"m\" },\n  \"monthlyPrice\": 5000,\n  \"status\": \"available\",\n  \"images\": []\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/billboards",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "billboards"]
+            },
+            "description": "Admin only. Saves data.id into {{digitalBillboardId}}."
+          }
+        },
+        {
+          "name": "List",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/billboards",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "billboards"]
+            },
+            "description": "Admin or advertiser. Returns { data: { billboards: [...] } }. (Search is client-side on the admin page; no query param.)"
+          }
+        },
+        {
+          "name": "Get by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/billboards/{{billboardId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "billboards", "{{billboardId}}"]
+            },
+            "description": "Admin or advertiser. Returns { data: { billboard: {...} } }."
+          }
+        },
+        {
+          "name": "Update info",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Updated marketing copy\",\n  \"monthlyPrice\": 2000,\n  \"location\": { \"address\": \"5 New Avenue\", \"city\": \"Benghazi\", \"country\": \"Libya\" },\n  \"images\": [\"https://example.com/updated.jpg\"],\n  \"status\": \"reserved\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/billboards/{{billboardId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "billboards", "{{billboardId}}"]
+            },
+            "description": "Admin only. Partial update: send any subset of description, monthlyPrice, location, images, status (at least one field)."
+          }
+        },
+        {
+          "name": "Change availability",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"occupied\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/billboards/{{billboardId}}/availability",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "billboards", "{{billboardId}}", "availability"]
+            },
+            "description": "Admin only. status: available | reserved | occupied | maintenance."
+          }
+        }
+      ]
+    },
+    {
+      "name": "digital-specs",
+      "item": [
+        {
+          "name": "Save spec (upsert)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resolution\": { \"width\": 1920, \"height\": 1080 },\n  \"brightness\": 5000,\n  \"slotDurationSeconds\": 10,\n  \"rotatingAdsCount\": 6,\n  \"screenStatus\": \"on\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/billboards/{{digitalBillboardId}}/digital-spec",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "billboards", "{{digitalBillboardId}}", "digital-spec"]
+            },
+            "description": "Admin only. One billboard -> one spec (upsert). Digital billboards only. screenStatus: on | off | standby | fault."
+          }
+        },
+        {
+          "name": "Get spec",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/billboards/{{digitalBillboardId}}/digital-spec",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "billboards", "{{digitalBillboardId}}", "digital-spec"]
+            },
+            "description": "Admin or advertiser. Returns { data: { spec: {...} | null } }."
+          }
+        }
+      ]
+    },
+    {
+      "name": "negative-cases",
+      "item": [
+        {
+          "name": "Duplicate code (409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Duplicate\",\n  \"code\": \"DT-STATIC-1\",\n  \"type\": \"static\",\n  \"location\": { \"address\": \"1 Road\", \"city\": \"Tripoli\", \"country\": \"Libya\" },\n  \"dimensions\": { \"width\": 6, \"height\": 3, \"unit\": \"m\" },\n  \"monthlyPrice\": 100,\n  \"status\": \"available\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/billboards",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "billboards"]
+            },
+            "description": "Expect 409 'Billboard code is already in use.'"
+          }
+        },
+        {
+          "name": "Invalid status (400)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"banana\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/billboards/{{billboardId}}/availability",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "billboards", "{{billboardId}}", "availability"]
+            },
+            "description": "Expect 400 invalid-option message."
+          }
+        },
+        {
+          "name": "Spec on static (400)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resolution\": { \"width\": 100, \"height\": 100 },\n  \"brightness\": 1,\n  \"slotDurationSeconds\": 1,\n  \"rotatingAdsCount\": 1,\n  \"screenStatus\": \"off\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/billboards/{{billboardId}}/digital-spec",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "billboards", "{{billboardId}}", "digital-spec"]
+            },
+            "description": "Uses the STATIC billboard id. Expect 400 'Only digital billboards can have specifications.'"
+          }
+        },
+        {
+          "name": "Empty update (400)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/billboards/{{billboardId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "billboards", "{{billboardId}}"]
+            },
+            "description": "Expect 400 'At least one field must be provided.'"
+          }
+        },
+        {
+          "name": "Unknown id (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/billboards/000000000000000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "billboards", "000000000000000000000000"]
+            },
+            "description": "Expect 404 'Billboard not found.'"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "adminEmail", "value": "admin@test.com" },
+    { "key": "adminPassword", "value": "Password123" },
+    { "key": "billboardId", "value": "" },
+    { "key": "digitalBillboardId", "value": "" }
+  ]
+}
