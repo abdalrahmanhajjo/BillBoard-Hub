@@ -15,7 +15,7 @@ export const authService = {
     return userService.findByEmailWithPassword(email, password);
   },
 
-  async getCurrentUser(userId: string): Promise<User | null> {
-    return userService.getById(userId);
+  async getCurrentUser(userId: string, actor: User): Promise<User | null> {
+    return userService.getById(userId, actor);
   },
 };
