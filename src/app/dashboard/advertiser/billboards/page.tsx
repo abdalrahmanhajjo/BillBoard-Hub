@@ -1,10 +1,5 @@
-import { ModulePlaceholderPage } from '@/client/features/dashboard/components/module-placeholder-page';
+import { AdvertiserBillboardsPage } from '@/client/features/billboards/pages/advertiser-billboards-page';
 
-export default function AdvertiserBillboardsPage() {
-  return (
-    <ModulePlaceholderPage
-      title="Advertiser Marketplace"
-      description="Browse available billboards and inspect placement details."
-    />
-  );
+export default function AdvertiserBillboardsRoute() {
+  return <AdvertiserBillboardsPage />;
 }

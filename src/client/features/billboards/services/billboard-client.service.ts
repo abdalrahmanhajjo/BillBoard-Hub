@@ -2,12 +2,12 @@ import type {
   CreateBillboardSchemaInput,
   UpdateBillboardSchemaInput,
 } from '@/shared/contracts/billboard/billboard.schema';
+import type { BillboardQuerySchemaInput } from '@/shared/contracts/billboard/billboard-query.schema';
 import type { UpsertDigitalSpecSchemaInput } from '@/shared/contracts/billboard/digital-spec.schema';
 import type { UpdateAvailabilitySchemaInput } from '@/shared/contracts/billboard/availability.schema';
 
 async function parseResponse(response: Response) {
   const payload = await response.json();
-
   if (!response.ok) {
     return {
       ok: false,
@@ -15,7 +15,6 @@ async function parseResponse(response: Response) {
       data: payload?.data,
     };
   }
-
   return {
     ok: payload?.ok ?? true,
     error: payload?.error,
@@ -31,28 +30,31 @@ export const billboardClientService = {
       credentials: 'include',
       body: JSON.stringify(payload),
     });
-
     return parseResponse(response);
   },
-
-  async list() {
-    const response = await fetch('/api/v1/billboards', {
+  async list(filters?: BillboardQuerySchemaInput) {
+    const searchParams = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          searchParams.set(key, String(value));
+        }
+      });
+    }
+    const query = searchParams.toString();
+    const response = await fetch(`/api/v1/billboards${query ? `?${query}` : ''}`, {
       method: 'GET',
       credentials: 'include',
     });
-
     return parseResponse(response);
   },
-
   async get(billboardId: string) {
     const response = await fetch(`/api/v1/billboards/${billboardId}`, {
       method: 'GET',
       credentials: 'include',
     });
-
     return parseResponse(response);
   },
-
   async update(billboardId: string, payload: UpdateBillboardSchemaInput) {
     const response = await fetch(`/api/v1/billboards/${billboardId}`, {
       method: 'PUT',
@@ -60,19 +62,15 @@ export const billboardClientService = {
       credentials: 'include',
       body: JSON.stringify(payload),
     });
-
     return parseResponse(response);
   },
-
   async getDigitalSpec(billboardId: string) {
     const response = await fetch(`/api/v1/billboards/${billboardId}/digital-spec`, {
       method: 'GET',
       credentials: 'include',
     });
-
     return parseResponse(response);
   },
-
   async saveDigitalSpec(billboardId: string, payload: UpsertDigitalSpecSchemaInput) {
     const response = await fetch(`/api/v1/billboards/${billboardId}/digital-spec`, {
       method: 'PUT',
@@ -80,10 +78,8 @@ export const billboardClientService = {
       credentials: 'include',
       body: JSON.stringify(payload),
     });
-
     return parseResponse(response);
   },
-
   async updateAvailability(billboardId: string, payload: UpdateAvailabilitySchemaInput) {
     const response = await fetch(`/api/v1/billboards/${billboardId}/availability`, {
       method: 'PATCH',
@@ -91,7 +87,6 @@ export const billboardClientService = {
       credentials: 'include',
       body: JSON.stringify(payload),
     });
-
     return parseResponse(response);
   },
 };
