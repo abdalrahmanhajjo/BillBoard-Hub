@@ -7,16 +7,21 @@ import type {
   UpdateUserInfoSchemaInput,
 } from '@/shared/contracts/user/user.schema';
 import type { User, UserRole } from '@/shared/types/user';
+import { ConflictError } from '@/shared/http/http-error';
 
-const SALT_ROUNDS = Number(process.env.SALT_ROUNDS);
+type CreateUserServiceInput = Omit<CreateUserSchemaInput, 'role'>;
+
+const configuredSaltRounds = Number.parseInt(process.env.SALT_ROUNDS ?? '12', 10);
+const SALT_ROUNDS =
+  Number.isInteger(configuredSaltRounds) && configuredSaltRounds >= 10 ? configuredSaltRounds : 12;
 
 export const userService = {
-  async create(input: CreateUserSchemaInput, role?: UserRole): Promise<User> {
+  async create(input: CreateUserServiceInput, role?: UserRole): Promise<User> {
     const assignedRole = role ?? USER_ROLES.ADVERTISER;
 
     const existing = await userRepository.findByEmail(input.email);
     if (existing) {
-      throw new Error('Email is already in use.');
+      throw new ConflictError('Email is already in use.');
     }
 
     const passwordHash = await bcrypt.hash(input.password, SALT_ROUNDS);

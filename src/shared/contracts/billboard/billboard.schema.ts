@@ -1,10 +1,36 @@
 import { z } from 'zod';
 import { BILLBOARD_STATUSES, BILLBOARD_TYPES, DIMENSION_UNITS } from '@/shared/constants/billboard';
 
+const lebanonCountrySchema = z
+  .string()
+  .trim()
+  .refine((country) => country.toLocaleLowerCase('en') === 'lebanon', {
+    message: 'Billboard inventory is currently limited to Lebanon.',
+  })
+  .transform(() => 'Lebanon');
+
+const billboardImageSchema = z
+  .string()
+  .trim()
+  .max(2048, 'Image path is too long.')
+  .refine(
+    (value) =>
+      /^\/(?!\/)[^\s]*$/.test(value) ||
+      (() => {
+        try {
+          const url = new URL(value);
+          return url.protocol === 'https:';
+        } catch {
+          return false;
+        }
+      })(),
+    'Each image must be a local path or a secure URL.',
+  );
+
 export const billboardLocationSchema = z.object({
-  address: z.string().trim().min(2, 'Address is required.'),
-  city: z.string().trim().min(2, 'City is required.'),
-  country: z.string().trim().min(2, 'Country is required.'),
+  address: z.string().trim().min(2, 'Address is required.').max(180, 'Address is too long.'),
+  city: z.string().trim().min(2, 'City is required.').max(80, 'City is too long.'),
+  country: lebanonCountrySchema,
 });
 
 export const billboardDimensionsSchema = z.object({
@@ -14,8 +40,17 @@ export const billboardDimensionsSchema = z.object({
 });
 
 export const createBillboardSchema = z.object({
-  name: z.string().trim().min(2, 'Billboard name is required.'),
-  code: z.string().trim().min(2, 'Billboard code is required.'),
+  name: z.string().trim().min(2, 'Billboard name is required.').max(120, 'Name is too long.'),
+  code: z
+    .string()
+    .trim()
+    .min(2, 'Billboard code is required.')
+    .max(40, 'Code is too long.')
+    .regex(
+      /^[a-zA-Z0-9][a-zA-Z0-9_-]*$/,
+      'Code can contain letters, numbers, dashes, and underscores.',
+    )
+    .transform((code) => code.toUpperCase()),
   description: z.string().trim().max(1000, 'Description is too long.').optional(),
   type: z.enum(BILLBOARD_TYPES),
   location: billboardLocationSchema,
@@ -24,10 +59,12 @@ export const createBillboardSchema = z.object({
   trafficCount: z.coerce
     .number()
     .int('Traffic count must be a whole number.')
-    .nonnegative('Traffic count cannot be negative.')
-    .optional(),
+    .positive('Monthly traffic must be greater than 0.'),
   status: z.enum(BILLBOARD_STATUSES).default(BILLBOARD_STATUSES.AVAILABLE),
-  images: z.array(z.url('Each image must be a valid URL.')).default([]),
+  images: z
+    .array(billboardImageSchema)
+    .max(12, 'A billboard can have up to 12 images.')
+    .default([]),
 });
 
 export const updateBillboardSchema = z
@@ -37,10 +74,13 @@ export const updateBillboardSchema = z
     trafficCount: z.coerce
       .number()
       .int('Traffic count must be a whole number.')
-      .nonnegative('Traffic count cannot be negative.')
+      .positive('Monthly traffic must be greater than 0.')
       .optional(),
     location: billboardLocationSchema.optional(),
-    images: z.array(z.url('Each image must be a valid URL.')).optional(),
+    images: z
+      .array(billboardImageSchema)
+      .max(12, 'A billboard can have up to 12 images.')
+      .optional(),
     status: z.enum(BILLBOARD_STATUSES).optional(),
   })
   .refine((data) => Object.values(data).some((value) => value !== undefined), {

@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { authProtectedPrefixes, guestOnlyRoutes } from '@/server/middleware';
+import { authProtectedPrefixes } from '@/server/middleware';
 
 function hasSessionCookie(request: NextRequest): boolean {
   const cookieHeader = request.headers.get('cookie') ?? '';
@@ -12,18 +12,13 @@ function hasSessionCookie(request: NextRequest): boolean {
   ].some((token) => cookieHeader.includes(token));
 }
 
-export default function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { nextUrl } = request;
   const isLoggedIn = hasSessionCookie(request);
   const pathname = nextUrl.pathname;
 
-  const isGuestOnly = guestOnlyRoutes.some((route) => pathname.startsWith(route));
   const isDashboardRoot = pathname === '/dashboard';
   const isProtectedByAuth = authProtectedPrefixes.some((prefix) => pathname.startsWith(prefix));
-
-  if (isGuestOnly && isLoggedIn) {
-    return NextResponse.redirect(new URL('/dashboard', nextUrl));
-  }
 
   if ((isProtectedByAuth || isDashboardRoot) && !isLoggedIn) {
     return NextResponse.redirect(new URL('/login', nextUrl));
@@ -33,5 +28,5 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/login', '/register', '/forgot-password', '/dashboard/:path*'],
+  matcher: ['/dashboard/:path*'],
 };

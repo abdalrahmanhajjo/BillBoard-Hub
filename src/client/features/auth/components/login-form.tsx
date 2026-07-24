@@ -6,6 +6,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginSchemaInput } from '@/shared/contracts/auth/login.schema';
 import { authClientService } from '@/client/features/auth/services/auth-client.service';
+import { Button } from '@/client/ui/components/ui/button';
+import { Input } from '@/client/ui/components/ui/input';
+import { Label } from '@/client/ui/components/ui/label';
 
 export function LoginForm() {
   const [isPending, startTransition] = useTransition();
@@ -41,46 +44,61 @@ export function LoginForm() {
   return (
     <form className="w-full max-w-md space-y-4" onSubmit={handleSubmit(onSubmit)}>
       {submitError ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p
+          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+          role="alert"
+        >
           {submitError}
         </p>
       ) : null}
 
       <div className="space-y-1">
-        <label htmlFor="email" className="text-sm font-medium">
+        <Label htmlFor="email" className="text-sm font-medium">
           Email
-        </label>
-        <input
+        </Label>
+        <Input
           id="email"
           type="email"
           autoComplete="email"
-          className="w-full rounded-md border border-zinc-300 px-3 py-2"
+          className="h-11 w-full rounded-lg border-zinc-300 px-3"
+          aria-invalid={Boolean(errors.email)}
+          aria-describedby={errors.email ? 'login-email-error' : undefined}
           {...register('email')}
         />
-        {errors.email ? <p className="text-sm text-red-600">{errors.email.message}</p> : null}
+        {errors.email ? (
+          <p id="login-email-error" className="text-sm text-red-600">
+            {errors.email.message}
+          </p>
+        ) : null}
       </div>
 
       <div className="space-y-1">
-        <label htmlFor="password" className="text-sm font-medium">
+        <Label htmlFor="password" className="text-sm font-medium">
           Password
-        </label>
-        <input
+        </Label>
+        <Input
           id="password"
           type="password"
           autoComplete="current-password"
-          className="w-full rounded-md border border-zinc-300 px-3 py-2"
+          className="h-11 w-full rounded-lg border-zinc-300 px-3"
+          aria-invalid={Boolean(errors.password)}
+          aria-describedby={errors.password ? 'login-password-error' : undefined}
           {...register('password')}
         />
-        {errors.password ? <p className="text-sm text-red-600">{errors.password.message}</p> : null}
+        {errors.password ? (
+          <p id="login-password-error" className="text-sm text-red-600">
+            {errors.password.message}
+          </p>
+        ) : null}
       </div>
 
-      <button
+      <Button
         type="submit"
         disabled={isPending}
-        className="w-full rounded-md bg-black px-4 py-2 text-white disabled:opacity-60"
+        className="min-h-11 w-full rounded-lg bg-blue-600 px-4 text-white hover:bg-blue-700 disabled:opacity-60"
       >
         {isPending ? 'Signing in...' : 'Sign in'}
-      </button>
+      </Button>
     </form>
   );
 }

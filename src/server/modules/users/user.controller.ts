@@ -7,9 +7,11 @@ import type {
   UpdateUserInfoSchemaInput,
 } from '@/shared/contracts/user/user.schema';
 import { createUserSchema, updateUserInfoSchema } from '@/shared/contracts/user/user.schema';
+import { authorizationPolicy } from '@/shared/policies';
+import type { User } from '@/shared/types/user';
 
 export const userController = {
-  async createUser(payload: CreateUserSchemaInput) {
+  async createUser(payload: CreateUserSchemaInput, actor: User) {
     const parsed = createUserSchema.safeParse(payload);
 
     if (!parsed.success) {
@@ -17,7 +19,8 @@ export const userController = {
     }
 
     try {
-      const user = await userService.create(parsed.data);
+      authorizationPolicy.user.assertCanAssignRole(actor, parsed.data.role);
+      const user = await userService.create(parsed.data, parsed.data.role);
 
       return apiResponse.ok(user, 201);
     } catch (error) {
@@ -25,7 +28,7 @@ export const userController = {
     }
   },
 
-  async updateUserInfo(userId: string, payload: UpdateUserInfoSchemaInput) {
+  async updateUserInfo(actor: User, userId: string, payload: UpdateUserInfoSchemaInput) {
     if (!userId) {
       return apiResponse.badRequest('User id is required.');
     }
@@ -37,6 +40,7 @@ export const userController = {
     }
 
     try {
+      authorizationPolicy.user.assertCanUpdateUser(actor, userId);
       const user = await userService.updateById(userId, parsed.data);
 
       if (!user) {
@@ -49,12 +53,13 @@ export const userController = {
     }
   },
 
-  async deleteUser(userId: string) {
+  async deleteUser(actor: User, userId: string) {
     if (!userId) {
       return apiResponse.badRequest('User id is required.');
     }
 
     try {
+      authorizationPolicy.user.assertCanDeleteUser(actor, userId);
       const user = await userService.deleteById(userId);
 
       if (!user) {
@@ -67,12 +72,13 @@ export const userController = {
     }
   },
 
-  async getUser(id: string) {
+  async getUser(actor: User, id: string) {
     if (!id) {
       return apiResponse.badRequest('User id is required.');
     }
 
     try {
+      authorizationPolicy.user.assertCanReadUser(actor, id);
       const user = await userService.getById(id);
 
       if (!user) {

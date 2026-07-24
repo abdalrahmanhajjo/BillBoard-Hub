@@ -27,6 +27,11 @@ export const digitalSpecService = {
    * required; returns the public-safe projection or null when none exists.
    */
   async getPublicByBillboard(billboardId: string): Promise<PublicDigitalSpec | null> {
+    const billboard = await billboardRepository.findById(billboardId);
+    if (!billboard) {
+      throw new NotFoundError('Billboard not found.');
+    }
+
     const spec = await digitalSpecRepository.findByBillboardId(billboardId);
 
     return spec ? toPublicDigitalSpec(toDigitalSpec(spec)) : null;

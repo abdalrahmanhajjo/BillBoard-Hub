@@ -6,7 +6,9 @@ import type { HomeData, MarketOverviewEntry } from '@/client/features/home/home.
 import type { PublicBillboard } from '@/shared/types/billboard';
 
 export const metadata: Metadata = {
-  title: 'Boardly — Book billboard ads that reach Lebanon',
+  title: {
+    absolute: 'Boardly — Billboard advertising across Lebanon',
+  },
   description:
     'Discover, plan, and book out of home billboard campaigns across Lebanon. Premium inventory, real-time availability, and transparent pricing.',
 };

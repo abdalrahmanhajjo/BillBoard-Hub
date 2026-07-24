@@ -16,6 +16,7 @@ import {
 import { Container } from '@/client/features/home/components/container';
 import { navLinks, solutionsGroup, brandName } from '@/client/features/home/data/homepage';
 import type { UserRole } from '@/shared/types/user';
+import { Button } from '@/client/ui/components/ui/button';
 
 type NavbarUser = {
   name?: string;
@@ -112,8 +113,9 @@ export function Navbar({ user }: NavbarProps) {
               onMouseEnter={() => setSolutionsOpen(true)}
               onMouseLeave={() => setSolutionsOpen(false)}
             >
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 aria-expanded={solutionsOpen}
                 className="inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
               >
@@ -122,7 +124,7 @@ export function Navbar({ user }: NavbarProps) {
                   className={cn('h-4 w-4 transition-transform', solutionsOpen && 'rotate-180')}
                   aria-hidden
                 />
-              </button>
+              </Button>
               <AnimatePresence>
                 {solutionsOpen ? (
                   <motion.div
@@ -161,22 +163,24 @@ export function Navbar({ user }: NavbarProps) {
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
-            <button
+            <Button
               type="button"
+              variant="ghost"
               className="inline-flex items-center gap-1 text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
             >
               <Globe className="h-4 w-4" aria-hidden />
               EN
               <ChevronDown className="h-3.5 w-3.5" aria-hidden />
-            </button>
+            </Button>
             {user ? (
               <div
                 className="relative"
                 onMouseEnter={() => setAccountOpen(true)}
                 onMouseLeave={() => setAccountOpen(false)}
               >
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={() => setAccountOpen((open) => !open)}
                   aria-expanded={accountOpen}
                   className="flex items-center gap-2 rounded-full border border-zinc-200 bg-white py-1.5 pr-3 pl-1.5 text-left shadow-sm transition-colors hover:border-zinc-300"
@@ -194,7 +198,7 @@ export function Navbar({ user }: NavbarProps) {
                     )}
                     aria-hidden
                   />
-                </button>
+                </Button>
 
                 <AnimatePresence>
                   {accountOpen ? (
@@ -219,14 +223,15 @@ export function Navbar({ user }: NavbarProps) {
                           <LayoutDashboard className="size-4 text-zinc-400" aria-hidden />
                           Open dashboard
                         </Link>
-                        <button
+                        <Button
                           type="button"
+                          variant="destructive"
                           onClick={() => signOut({ redirectTo: '/' })}
                           className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
                         >
                           <LogOut className="size-4" aria-hidden />
                           Sign out
-                        </button>
+                        </Button>
                       </div>
                     </motion.div>
                   ) : null}
@@ -253,8 +258,9 @@ export function Navbar({ user }: NavbarProps) {
           <Sheet>
             <SheetTrigger
               render={
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
                   aria-label="Open menu"
                   className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-zinc-700 hover:bg-zinc-100 lg:hidden"
                 />
@@ -273,6 +279,7 @@ export function Navbar({ user }: NavbarProps) {
                 {[...navLinks, ...solutionsGroup.items].map((item) => (
                   <SheetClose
                     key={item.label}
+                    nativeButton={false}
                     render={
                       <Link
                         href={item.href}
@@ -299,6 +306,7 @@ export function Navbar({ user }: NavbarProps) {
                       </div>
                     </div>
                     <SheetClose
+                      nativeButton={false}
                       render={
                         <Link
                           href="/dashboard"
@@ -309,18 +317,20 @@ export function Navbar({ user }: NavbarProps) {
                       <LayoutDashboard className="size-4" aria-hidden />
                       Open Dashboard
                     </SheetClose>
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
                       onClick={() => signOut({ redirectTo: '/' })}
                       className="flex min-h-12 items-center justify-center gap-2 rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-semibold text-zinc-700"
                     >
                       <LogOut className="size-4" aria-hidden />
                       Sign out
-                    </button>
+                    </Button>
                   </>
                 ) : (
                   <>
                     <SheetClose
+                      nativeButton={false}
                       render={
                         <Link
                           href="/login"
@@ -332,6 +342,7 @@ export function Navbar({ user }: NavbarProps) {
                       Login
                     </SheetClose>
                     <SheetClose
+                      nativeButton={false}
                       render={
                         <Link
                           href="/register"

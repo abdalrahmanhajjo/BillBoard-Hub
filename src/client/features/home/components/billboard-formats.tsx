@@ -14,6 +14,7 @@ import {
 } from 'motion/react';
 import { Container } from '@/client/features/home/components/container';
 import { billboardFormats } from '@/client/features/home/data/homepage';
+import { Button } from '@/client/ui/components/ui/button';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -171,13 +172,18 @@ export function BillboardFormats() {
               const active = index === activeIndex;
 
               return (
-                <motion.button
+                <Button
                   key={format.title}
+                  render={
+                    <motion.button
+                      variants={{
+                        hidden: { opacity: 0, x: reduceMotion ? 0 : 22 },
+                        visible: { opacity: 1, x: 0, transition: { duration: 0.55, ease } },
+                      }}
+                    />
+                  }
                   type="button"
-                  variants={{
-                    hidden: { opacity: 0, x: reduceMotion ? 0 : 22 },
-                    visible: { opacity: 1, x: 0, transition: { duration: 0.55, ease } },
-                  }}
+                  variant="ghost"
                   onClick={() => setActiveIndex(index)}
                   onPointerEnter={() => setActiveIndex(index)}
                   aria-pressed={active}
@@ -234,7 +240,7 @@ export function BillboardFormats() {
                     }`}
                     aria-hidden
                   />
-                </motion.button>
+                </Button>
               );
             })}
           </motion.div>

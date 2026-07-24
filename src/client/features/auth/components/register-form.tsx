@@ -5,6 +5,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema, type RegisterSchemaInput } from '@/shared/contracts/auth/register.schema';
 import { authClientService } from '@/client/features/auth/services/auth-client.service';
+import { Button } from '@/client/ui/components/ui/button';
+import { Input } from '@/client/ui/components/ui/input';
+import { Label } from '@/client/ui/components/ui/label';
 
 export function RegisterForm() {
   const [isPending, startTransition] = useTransition();
@@ -46,24 +49,32 @@ export function RegisterForm() {
   return (
     <form className="w-full max-w-md space-y-4" onSubmit={handleSubmit(onSubmit)}>
       {submitError ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p
+          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+          role="alert"
+        >
           {submitError}
         </p>
       ) : null}
 
       {submitSuccess ? (
-        <p className="rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
+        <p
+          className="rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700"
+          role="status"
+        >
           {submitSuccess}
         </p>
       ) : null}
 
       <div className="space-y-1">
-        <label htmlFor="firstName" className="text-sm font-medium">
+        <Label htmlFor="firstName" className="text-sm font-medium">
           First Name
-        </label>
-        <input
+        </Label>
+        <Input
           id="firstName"
-          className="w-full rounded-md border border-zinc-300 px-3 py-2"
+          autoComplete="given-name"
+          className="h-11 w-full rounded-lg border-zinc-300 px-3"
+          aria-invalid={Boolean(errors.firstName)}
           {...register('firstName')}
         />
         {errors.firstName ? (
@@ -72,54 +83,59 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-1">
-        <label htmlFor="lastName" className="text-sm font-medium">
+        <Label htmlFor="lastName" className="text-sm font-medium">
           Last Name
-        </label>
-        <input
+        </Label>
+        <Input
           id="lastName"
-          className="w-full rounded-md border border-zinc-300 px-3 py-2"
+          autoComplete="family-name"
+          className="h-11 w-full rounded-lg border-zinc-300 px-3"
+          aria-invalid={Boolean(errors.lastName)}
           {...register('lastName')}
         />
         {errors.lastName ? <p className="text-sm text-red-600">{errors.lastName.message}</p> : null}
       </div>
 
       <div className="space-y-1">
-        <label htmlFor="email" className="text-sm font-medium">
+        <Label htmlFor="email" className="text-sm font-medium">
           Email
-        </label>
-        <input
+        </Label>
+        <Input
           id="email"
           type="email"
           autoComplete="email"
-          className="w-full rounded-md border border-zinc-300 px-3 py-2"
+          className="h-11 w-full rounded-lg border-zinc-300 px-3"
+          aria-invalid={Boolean(errors.email)}
           {...register('email')}
         />
         {errors.email ? <p className="text-sm text-red-600">{errors.email.message}</p> : null}
       </div>
 
       <div className="space-y-1">
-        <label htmlFor="password" className="text-sm font-medium">
+        <Label htmlFor="password" className="text-sm font-medium">
           Password
-        </label>
-        <input
+        </Label>
+        <Input
           id="password"
           type="password"
           autoComplete="new-password"
-          className="w-full rounded-md border border-zinc-300 px-3 py-2"
+          className="h-11 w-full rounded-lg border-zinc-300 px-3"
+          aria-invalid={Boolean(errors.password)}
           {...register('password')}
         />
         {errors.password ? <p className="text-sm text-red-600">{errors.password.message}</p> : null}
       </div>
 
       <div className="space-y-1">
-        <label htmlFor="confirmPassword" className="text-sm font-medium">
+        <Label htmlFor="confirmPassword" className="text-sm font-medium">
           Confirm Password
-        </label>
-        <input
+        </Label>
+        <Input
           id="confirmPassword"
           type="password"
           autoComplete="new-password"
-          className="w-full rounded-md border border-zinc-300 px-3 py-2"
+          className="h-11 w-full rounded-lg border-zinc-300 px-3"
+          aria-invalid={Boolean(errors.confirmPassword)}
           {...register('confirmPassword')}
         />
         {errors.confirmPassword ? (
@@ -127,13 +143,13 @@ export function RegisterForm() {
         ) : null}
       </div>
 
-      <button
+      <Button
         type="submit"
         disabled={isPending}
-        className="w-full rounded-md bg-black px-4 py-2 text-white disabled:opacity-60"
+        className="min-h-11 w-full rounded-lg bg-blue-600 px-4 text-white hover:bg-blue-700 disabled:opacity-60"
       >
         {isPending ? 'Creating account...' : 'Create account'}
-      </button>
+      </Button>
     </form>
   );
 }

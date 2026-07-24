@@ -198,12 +198,12 @@ export const faqs: FaqItem[] = [
   {
     question: 'How do I book a billboard campaign?',
     answer:
-      'Search inventory by location and format, pick your billboards and dates, then request a quote or book instantly. Our team handles the rest of the execution.',
+      'Browse inventory by location and format, choose a placement and preferred dates, then send a reservation request. Our team confirms availability, final pricing, and production details before anything is booked.',
   },
   {
     question: 'Can I see availability and pricing online?',
     answer:
-      'Yes. Every billboard shows real-time availability and transparent pricing directly on its listing — no back-and-forth required.',
+      'Every listing shows its current inventory status and monthly media rate. Because campaign dates can overlap, our team performs a final availability check before confirming your reservation.',
   },
   {
     question: 'What formats and locations are available?',
@@ -218,7 +218,7 @@ export const faqs: FaqItem[] = [
   {
     question: 'Can you help plan my campaign?',
     answer:
-      'Absolutely. Our team offers campaign planning, audience targeting, and reach estimates so you can invest with confidence.',
+      'Yes. Our planning team can recommend locations, formats, campaign length, and audience coverage based on your objectives and budget.',
   },
 ];
 

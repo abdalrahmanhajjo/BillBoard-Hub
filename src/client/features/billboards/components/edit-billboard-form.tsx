@@ -121,12 +121,12 @@ export function EditBillboardForm({ billboard, onSaved, onCancel }: EditBillboar
 
       <div className="space-y-1">
         <label htmlFor="edit-traffic-count" className="text-sm font-medium">
-          Traffic Count (optional)
+          Monthly Traffic
         </label>
         <input
           id="edit-traffic-count"
           type="number"
-          min="0"
+          min="1"
           step="1"
           className={inputClassName}
           {...register('trafficCount', {

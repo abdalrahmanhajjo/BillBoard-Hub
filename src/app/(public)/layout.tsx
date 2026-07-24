@@ -21,8 +21,16 @@ export default async function PublicLayout({
 
   return (
     <div className="flex min-h-full flex-col bg-white">
+      <a
+        href="#main-content"
+        className="sr-only z-50 rounded-md bg-white px-4 py-2 text-sm font-semibold text-blue-700 shadow focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+      >
+        Skip to content
+      </a>
       <Navbar user={user} />
-      <main className="flex-1">{children}</main>
+      <main id="main-content" className="flex-1" tabIndex={-1}>
+        {children}
+      </main>
       <Footer />
     </div>
   );

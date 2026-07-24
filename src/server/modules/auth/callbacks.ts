@@ -4,7 +4,7 @@ import {
   REFRESH_TOKEN_TTL_MS,
   createOpaqueToken,
 } from '@/server/modules/auth/tokens';
-import type { User, UserRole } from '@/shared/types/user';
+import type { UserRole } from '@/shared/types/user';
 import { userService } from '../users/user.service';
 
 export const authCallbacks: NextAuthConfig['callbacks'] = {
@@ -20,6 +20,19 @@ export const authCallbacks: NextAuthConfig['callbacks'] = {
       token.accessToken = createOpaqueToken();
       token.accessTokenExpires = Date.now() + ACCESS_TOKEN_TTL_MS;
       token.error = undefined;
+    } else if (typeof token.id === 'string' && token.id) {
+      try {
+        const currentUser = await userService.getById(token.id);
+        token.isActive = currentUser?.isActive ?? false;
+        if (currentUser) {
+          token.role = currentUser.role;
+          token.firstName = currentUser.firstName;
+          token.lastName = currentUser.lastName;
+        }
+      } catch {
+        // Fail closed when account state cannot be verified.
+        token.isActive = false;
+      }
     }
 
     const hasRefreshToken = typeof token.refreshToken === 'string';
@@ -80,7 +93,7 @@ export const authCallbacks: NextAuthConfig['callbacks'] = {
       return false;
     }
 
-    const dbUser = await userService.getById(user.id, user as User);
+    const dbUser = await userService.getById(user.id);
     return !!dbUser?.isActive;
   },
 };

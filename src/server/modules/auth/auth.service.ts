@@ -5,10 +5,7 @@ import { USER_ROLES } from '@/shared/constants/user-roles';
 
 export const authService = {
   async register(input: RegisterSchemaInput): Promise<User> {
-    return userService.create({
-      ...input,
-      role: USER_ROLES.ADVERTISER, // Default role for registered users
-    });
+    return userService.create(input, USER_ROLES.ADVERTISER);
   },
 
   async authenticateCredentials(email: string, password: string): Promise<User | null> {

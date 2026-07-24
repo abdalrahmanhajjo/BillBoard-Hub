@@ -1,6 +1,11 @@
 import { authController } from '@/server/modules/auth/auth.controller';
+import { handleControllerError } from '@/server/http/controller-utils';
 
 export async function POST(request: Request) {
-  const payload = await request.json();
-  return authController.register(payload);
+  try {
+    const payload = await request.json();
+    return authController.register(payload);
+  } catch (error) {
+    return handleControllerError(error, 'Unable to process the registration request.');
+  }
 }

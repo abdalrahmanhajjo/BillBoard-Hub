@@ -1,8 +1,22 @@
 import type { LoginSchemaInput } from '@/shared/contracts/auth/login.schema';
 import type { RegisterSchemaInput } from '@/shared/contracts/auth/register.schema';
 
-async function parseResponse(response: Response) {
-  const payload = await response.json();
+type AuthClientResult = {
+  ok: boolean;
+  error?: string;
+  data?: unknown;
+};
+
+async function parseResponse(response: Response): Promise<AuthClientResult> {
+  let payload: { ok?: boolean; error?: string; data?: unknown } = {};
+
+  try {
+    payload = await response.json();
+  } catch {
+    if (!response.ok) {
+      return { ok: false, error: 'The server returned an invalid response.' };
+    }
+  }
 
   if (!response.ok) {
     return {
@@ -19,53 +33,55 @@ async function parseResponse(response: Response) {
   };
 }
 
+async function authRequest(path: string, init: RequestInit): Promise<AuthClientResult> {
+  try {
+    const response = await fetch(path, init);
+    return parseResponse(response);
+  } catch {
+    return {
+      ok: false,
+      error: 'Unable to reach the server. Check your connection and try again.',
+    };
+  }
+}
+
 export const authClientService = {
   async register(payload: RegisterSchemaInput) {
-    const response = await fetch('/api/v1/auth/register', {
+    return authRequest('/api/v1/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify(payload),
     });
-
-    return parseResponse(response);
   },
 
   async login(payload: LoginSchemaInput) {
-    const response = await fetch('/api/v1/auth/login', {
+    return authRequest('/api/v1/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify(payload),
     });
-
-    return parseResponse(response);
   },
 
   async logout() {
-    const response = await fetch('/api/v1/auth/logout', {
+    return authRequest('/api/v1/auth/logout', {
       method: 'POST',
       credentials: 'include',
     });
-
-    return parseResponse(response);
   },
 
   async me() {
-    const response = await fetch('/api/v1/auth/me', {
+    return authRequest('/api/v1/auth/me', {
       method: 'GET',
       credentials: 'include',
     });
-
-    return parseResponse(response);
   },
 
   async refresh() {
-    const response = await fetch('/api/v1/auth/refresh', {
+    return authRequest('/api/v1/auth/refresh', {
       method: 'POST',
       credentials: 'include',
     });
-
-    return parseResponse(response);
   },
 };

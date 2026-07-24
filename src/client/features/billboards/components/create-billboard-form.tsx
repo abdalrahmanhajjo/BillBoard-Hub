@@ -240,13 +240,14 @@ export function CreateBillboardForm({ onCreated }: CreateBillboardFormProps) {
 
         <div className="space-y-1">
           <label htmlFor="trafficCount" className="text-sm font-medium">
-            Traffic Count (optional)
+            Monthly Traffic
           </label>
           <input
             id="trafficCount"
             type="number"
-            min="0"
+            min="1"
             step="1"
+            required
             className={inputClassName}
             {...register('trafficCount', {
               setValueAs: (value) =>

@@ -10,6 +10,7 @@ import type {
 import type { BillboardQuerySchemaOutput } from '@/shared/contracts/billboard/billboard-query.schema';
 import type { Billboard, BillboardStatus, PublicBillboard } from '@/shared/types/billboard';
 import type { User } from '@/shared/types/user';
+import { digitalSpecRepository } from '@/server/modules/billboards/digital-spec.repository';
 
 export const billboardService = {
   async create(input: CreateBillboardSchemaOutput, actor: User): Promise<Billboard> {
@@ -90,6 +91,7 @@ export const billboardService = {
     if (!deleted) {
       throw new NotFoundError('Billboard not found.');
     }
+    await digitalSpecRepository.deleteByBillboardId(billboardId);
   },
 
   /**

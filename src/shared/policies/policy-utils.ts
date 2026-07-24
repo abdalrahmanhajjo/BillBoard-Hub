@@ -1,5 +1,5 @@
 import { rolePermissionMap } from '../constants/permissions';
-import { UnauthorizedError } from '../http/http-error';
+import { ForbiddenError } from '../http/http-error';
 import { Permission } from '../types/permissions';
 import { UserRole } from '../types/user';
 
@@ -13,6 +13,6 @@ export function can(role: UserRole, permission: Permission): boolean {
 
 export function assert(role: UserRole, permission: Permission, message?: string): void {
   if (!hasPermission(role, permission)) {
-    throw new UnauthorizedError(message ?? 'Forbidden');
+    throw new ForbiddenError(message ?? 'Forbidden.');
   }
 }

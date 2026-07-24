@@ -8,7 +8,7 @@ export default async function DashboardLayout({
 }>) {
   const session = await auth();
 
-  if (!session?.user?.id) {
+  if (!session?.user?.id || !session.user.isActive) {
     redirect('/login');
   }
 
