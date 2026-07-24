@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowRight, MessageCircleQuestion } from 'lucide-react';
+import { ChevronDown, MessageCircleQuestion } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { Container } from '@/client/features/home/components/container';
 import { faqs } from '@/client/features/home/data/homepage';
@@ -18,7 +18,7 @@ export function Faq() {
       id="faq"
       className="scroll-mt-24 bg-white text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50"
     >
-      <Container className="py-24 lg:py-36">
+      <Container className="py-20 sm:py-24 lg:py-36">
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -34,7 +34,85 @@ export function Faq() {
           </p>
         </motion.div>
 
-        <div className="mt-14 grid gap-4 lg:mt-20 lg:grid-cols-[1.05fr_.95fr]">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={{
+            hidden: {},
+            visible: {
+              transition: { staggerChildren: reduceMotion ? 0 : 0.06 },
+            },
+          }}
+          className="mt-12 overflow-hidden rounded-[24px] border border-zinc-200 bg-zinc-50 px-5 lg:hidden dark:border-zinc-800 dark:bg-zinc-900"
+        >
+          {faqs.map((faq, index) => {
+            const active = index === activeIndex;
+            const answerId = `faq-mobile-answer-${index}`;
+
+            return (
+              <motion.div
+                key={faq.question}
+                variants={{
+                  hidden: { opacity: 0, y: reduceMotion ? 0 : 14 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease } },
+                }}
+                className="border-b border-zinc-200 last:border-b-0 dark:border-zinc-800"
+              >
+                <button
+                  type="button"
+                  onClick={() => setActiveIndex(index)}
+                  aria-expanded={active}
+                  aria-controls={answerId}
+                  className="flex min-h-20 w-full items-center gap-3 py-5 text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-blue-600"
+                >
+                  <span
+                    className={`flex size-10 shrink-0 items-center justify-center rounded-full transition-colors ${
+                      active ? 'bg-blue-600 text-white' : 'bg-white text-zinc-400 dark:bg-zinc-800'
+                    }`}
+                  >
+                    <MessageCircleQuestion className="size-4" aria-hidden />
+                  </span>
+                  <span
+                    className={`flex-1 text-base leading-6 font-medium ${
+                      active
+                        ? 'text-blue-700 dark:text-blue-400'
+                        : 'text-zinc-700 dark:text-zinc-300'
+                    }`}
+                  >
+                    {faq.question}
+                  </span>
+                  <ChevronDown
+                    className={`size-5 shrink-0 text-zinc-400 transition-transform duration-300 ${
+                      active ? 'rotate-180 text-blue-600' : ''
+                    }`}
+                    aria-hidden
+                  />
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {active ? (
+                    <motion.div
+                      id={answerId}
+                      role="region"
+                      initial={reduceMotion ? false : { height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={reduceMotion ? undefined : { height: 0, opacity: 0 }}
+                      transition={{ duration: 0.32, ease }}
+                      className="overflow-hidden"
+                    >
+                      <p className="pb-6 pl-[3.25rem] text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+                        {faq.answer}
+                      </p>
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
+        <div className="mt-20 hidden gap-4 lg:grid lg:grid-cols-[1.05fr_.95fr]">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -60,7 +138,7 @@ export function Faq() {
                   }}
                   onClick={() => setActiveIndex(index)}
                   aria-pressed={active}
-                  aria-controls="faq-answer"
+                  aria-controls="faq-desktop-answer"
                   className={`group flex w-full items-center gap-4 border-b border-zinc-200 py-6 text-left transition-colors last:border-b-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-blue-600 sm:py-7 dark:border-zinc-800 ${
                     active ? 'text-blue-700 dark:text-blue-400' : 'text-zinc-700 dark:text-zinc-300'
                   }`}
@@ -77,11 +155,9 @@ export function Faq() {
                   <span className="flex-1 text-base leading-6 font-medium sm:text-lg">
                     {faq.question}
                   </span>
-                  <ArrowRight
+                  <ChevronDown
                     className={`size-4 shrink-0 transition-transform duration-300 ${
-                      active
-                        ? 'translate-x-1 text-blue-600'
-                        : 'text-zinc-400 group-hover:translate-x-1'
+                      active ? '-rotate-90 text-blue-600' : 'text-zinc-400 group-hover:-rotate-90'
                     }`}
                     aria-hidden
                   />
@@ -91,7 +167,7 @@ export function Faq() {
           </motion.div>
 
           <motion.article
-            id="faq-answer"
+            id="faq-desktop-answer"
             role="region"
             aria-live="polite"
             initial={reduceMotion ? false : { opacity: 0, x: 28 }}

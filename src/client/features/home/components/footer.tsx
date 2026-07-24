@@ -25,10 +25,12 @@ const SOCIAL_ICONS: Record<SocialKey, (props: { className?: string }) => React.R
 };
 
 export function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer id="contact" className="border-t border-zinc-200 bg-zinc-50">
-      <Container className="py-16 lg:py-20">
-        <div className="grid gap-12 lg:grid-cols-[1.5fr_repeat(4,1fr)_1.2fr]">
+      <Container className="py-12 sm:py-16 lg:py-20">
+        <div className="grid gap-10 lg:grid-cols-[1.5fr_repeat(4,1fr)_1.2fr] lg:gap-12">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
@@ -63,9 +65,11 @@ export function Footer() {
             </div>
           </div>
 
-          {footerColumns.map((column) => (
-            <FooterColumn key={column.title} column={column} />
-          ))}
+          <div className="grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-4 lg:contents">
+            {footerColumns.map((column) => (
+              <FooterColumn key={column.title} column={column} />
+            ))}
+          </div>
 
           <div className="space-y-3">
             <h3 className="text-xs font-semibold tracking-wider text-zinc-400 uppercase">
@@ -76,7 +80,7 @@ export function Footer() {
               <li>
                 <a
                   href={`tel:${contactInfo.phone.replace(/\s/g, '')}`}
-                  className="transition-colors hover:text-zinc-900"
+                  className="inline-flex min-h-10 items-center transition-colors hover:text-zinc-900"
                 >
                   {contactInfo.phone}
                 </a>
@@ -84,7 +88,7 @@ export function Footer() {
               <li>
                 <a
                   href={`mailto:${contactInfo.email}`}
-                  className="transition-colors hover:text-zinc-900"
+                  className="inline-flex min-h-10 items-center transition-colors hover:text-zinc-900"
                 >
                   {contactInfo.email}
                 </a>
@@ -96,7 +100,9 @@ export function Footer() {
         <Separator className="my-10 bg-zinc-200 lg:my-12" />
 
         <div className="flex flex-col gap-4 text-sm text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>© 2025 {brandName}. All rights reserved.</p>
+          <p>
+            © {currentYear} {brandName}. All rights reserved.
+          </p>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
             <Link href="/#" className="transition-colors hover:text-zinc-900">
               Terms of Service

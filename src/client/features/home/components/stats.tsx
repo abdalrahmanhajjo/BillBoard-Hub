@@ -16,7 +16,7 @@ export function Stats({ stats }: { stats: HomeStats }) {
 
   return (
     <section className="overflow-hidden bg-white text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
-      <Container className="py-24 lg:py-36">
+      <Container className="py-20 sm:py-24 lg:py-36">
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -38,7 +38,7 @@ export function Stats({ stats }: { stats: HomeStats }) {
             whileInView={{ opacity: 1, x: 0, scale: 1 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ duration: 0.8, ease }}
-            className="relative min-h-[470px] overflow-hidden rounded-[28px] bg-blue-600 p-7 text-white sm:min-h-[560px] sm:p-10 lg:col-span-7 lg:p-12"
+            className="relative min-h-[430px] overflow-hidden rounded-[24px] bg-blue-600 p-6 text-white sm:min-h-[560px] sm:rounded-[28px] sm:p-10 lg:col-span-7 lg:p-12"
           >
             <motion.div
               aria-hidden
@@ -57,7 +57,7 @@ export function Stats({ stats }: { stats: HomeStats }) {
               className="absolute -top-8 -right-4 size-52 rounded-full border border-white/15 sm:size-72"
             />
 
-            <div className="relative flex h-full min-h-[410px] flex-col justify-between sm:min-h-[480px]">
+            <div className="relative flex h-full min-h-[382px] flex-col justify-between sm:min-h-[480px]">
               <div className="flex items-start justify-between gap-4">
                 <p className="max-w-52 text-sm leading-6 text-white/72">
                   Premium placements currently represented across the platform.
@@ -77,7 +77,7 @@ export function Stats({ stats }: { stats: HomeStats }) {
                 <AnimatedCounter
                   value={primaryValue}
                   suffix={primaryStat.suffix}
-                  className="block text-[clamp(5.5rem,14vw,11rem)] leading-[0.72] font-semibold tracking-[-0.075em] tabular-nums"
+                  className="block text-[clamp(4rem,21vw,11rem)] leading-[0.76] font-semibold tracking-[-0.075em] tabular-nums"
                 />
                 <p className="mt-8 text-lg font-medium text-white">{primaryStat.label}</p>
               </div>
@@ -94,7 +94,7 @@ export function Stats({ stats }: { stats: HomeStats }) {
                 transition: { staggerChildren: reduceMotion ? 0 : 0.12, delayChildren: 0.12 },
               },
             }}
-            className="flex flex-col rounded-[28px] border border-zinc-200 bg-zinc-50 px-6 sm:px-9 lg:col-span-5 dark:border-zinc-800 dark:bg-zinc-900"
+            className="flex flex-col rounded-[24px] border border-zinc-200 bg-zinc-50 px-5 sm:rounded-[28px] sm:px-9 lg:col-span-5 dark:border-zinc-800 dark:bg-zinc-900"
           >
             {supportingStats.map((item) => {
               const Icon = item.icon;
@@ -107,7 +107,7 @@ export function Stats({ stats }: { stats: HomeStats }) {
                     hidden: { opacity: 0, x: reduceMotion ? 0 : 28 },
                     visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease } },
                   }}
-                  className="group flex flex-1 items-center gap-5 border-b border-zinc-200 py-8 last:border-b-0 sm:gap-7 dark:border-zinc-800"
+                  className="group flex flex-1 items-center gap-4 border-b border-zinc-200 py-7 last:border-b-0 sm:gap-7 sm:py-8 dark:border-zinc-800"
                 >
                   <motion.span
                     whileHover={reduceMotion ? undefined : { rotate: -5, scale: 1.08 }}
@@ -121,7 +121,7 @@ export function Stats({ stats }: { stats: HomeStats }) {
                     <AnimatedCounter
                       value={value}
                       suffix={item.suffix}
-                      className="block text-4xl leading-none font-semibold tracking-[-0.045em] text-zinc-950 tabular-nums sm:text-5xl dark:text-white"
+                      className="block text-3xl leading-none font-semibold tracking-[-0.045em] text-zinc-950 tabular-nums min-[390px]:text-4xl sm:text-5xl dark:text-white"
                     />
                     <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{item.label}</p>
                   </div>

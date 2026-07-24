@@ -34,10 +34,10 @@ function InventoryFeature({ billboard, index }: { billboard: PublicBillboard; in
   const { width, height, unit } = billboard.dimensions;
 
   const layouts = [
-    'min-h-[560px] md:col-span-7 md:row-span-2 lg:min-h-[680px]',
-    'min-h-[360px] md:col-span-5 lg:min-h-0',
-    'min-h-[360px] md:col-span-3 lg:min-h-0',
-    'min-h-[360px] md:col-span-2 lg:min-h-0',
+    'min-h-[500px] sm:min-h-[560px] md:col-span-7 md:row-span-2 lg:min-h-[680px]',
+    'min-h-[330px] sm:min-h-[360px] md:col-span-5 lg:min-h-0',
+    'min-h-[330px] sm:min-h-[360px] md:col-span-3 lg:min-h-0',
+    'min-h-[330px] sm:min-h-[360px] md:col-span-2 lg:min-h-0',
   ];
 
   return (
@@ -51,7 +51,7 @@ function InventoryFeature({ billboard, index }: { billboard: PublicBillboard; in
           transition: { duration: 0.7, ease },
         },
       }}
-      className={`group relative overflow-hidden rounded-[28px] bg-zinc-900 ${layouts[index]}`}
+      className={`group relative overflow-hidden rounded-[24px] bg-zinc-900 sm:rounded-[28px] ${layouts[index]}`}
     >
       <Link
         href={`/billboards/${billboard.id}`}
@@ -77,7 +77,7 @@ function InventoryFeature({ billboard, index }: { billboard: PublicBillboard; in
 
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(9,9,11,.04)_20%,rgba(9,9,11,.88)_100%)] transition-opacity duration-500 group-hover:opacity-90" />
 
-        <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8">
+        <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-8">
           <div className="mb-4 flex items-center gap-3 text-xs text-white/72">
             <span>{typeLabel(billboard.type)}</span>
             <span className="h-px w-5 bg-white/35" aria-hidden />
@@ -145,7 +145,7 @@ export function InventoryShowcase({ billboards }: InventoryShowcaseProps) {
 
   return (
     <section className="bg-white text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
-      <Container className="py-24 lg:py-36">
+      <Container className="py-20 sm:py-24 lg:py-36">
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -173,7 +173,7 @@ export function InventoryShowcase({ billboards }: InventoryShowcaseProps) {
                 transition: { staggerChildren: reduceMotion ? 0 : 0.1, delayChildren: 0.08 },
               },
             }}
-            className="mt-14 grid gap-4 md:grid-cols-12 md:grid-rows-2 lg:mt-20 lg:h-[680px]"
+            className="mt-12 grid gap-3 sm:mt-14 sm:gap-4 md:grid-cols-12 md:grid-rows-2 lg:mt-20 lg:h-[680px]"
           >
             {topBillboards.map((billboard, index) => (
               <InventoryFeature key={billboard.id} billboard={billboard} index={index} />
@@ -198,7 +198,7 @@ export function InventoryShowcase({ billboards }: InventoryShowcaseProps) {
         >
           <Link
             href="/billboards"
-            className="group inline-flex items-center gap-3 rounded-full bg-blue-600 px-6 py-3.5 text-sm font-semibold whitespace-nowrap text-white transition-transform hover:scale-[1.025] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600 active:scale-[0.98]"
+            className="group inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-full bg-blue-600 px-6 py-3.5 text-sm font-semibold whitespace-nowrap text-white transition-transform hover:scale-[1.025] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600 active:scale-[0.98] sm:w-auto"
           >
             Browse all inventory
             <ArrowRight

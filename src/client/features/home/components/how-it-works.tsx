@@ -18,13 +18,13 @@ export function HowItWorks() {
 
   return (
     <section id="how-it-works" className="scroll-mt-24 bg-white">
-      <Container className="py-24 lg:py-32">
+      <Container className="py-20 sm:py-24 lg:py-32">
         <SectionHeading
           title="How it works"
           subtitle="Book your billboard campaign in three simple steps."
         />
 
-        <div ref={ref} className="relative mx-auto mt-20 max-w-4xl">
+        <div ref={ref} className="relative mx-auto mt-12 max-w-4xl sm:mt-16 lg:mt-20">
           {/* Base spine */}
           <div
             aria-hidden
@@ -37,7 +37,7 @@ export function HowItWorks() {
             className="absolute top-0 left-4 w-0.5 -translate-x-1/2 rounded-full bg-gradient-to-b from-blue-500 to-blue-600 md:left-1/2"
           />
 
-          <div className="space-y-12 md:space-y-8">
+          <div className="space-y-8 md:space-y-8">
             {steps.map((step, index) => (
               <TimelineStep
                 key={step.number}

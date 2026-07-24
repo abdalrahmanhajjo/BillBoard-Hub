@@ -12,7 +12,7 @@ export function FooterColumn({ column }: { column: FooterColumnData }) {
           <li key={link.label}>
             <Link
               href={link.href}
-              className="text-sm text-zinc-600 transition-colors hover:text-zinc-900"
+              className="inline-flex min-h-10 items-center text-sm text-zinc-600 transition-colors hover:text-zinc-900"
             >
               {link.label}
             </Link>

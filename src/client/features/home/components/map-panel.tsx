@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { LebanonMap } from '@/client/features/home/components/lebanon-map';
 import { fadeUp, staggerContainer, viewportOnce } from '@/client/features/home/lib/animations';
 import type { HomeStats, MarketOverviewEntry } from '@/client/features/home/home.types';
@@ -18,8 +18,10 @@ const float = {
 };
 
 export function MapPanel({ marketOverview, stats }: MapPanelProps) {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <div className="rounded-3xl border border-zinc-200 bg-white p-4 shadow-2xl shadow-zinc-900/10">
+    <div className="min-w-0 rounded-[24px] border border-zinc-200 bg-white p-3 shadow-2xl shadow-zinc-900/10 sm:rounded-3xl sm:p-4">
       <div className="grid gap-4 sm:grid-cols-[1.5fr_1fr]">
         {/* Stylized map of Lebanon */}
         <div className="relative h-64 overflow-hidden rounded-2xl bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50 sm:h-80">
@@ -36,19 +38,23 @@ export function MapPanel({ marketOverview, stats }: MapPanelProps) {
             <LebanonMap />
           </div>
           <motion.span
-            animate={float.animate}
-            transition={float.transition}
-            className="absolute top-4 left-4 z-10 inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white/90 px-3 py-1.5 text-xs font-medium text-zinc-700 shadow-sm backdrop-blur"
+            animate={reduceMotion ? undefined : float.animate}
+            transition={reduceMotion ? undefined : float.transition}
+            className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white/90 px-2.5 py-1.5 text-[11px] font-medium text-zinc-700 shadow-sm backdrop-blur sm:top-4 sm:left-4 sm:px-3 sm:text-xs"
           >
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            Live Inventory · Updated just now
+            Live inventory, updated now
           </motion.span>
         </div>
 
         {/* Market overview (data-bound) */}
         <motion.div
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
+          animate={reduceMotion ? undefined : { y: [0, -5, 0] }}
+          transition={
+            reduceMotion
+              ? undefined
+              : { duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }
+          }
           className="flex flex-col rounded-2xl border border-zinc-200 bg-zinc-50/60 p-4"
         >
           <p className="mb-3 text-sm font-semibold text-zinc-900">Market Overview</p>
@@ -100,8 +106,10 @@ export function MapPanel({ marketOverview, stats }: MapPanelProps) {
               <span className="relative flex h-2.5 w-2.5">
                 <motion.span
                   className="absolute inline-flex h-full w-full rounded-full bg-emerald-400"
-                  animate={{ scale: [1, 2.4], opacity: [0.6, 0] }}
-                  transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
+                  animate={reduceMotion ? undefined : { scale: [1, 2.4], opacity: [0.6, 0] }}
+                  transition={
+                    reduceMotion ? undefined : { duration: 1.8, repeat: Infinity, ease: 'easeOut' }
+                  }
                 />
                 <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
               </span>
@@ -113,8 +121,8 @@ export function MapPanel({ marketOverview, stats }: MapPanelProps) {
 
         <motion.div
           variants={fadeUp}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.97 }}
+          whileHover={reduceMotion ? undefined : { scale: 1.04 }}
+          whileTap={reduceMotion ? undefined : { scale: 0.97 }}
           className="shrink-0"
         >
           <Link
@@ -124,8 +132,10 @@ export function MapPanel({ marketOverview, stats }: MapPanelProps) {
             View Marketplace
             <motion.span
               className="inline-flex"
-              animate={{ x: [0, 3, 0] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+              animate={reduceMotion ? undefined : { x: [0, 3, 0] }}
+              transition={
+                reduceMotion ? undefined : { duration: 1.8, repeat: Infinity, ease: 'easeInOut' }
+              }
             >
               <ArrowRight className="h-4 w-4" aria-hidden />
             </motion.span>
