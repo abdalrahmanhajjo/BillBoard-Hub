@@ -6,7 +6,6 @@ import {
   ChevronDown,
   Columns3,
   Download,
-  Filter,
   Gauge,
   Menu,
   Monitor,
@@ -17,7 +16,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
-import type { Billboard, BillboardStatus } from '@/shared/types/billboard';
+import type { Billboard, BillboardStatus, BillboardType } from '@/shared/types/billboard';
 import { BILLBOARD_STATUSES, BILLBOARD_TYPES } from '@/shared/constants/billboard';
 import { billboardClientService } from '@/client/features/billboards/services/billboard-client.service';
 import { CreateBillboardForm } from '@/client/features/billboards/components/create-billboard-form';
@@ -34,14 +33,30 @@ async function fetchBillboards(): Promise<Billboard[]> {
   return (result.data?.billboards as Billboard[] | undefined) ?? [];
 }
 
-function FilterSelect({ label, options }: { label: string; options?: string[] }) {
+function FilterSelect({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+}) {
   return (
     <label className="relative">
       <span className="sr-only">{label}</span>
-      <select className="h-9 min-w-32 appearance-none rounded-md border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-700 shadow-sm transition outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
-        <option>{label}</option>
-        {options?.map((option) => (
-          <option key={option}>{option}</option>
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-9 min-w-32 appearance-none rounded-md border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-700 shadow-sm transition outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+      >
+        <option value="">{label}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
         ))}
       </select>
       <ChevronDown className="pointer-events-none absolute top-3 right-3 size-3 text-slate-400" />
@@ -86,6 +101,8 @@ export function AdminBillboardsPage() {
   const [pendingStatusId, setPendingStatusId] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | BillboardStatus>('all');
+  const [cityFilter, setCityFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState<'' | BillboardType>('');
   const [drawerMode, setDrawerMode] = useState<DrawerMode>(null);
   const [selectedBillboard, setSelectedBillboard] = useState<Billboard | null>(null);
 
@@ -121,10 +138,22 @@ export function AdminBillboardsPage() {
     };
   }, []);
 
+  const cityOptions = useMemo(
+    () =>
+      [...new Set(billboards.map((item) => item.location.city.trim()).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b))
+        .map((city) => ({ value: city, label: city })),
+    [billboards],
+  );
+
   const filteredBillboards = useMemo(() => {
     const normalized = query.trim().toLowerCase();
+    const normalizedCity = cityFilter.trim().toLowerCase();
     return billboards.filter((billboard) => {
       const matchesStatus = statusFilter === 'all' || billboard.status === statusFilter;
+      const matchesType = !typeFilter || billboard.type === typeFilter;
+      const matchesCity =
+        !normalizedCity || billboard.location.city.trim().toLowerCase() === normalizedCity;
       const matchesQuery =
         !normalized ||
         [
@@ -138,9 +167,19 @@ export function AdminBillboardsPage() {
           .join(' ')
           .toLowerCase()
           .includes(normalized);
-      return matchesStatus && matchesQuery;
+      return matchesStatus && matchesType && matchesCity && matchesQuery;
     });
-  }, [billboards, query, statusFilter]);
+  }, [billboards, query, statusFilter, typeFilter, cityFilter]);
+
+  const hasActiveFilters =
+    query.trim() !== '' || statusFilter !== 'all' || typeFilter !== '' || cityFilter !== '';
+
+  const clearFilters = useCallback(() => {
+    setQuery('');
+    setStatusFilter('all');
+    setTypeFilter('');
+    setCityFilter('');
+  }, []);
 
   const counts = useMemo(
     () => ({
@@ -230,20 +269,41 @@ export function AdminBillboardsPage() {
         </div>
 
         <section className="mt-6 flex flex-wrap items-center gap-2">
-          <FilterSelect label="All Cities" options={['Beirut', 'Jounieh', 'Tripoli', 'Saida']} />
-          <FilterSelect label="All Formats" options={['Static', 'Digital']} />
-          <FilterSelect label="All Sizes" />
+          <FilterSelect
+            label="All Cities"
+            value={cityFilter}
+            onChange={setCityFilter}
+            options={cityOptions}
+          />
+          <FilterSelect
+            label="All Formats"
+            value={typeFilter}
+            onChange={(value) => setTypeFilter(value as '' | BillboardType)}
+            options={[
+              { value: BILLBOARD_TYPES.STATIC, label: 'Static' },
+              { value: BILLBOARD_TYPES.DIGITAL, label: 'Digital' },
+            ]}
+          />
           <FilterSelect
             label="All Availability"
-            options={['Available', 'Reserved', 'Maintenance']}
+            value={statusFilter === 'all' ? '' : statusFilter}
+            onChange={(value) => setStatusFilter((value as BillboardStatus) || 'all')}
+            options={[
+              { value: BILLBOARD_STATUSES.AVAILABLE, label: 'Available' },
+              { value: BILLBOARD_STATUSES.RESERVED, label: 'Reserved' },
+              { value: BILLBOARD_STATUSES.OCCUPIED, label: 'Occupied' },
+              { value: BILLBOARD_STATUSES.MAINTENANCE, label: 'Maintenance' },
+            ]}
           />
-          <button
-            type="button"
-            className="flex h-9 items-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-xs font-medium"
-          >
-            <Filter className="size-3.5" /> More Filters{' '}
-            <ChevronDown className="size-3 text-slate-400" />
-          </button>
+          {hasActiveFilters ? (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="flex h-9 items-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-xs font-medium text-slate-600 hover:bg-slate-50"
+            >
+              <X className="size-3.5" /> Clear filters
+            </button>
+          ) : null}
           <button
             type="button"
             className="ml-auto hidden h-9 items-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-xs font-medium sm:flex"
@@ -328,7 +388,11 @@ export function AdminBillboardsPage() {
             billboards={filteredBillboards}
             isLoading={status === 'loading'}
             error={status === 'error' ? loadError : null}
-            emptyMessage={query ? 'No billboards match your search.' : 'Add a billboard to begin.'}
+            emptyMessage={
+              hasActiveFilters
+                ? 'No billboards match your search or filters.'
+                : 'Add a billboard to begin.'
+            }
             onStatusChange={handleStatusChange}
             onEdit={openEdit}
             onDelete={(billboard) => void handleDelete(billboard)}
