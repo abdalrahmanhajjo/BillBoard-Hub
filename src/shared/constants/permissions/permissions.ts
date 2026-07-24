@@ -17,4 +17,5 @@ export const PERMISSIONS = {
   BILLBOARDS_READ: 'billboards.read',
   BILLBOARDS_CREATE: 'billboards.create',
   BILLBOARDS_UPDATE: 'billboards.update',
+  BILLBOARDS_DELETE: 'billboards.delete',
 } as const;

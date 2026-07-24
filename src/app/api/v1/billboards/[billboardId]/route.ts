@@ -28,3 +28,14 @@ export async function PUT(request: Request, { params }: RouteContext) {
     return handleControllerError(error, 'Billboard update failed.');
   }
 }
+
+export async function DELETE(_request: Request, { params }: RouteContext) {
+  try {
+    const session = await requireSession();
+    const { billboardId } = await params;
+
+    return billboardController.deleteBillboard(session.user, billboardId);
+  } catch (error) {
+    return handleControllerError(error, 'Archiving billboard failed.');
+  }
+}

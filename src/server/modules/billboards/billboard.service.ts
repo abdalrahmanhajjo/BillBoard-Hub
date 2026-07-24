@@ -1,5 +1,5 @@
 import { billboardRepository } from '@/server/modules/billboards/billboard.repository';
-import { toBillboard } from '@/server/modules/billboards/billboard.utils';
+import { toBillboard, toPublicBillboard } from '@/server/modules/billboards/billboard.utils';
 import { authorizationPolicy } from '@/shared/policies';
 import { ConflictError, NotFoundError } from '@/shared/http/http-error';
 import { isBillboardBookable } from '@/shared/utils/billboard-availability';
@@ -7,7 +7,7 @@ import type {
   CreateBillboardSchemaOutput,
   UpdateBillboardSchemaOutput,
 } from '@/shared/contracts/billboard/billboard.schema';
-import type { Billboard, BillboardStatus } from '@/shared/types/billboard';
+import type { Billboard, BillboardStatus, PublicBillboard } from '@/shared/types/billboard';
 import type { User } from '@/shared/types/user';
 
 export const billboardService = {
@@ -30,6 +30,29 @@ export const billboardService = {
     const billboards = await billboardRepository.findMany();
 
     return billboards.map(toBillboard);
+  },
+
+  /**
+   * Public catalog read: no actor/authorization required. Returns the whole
+   * collection projected to public-safe fields for the storefront.
+   */
+  async listPublic(): Promise<PublicBillboard[]> {
+    const billboards = await billboardRepository.findMany();
+
+    return billboards.map(toBillboard).map(toPublicBillboard);
+  },
+
+  /**
+   * Public catalog read for a single billboard. No actor/authorization
+   * required; returns the public-safe projection.
+   */
+  async getPublicById(billboardId: string): Promise<PublicBillboard> {
+    const billboard = await billboardRepository.findById(billboardId);
+    if (!billboard) {
+      throw new NotFoundError('Billboard not found.');
+    }
+
+    return toPublicBillboard(toBillboard(billboard));
   },
 
   async getById(actor: User, billboardId: string): Promise<Billboard> {
@@ -71,6 +94,15 @@ export const billboardService = {
     }
 
     return toBillboard(updated);
+  },
+
+  async delete(actor: User, billboardId: string): Promise<void> {
+    authorizationPolicy.billboard.assertCanDelete(actor);
+
+    const deleted = await billboardRepository.deleteById(billboardId);
+    if (!deleted) {
+      throw new NotFoundError('Billboard not found.');
+    }
   },
 
   /**

@@ -21,6 +21,11 @@ export const createBillboardSchema = z.object({
   location: billboardLocationSchema,
   dimensions: billboardDimensionsSchema,
   monthlyPrice: z.coerce.number().positive('Monthly price must be greater than 0.'),
+  trafficCount: z.coerce
+    .number()
+    .int('Traffic count must be a whole number.')
+    .nonnegative('Traffic count cannot be negative.')
+    .optional(),
   status: z.enum(BILLBOARD_STATUSES).default(BILLBOARD_STATUSES.AVAILABLE),
   images: z.array(z.url('Each image must be a valid URL.')).default([]),
 });
@@ -29,6 +34,11 @@ export const updateBillboardSchema = z
   .object({
     description: z.string().trim().max(1000, 'Description is too long.').optional(),
     monthlyPrice: z.coerce.number().positive('Monthly price must be greater than 0.').optional(),
+    trafficCount: z.coerce
+      .number()
+      .int('Traffic count must be a whole number.')
+      .nonnegative('Traffic count cannot be negative.')
+      .optional(),
     location: billboardLocationSchema.optional(),
     images: z.array(z.url('Each image must be a valid URL.')).optional(),
     status: z.enum(BILLBOARD_STATUSES).optional(),

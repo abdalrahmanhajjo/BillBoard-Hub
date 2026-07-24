@@ -35,6 +35,7 @@ export function EditBillboardForm({ billboard, onSaved, onCancel }: EditBillboar
     defaultValues: {
       description: billboard.description ?? '',
       monthlyPrice: billboard.monthlyPrice,
+      trafficCount: billboard.trafficCount ?? '',
       location: {
         address: billboard.location.address,
         city: billboard.location.city,
@@ -116,6 +117,26 @@ export function EditBillboardForm({ billboard, onSaved, onCancel }: EditBillboar
           </select>
           {errors.status ? <p className="text-sm text-red-600">{errors.status.message}</p> : null}
         </div>
+      </div>
+
+      <div className="space-y-1">
+        <label htmlFor="edit-traffic-count" className="text-sm font-medium">
+          Traffic Count (optional)
+        </label>
+        <input
+          id="edit-traffic-count"
+          type="number"
+          min="0"
+          step="1"
+          className={inputClassName}
+          {...register('trafficCount', {
+            setValueAs: (value) =>
+              value === '' || value === undefined || value === null ? undefined : Number(value),
+          })}
+        />
+        {errors.trafficCount ? (
+          <p className="text-sm text-red-600">{errors.trafficCount.message}</p>
+        ) : null}
       </div>
 
       <div className="space-y-1">

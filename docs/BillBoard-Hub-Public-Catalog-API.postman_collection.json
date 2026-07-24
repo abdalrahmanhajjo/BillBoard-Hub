@@ -1,0 +1,138 @@
+{
+  "info": {
+    "_postman_id": "b17b0a7d-4c3e-4f2a-9a1e-bb2000000003",
+    "name": "BillBoard Hub Public Catalog API",
+    "description": "Public storefront read endpoints added on the BB-2 branch (Public Website & Billboard Catalog).\n\nThese routes are PUBLIC: no session cookie, no role, GET only. They return a public-safe projection (status -> isAvailable boolean; code, timestamps and digital-spec screenStatus omitted; trafficCount included).\n\nUsage:\n1. Create billboards first via the admin inventory API (BillBoard Hub Billboards API collection).\n2. public-catalog > List runs first and saves {{publicBillboardId}} (and {{publicDigitalBillboardId}} if a digital billboard exists) automatically.\n3. Get by id / Get digital spec reuse those variables.\n\nSee docs/billboard-public-catalog-api.md for the full reference.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "public-catalog",
+      "item": [
+        {
+          "name": "List billboards",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "const list = res && res.data && res.data.billboards ? res.data.billboards : [];",
+                  "if (list.length) {",
+                  "  pm.collectionVariables.set('publicBillboardId', list[0].id);",
+                  "  console.log('publicBillboardId =', list[0].id);",
+                  "}",
+                  "const digital = list.find((b) => b.type === 'digital');",
+                  "if (digital) {",
+                  "  pm.collectionVariables.set('publicDigitalBillboardId', digital.id);",
+                  "  console.log('publicDigitalBillboardId =', digital.id);",
+                  "}",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('returns billboards array', () => pm.expect(res.data).to.have.property('billboards'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/billboards",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "public", "billboards"]
+            },
+            "description": "Public. No auth. Returns { data: { billboards: PublicBillboard[] } }, newest first. Saves the first id into {{publicBillboardId}} and the first digital id into {{publicDigitalBillboardId}}."
+          }
+        },
+        {
+          "name": "Get by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/billboards/{{publicBillboardId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "public", "billboards", "{{publicBillboardId}}"]
+            },
+            "description": "Public. No auth. Returns { data: { billboard: PublicBillboard } }. Unknown id -> 404 'Billboard not found.'"
+          }
+        },
+        {
+          "name": "Get digital spec",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/billboards/{{publicDigitalBillboardId}}/digital-spec",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "billboards",
+                "{{publicDigitalBillboardId}}",
+                "digital-spec"
+              ]
+            },
+            "description": "Public. No auth. Returns { data: { spec: PublicDigitalSpec | null } }. spec is null for non-digital billboards or when no spec is saved. (Uses {{publicDigitalBillboardId}} captured by List.)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "negative-cases",
+      "item": [
+        {
+          "name": "Unknown id (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/billboards/000000000000000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "public", "billboards", "000000000000000000000000"]
+            },
+            "description": "Expect 404 'Billboard not found.'"
+          }
+        },
+        {
+          "name": "Malformed id (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/billboards/not-an-object-id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "public", "billboards", "not-an-object-id"]
+            },
+            "description": "Malformed ObjectId. Expect 404 'Not found.'"
+          }
+        },
+        {
+          "name": "Method not allowed (405)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"should not work\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/billboards",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "public", "billboards"]
+            },
+            "description": "The public list route is read-only (GET only). Expect 405 Method Not Allowed."
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "publicBillboardId", "value": "" },
+    { "key": "publicDigitalBillboardId", "value": "" }
+  ]
+}

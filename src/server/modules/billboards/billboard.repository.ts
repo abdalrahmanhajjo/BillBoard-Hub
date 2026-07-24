@@ -48,4 +48,9 @@ export const billboardRepository = {
     await connectToDatabase();
     return BillboardModel.find().sort({ createdAt: -1 }).lean<BillboardDocument[]>().exec();
   },
+
+  async deleteById(billboardId: string): Promise<BillboardDocument | null> {
+    await connectToDatabase();
+    return BillboardModel.findByIdAndDelete(billboardId).lean<BillboardDocument>().exec();
+  },
 };
