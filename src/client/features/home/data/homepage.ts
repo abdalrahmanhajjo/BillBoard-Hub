@@ -35,20 +35,37 @@ import type {
 export const brandName = 'Boardly';
 
 export const navLinks: NavItem[] = [
-  { label: 'Billboards', href: '/billboards' },
   { label: 'How It Works', href: '/#how-it-works' },
   { label: 'Pricing', href: '/#pricing' },
   { label: 'FAQ', href: '/#faq' },
   { label: 'Contact', href: '/#contact' },
 ];
 
-export const solutionsGroup: NavGroup = {
-  label: 'Solutions',
+/* "Billboards" mega-item: the trigger links to the full catalog, and each item
+   deep-links into a real, working view of the inventory. */
+export const exploreGroup: NavGroup = {
+  label: 'Billboards',
   items: [
-    { label: 'For Brands', href: '/#formats' },
-    { label: 'For Agencies', href: '/#formats' },
-    { label: 'Campaign Planning', href: '/#features' },
-    { label: 'Audience Targeting', href: '/#features' },
+    {
+      label: 'All billboards',
+      href: '/billboards',
+      description: 'Browse every placement across Lebanon',
+    },
+    {
+      label: 'Digital screens',
+      href: '/billboards?type=digital',
+      description: 'Dynamic LED displays with rotating ads',
+    },
+    {
+      label: 'Static billboards',
+      href: '/billboards?type=static',
+      description: 'Classic printed roadside formats',
+    },
+    {
+      label: 'Formats & placements',
+      href: '/#formats',
+      description: 'Highway, rooftop, mall, and street-level',
+    },
   ],
 };
 

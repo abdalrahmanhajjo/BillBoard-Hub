@@ -43,6 +43,7 @@ type BrowseBillboardsPageProps = {
   billboards: PublicBillboard[];
   error?: string | null;
   query?: string;
+  initialType?: string;
 };
 
 type SortOption = 'featured' | 'price-low' | 'price-high' | 'traffic';
@@ -58,7 +59,12 @@ function searchableText(billboard: PublicBillboard): string {
     .toLowerCase();
 }
 
-export function BrowseBillboardsPage({ billboards, error, query }: BrowseBillboardsPageProps) {
+export function BrowseBillboardsPage({
+  billboards,
+  error,
+  query,
+  initialType,
+}: BrowseBillboardsPageProps) {
   const cities = useMemo(
     () =>
       [...new Set(billboards.map((billboard) => billboard.location.city))]
@@ -74,7 +80,7 @@ export function BrowseBillboardsPage({ billboards, error, query }: BrowseBillboa
   const [draftQuery, setDraftQuery] = useState(query ?? '');
   const [searchQuery, setSearchQuery] = useState(query ?? '');
   const [city, setCity] = useState('');
-  const [types, setTypes] = useState<string[]>([]);
+  const [types, setTypes] = useState<string[]>(initialType ? [initialType] : []);
   const [availableOnly, setAvailableOnly] = useState(false);
   const [maxPrice, setMaxPrice] = useState(databaseMaxPrice);
   const [sort, setSort] = useState<SortOption>('featured');

@@ -14,7 +14,7 @@ import {
   SheetTrigger,
 } from '@/client/ui/components/ui/sheet';
 import { Container } from '@/client/features/home/components/container';
-import { navLinks, solutionsGroup, brandName } from '@/client/features/home/data/homepage';
+import { navLinks, exploreGroup, brandName } from '@/client/features/home/data/homepage';
 import type { UserRole } from '@/shared/types/user';
 import { Button } from '@/client/ui/components/ui/button';
 
@@ -73,7 +73,7 @@ function roleLabel(role: UserRole): string {
 
 export function Navbar({ user }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
-  const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const [exploreOpen, setExploreOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const { scrollY } = useScroll();
 
@@ -95,53 +95,46 @@ export function Navbar({ user }: NavbarProps) {
           <BrandMark />
 
           <nav className="hidden items-center gap-1 lg:flex">
-            <Link
-              href="/billboards"
-              className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
-            >
-              Billboards
-            </Link>
-            <Link
-              href="/#how-it-works"
-              className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
-            >
-              How It Works
-            </Link>
-
             <div
               className="relative"
-              onMouseEnter={() => setSolutionsOpen(true)}
-              onMouseLeave={() => setSolutionsOpen(false)}
+              onMouseEnter={() => setExploreOpen(true)}
+              onMouseLeave={() => setExploreOpen(false)}
             >
-              <Button
-                type="button"
-                variant="ghost"
-                aria-expanded={solutionsOpen}
+              <Link
+                href="/billboards"
+                aria-expanded={exploreOpen}
                 className="inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
               >
-                {solutionsGroup.label}
+                {exploreGroup.label}
                 <ChevronDown
-                  className={cn('h-4 w-4 transition-transform', solutionsOpen && 'rotate-180')}
+                  className={cn('h-4 w-4 transition-transform', exploreOpen && 'rotate-180')}
                   aria-hidden
                 />
-              </Button>
+              </Link>
               <AnimatePresence>
-                {solutionsOpen ? (
+                {exploreOpen ? (
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-full left-0 w-52 pt-2"
+                    className="absolute top-full left-0 w-72 pt-2"
                   >
-                    <ul className="overflow-hidden rounded-xl border border-zinc-200 bg-white py-1 shadow-lg">
-                      {solutionsGroup.items.map((item) => (
+                    <ul className="overflow-hidden rounded-xl border border-zinc-200 bg-white p-1.5 shadow-lg">
+                      {exploreGroup.items.map((item) => (
                         <li key={item.label}>
                           <Link
                             href={item.href}
-                            className="block px-4 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
+                            className="block rounded-lg px-3 py-2 transition-colors hover:bg-zinc-50"
                           >
-                            {item.label}
+                            <span className="block text-sm font-medium text-zinc-900">
+                              {item.label}
+                            </span>
+                            {item.description ? (
+                              <span className="mt-0.5 block text-xs text-zinc-500">
+                                {item.description}
+                              </span>
+                            ) : null}
                           </Link>
                         </li>
                       ))}
@@ -151,13 +144,13 @@ export function Navbar({ user }: NavbarProps) {
               </AnimatePresence>
             </div>
 
-            {['Pricing', 'FAQ', 'Contact'].map((label) => (
+            {navLinks.map((link) => (
               <Link
-                key={label}
-                href={`/#${label.toLowerCase()}`}
+                key={link.label}
+                href={link.href}
                 className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
               >
-                {label}
+                {link.label}
               </Link>
             ))}
           </nav>
@@ -276,7 +269,7 @@ export function Navbar({ user }: NavbarProps) {
                 <BrandMark />
               </SheetTitle>
               <nav className="flex flex-col gap-1 p-4">
-                {[...navLinks, ...solutionsGroup.items].map((item) => (
+                {[...exploreGroup.items, ...navLinks].map((item) => (
                   <SheetClose
                     key={item.label}
                     nativeButton={false}

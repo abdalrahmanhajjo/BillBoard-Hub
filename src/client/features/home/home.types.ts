@@ -26,6 +26,7 @@ export type HomeData = {
 export type NavItem = {
   label: string;
   href: string;
+  description?: string;
 };
 
 export type NavGroup = {
