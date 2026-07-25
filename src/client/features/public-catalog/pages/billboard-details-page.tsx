@@ -218,7 +218,10 @@ export function BillboardDetailsPage({
             >
               Choose dates and duration
             </a>
-            <ReserveButton isAvailable={billboard.isAvailable} />
+            <ReserveButton
+              isAvailable={billboard.isAvailable}
+              href={`/billboards/${billboard.id}/reservation`}
+            />
           </Card>
         </div>
 
@@ -348,6 +351,7 @@ export function BillboardDetailsPage({
             isAvailable={billboard.isAvailable}
             monthlyPrice={billboard.monthlyPrice}
             todayIso={todayIso}
+            billboardId={billboard.id}
             sticky={false}
           />
         </section>

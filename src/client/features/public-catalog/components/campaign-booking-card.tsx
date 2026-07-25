@@ -30,6 +30,7 @@ type CampaignBookingCardProps = {
   isAvailable: boolean;
   monthlyPrice: number;
   todayIso: string;
+  billboardId: string;
   sticky?: boolean;
 };
 
@@ -55,6 +56,7 @@ export function CampaignBookingCard({
   isAvailable,
   monthlyPrice,
   todayIso,
+  billboardId,
   sticky = true,
 }: CampaignBookingCardProps) {
   const today = useMemo(() => parseIsoDate(todayIso), [todayIso]);
@@ -286,7 +288,10 @@ export function CampaignBookingCard({
       </div>
 
       <div className="mt-4">
-        <ReserveButton isAvailable={isAvailable} />
+        <ReserveButton
+          isAvailable={isAvailable}
+          href={`/billboards/${billboardId}/reservation?start=${startDate}&end=${toIsoDate(endDate)}`}
+        />
       </div>
 
       <div className="mt-5 rounded-xl bg-zinc-50 p-4">

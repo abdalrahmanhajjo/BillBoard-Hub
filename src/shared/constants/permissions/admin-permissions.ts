@@ -38,4 +38,8 @@ export const ADMIN_PERMISSIONS: Permission[] = [
 
   // Impression Permissions (admins read playback analytics)
   PERMISSIONS.IMPRESSIONS_READ,
+
+  // Booking Permissions (admins review and moderate reservations)
+  PERMISSIONS.BOOKINGS_READ,
+  PERMISSIONS.BOOKINGS_MODERATE,
 ];

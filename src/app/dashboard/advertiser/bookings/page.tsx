@@ -1,10 +1,5 @@
-import { ModulePlaceholderPage } from '@/client/features/dashboard/components/module-placeholder-page';
+import { AdvertiserBookingsPage } from '@/client/features/bookings/pages/advertiser-bookings-page';
 
-export default function AdvertiserBookingsPage() {
-  return (
-    <ModulePlaceholderPage
-      title="Advertiser Bookings"
-      description="Create and track booking requests across billboard inventory."
-    />
-  );
+export default function AdvertiserBookingsRoute() {
+  return <AdvertiserBookingsPage />;
 }

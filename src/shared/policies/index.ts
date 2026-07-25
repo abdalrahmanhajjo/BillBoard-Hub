@@ -1,4 +1,5 @@
 import { billboardPolicy } from './modules/billboard-policy';
+import { bookingPolicy } from './modules/booking-policy';
 import { creativePolicy } from './modules/creative-policy';
 import { dashboardPolicy } from './modules/dashboard-policy';
 import { impressionPolicy } from './modules/impression-policy';
@@ -14,4 +15,5 @@ export const authorizationPolicy = {
   playlist: playlistPolicy,
   schedule: schedulePolicy,
   impression: impressionPolicy,
+  booking: bookingPolicy,
 };

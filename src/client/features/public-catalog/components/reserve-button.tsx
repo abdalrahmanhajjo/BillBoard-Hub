@@ -1,6 +1,16 @@
 import { Button } from '@/client/ui/components/ui/button';
 
-export function ReserveButton({ isAvailable }: { isAvailable: boolean }) {
+type ReserveButtonProps = {
+  isAvailable: boolean;
+  href?: string;
+  label?: string;
+};
+
+export function ReserveButton({
+  isAvailable,
+  href = '#campaign-inquiry',
+  label = 'Reserve this billboard',
+}: ReserveButtonProps) {
   if (!isAvailable) {
     return (
       <Button
@@ -15,11 +25,11 @@ export function ReserveButton({ isAvailable }: { isAvailable: boolean }) {
 
   return (
     <Button
-      render={<a href="#campaign-inquiry" />}
+      render={<a href={href} />}
       nativeButton={false}
       className="min-h-12 w-full rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
     >
-      Request this billboard
+      {label}
     </Button>
   );
 }

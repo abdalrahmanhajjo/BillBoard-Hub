@@ -40,4 +40,9 @@ export const PERMISSIONS = {
 
   // Impression Permissions
   IMPRESSIONS_READ: 'impressions.read',
+
+  // Booking Permissions
+  BOOKINGS_CREATE: 'bookings.create',
+  BOOKINGS_READ: 'bookings.read',
+  BOOKINGS_MODERATE: 'bookings.moderate',
 } as const;
