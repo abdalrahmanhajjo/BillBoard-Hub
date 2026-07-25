@@ -244,7 +244,7 @@ export function BillboardDetailsPage({
           </div>
         </section>
 
-        {isDigital ? <DigitalSpecShowcase spec={spec} /> : null}
+        {isDigital ? <DigitalSpecShowcase spec={spec} billboard={billboard} /> : null}
 
         <section className="mt-8 grid gap-5 lg:grid-cols-2">
           <Card className="h-full min-h-[640px] gap-0 overflow-hidden rounded-2xl border border-zinc-200 bg-white py-0 ring-0">

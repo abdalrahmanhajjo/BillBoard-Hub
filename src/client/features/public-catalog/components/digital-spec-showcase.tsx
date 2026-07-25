@@ -1,44 +1,70 @@
-import { Monitor, Repeat, Sparkles, Sun, Timer, Zap } from 'lucide-react';
-import type { PublicDigitalSpec } from '@/shared/types/billboard';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Monitor, Radio, Repeat, Sparkles, Sun, Timer, Zap } from 'lucide-react';
+import type { PublicBillboard, PublicDigitalSpec, Resolution } from '@/shared/types/billboard';
 
 const numberFormatter = new Intl.NumberFormat('en-US');
 
 /**
- * Distinct "digital screen" experience for the public details page. Renders the
- * public digital spec (resolution, brightness, slot duration, rotating ads) plus
- * a few derived, advertiser-facing metrics on a dark, screen-like panel so a
- * digital billboard reads very differently from a static one.
+ * Representative display configuration used when a digital billboard has no
+ * published spec yet. Grounded in the billboard's real dimensions (orientation
+ * drives the resolution) so the panel always reads as a real screen rather than
+ * a "coming soon" placeholder.
  */
-export function DigitalSpecShowcase({ spec }: { spec: PublicDigitalSpec | null }) {
-  if (!spec) {
-    return (
-      <section className="mt-8 overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 p-6 text-white sm:p-10">
-        <div className="flex items-center gap-3">
-          <span className="flex size-11 items-center justify-center rounded-xl bg-blue-600/20 text-blue-300">
-            <Monitor className="size-5" aria-hidden />
-          </span>
-          <div>
-            <p className="text-xs font-semibold tracking-[0.16em] text-blue-300 uppercase">
-              Digital LED screen
-            </p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-[-0.03em]">
-              Screen specifications coming soon
-            </h2>
-          </div>
-        </div>
-        <p className="mt-4 max-w-xl text-sm text-zinc-400">
-          This is a digital screen. Detailed display specifications will be published shortly —
-          contact the team for the current capabilities.
-        </p>
-      </section>
-    );
+function buildFallbackSpec(billboard: PublicBillboard): PublicDigitalSpec {
+  const { width, height } = billboard.dimensions;
+  let resolution: Resolution;
+  if (width > height) {
+    resolution = { width: 1920, height: 1080 };
+  } else if (height > width) {
+    resolution = { width: 1080, height: 1920 };
+  } else {
+    resolution = { width: 1440, height: 1440 };
   }
 
-  const { resolution, brightness, slotDurationSeconds, rotatingAdsCount } = spec;
+  return {
+    resolution,
+    brightness: 6000,
+    slotDurationSeconds: 10,
+    rotatingAdsCount: 6,
+  };
+}
+
+/**
+ * Distinct, live "digital screen" experience for the public details page.
+ * Renders the digital spec (resolution, brightness, slot duration, rotating
+ * ads) plus derived, advertiser-facing metrics on a dark, screen-like panel,
+ * with an animated rotation loop so a digital billboard reads very differently
+ * from a static one. Falls back to a representative spec when none is published.
+ */
+export function DigitalSpecShowcase({
+  spec,
+  billboard,
+}: {
+  spec: PublicDigitalSpec | null;
+  billboard: PublicBillboard;
+}) {
+  const effectiveSpec = spec ?? buildFallbackSpec(billboard);
+  const isRepresentative = spec === null;
+
+  const { resolution, brightness, slotDurationSeconds, rotatingAdsCount } = effectiveSpec;
   const megapixels = (resolution.width * resolution.height) / 1_000_000;
   const loopSeconds = slotDurationSeconds * rotatingAdsCount;
   const spotsPerHour = Math.max(1, Math.floor(3600 / loopSeconds));
   const shareOfScreen = Math.round(100 / rotatingAdsCount);
+
+  const slotCount = Math.min(rotatingAdsCount, 12);
+  const previewIntervalMs = Math.max(1200, Math.min(slotDurationSeconds, 3) * 1000);
+  const [activeSlot, setActiveSlot] = useState(0);
+
+  useEffect(() => {
+    if (slotCount <= 1) return;
+    const id = setInterval(() => {
+      setActiveSlot((current) => (current + 1) % slotCount);
+    }, previewIntervalMs);
+    return () => clearInterval(id);
+  }, [slotCount, previewIntervalMs]);
 
   const specs = [
     {
@@ -67,6 +93,8 @@ export function DigitalSpecShowcase({ spec }: { spec: PublicDigitalSpec | null }
     { icon: Zap, label: 'Your spots / hour', value: `~${spotsPerHour}` },
     { icon: Sparkles, label: 'Share of screen', value: `${shareOfScreen}%` },
   ];
+
+  const activeLabel = activeSlot === 0 ? 'Your ad' : `Ad ${activeSlot + 1}`;
 
   return (
     <section className="mt-8 overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 text-white">
@@ -114,25 +142,48 @@ export function DigitalSpecShowcase({ spec }: { spec: PublicDigitalSpec | null }
 
       <div className="grid gap-8 border-t border-zinc-800 p-6 sm:p-10 lg:grid-cols-[1.2fr_1fr]">
         <div>
-          <p className="text-xs font-semibold tracking-[0.14em] text-zinc-400 uppercase">
-            Rotation preview
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {Array.from({ length: Math.min(rotatingAdsCount, 12) }).map((_, index) => (
-              <span
-                key={index}
-                className={`flex h-10 min-w-16 flex-1 items-center justify-center rounded-lg border text-xs font-semibold ${
-                  index === 0
-                    ? 'border-blue-500 bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,.5)]'
-                    : 'border-zinc-800 bg-zinc-900 text-zinc-500'
-                }`}
-              >
-                {index === 0 ? 'Your ad' : `Ad ${index + 1}`}
+          <div className="flex items-center justify-between">
+            <p className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-[0.14em] text-zinc-400 uppercase">
+              <Radio className="size-3.5 text-emerald-400" aria-hidden />
+              Live rotation
+            </p>
+            <p className="text-xs font-medium text-zinc-400 tabular-nums">
+              Now showing{' '}
+              <span className="font-semibold text-white">
+                {activeSlot + 1}/{slotCount}
               </span>
-            ))}
+            </p>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {Array.from({ length: slotCount }).map((_, index) => {
+              const isActive = index === activeSlot;
+              const isYours = index === 0;
+              return (
+                <span
+                  key={index}
+                  className={`flex h-10 min-w-16 flex-1 items-center justify-center rounded-lg border text-xs font-semibold transition-all duration-500 ${
+                    isActive
+                      ? 'border-blue-400 bg-blue-600 text-white shadow-[0_0_22px_rgba(37,99,235,.65)]'
+                      : isYours
+                        ? 'border-blue-500/50 bg-blue-500/10 text-blue-200'
+                        : 'border-zinc-800 bg-zinc-900 text-zinc-500'
+                  }`}
+                >
+                  {isYours ? 'Your ad' : `Ad ${index + 1}`}
+                </span>
+              );
+            })}
+          </div>
+          <div className="mt-4 h-1 overflow-hidden rounded-full bg-zinc-800">
+            <div
+              key={activeSlot}
+              className="h-full rounded-full bg-emerald-400"
+              style={{ animation: `dss-slot-progress ${previewIntervalMs}ms linear forwards` }}
+            />
           </div>
           <p className="mt-3 text-xs text-zinc-500">
-            Each ad shows for {slotDurationSeconds}s · a full loop completes every {loopSeconds}s.
+            Currently on <span className="font-medium text-zinc-300">{activeLabel}</span> · each ad
+            shows for {slotDurationSeconds}s · a full loop completes every {loopSeconds}s.
           </p>
         </div>
 
@@ -149,6 +200,15 @@ export function DigitalSpecShowcase({ spec }: { spec: PublicDigitalSpec | null }
           ))}
         </div>
       </div>
+
+      {isRepresentative ? (
+        <p className="border-t border-zinc-800 px-6 py-3 text-[11px] text-zinc-500 sm:px-10">
+          Representative configuration for this screen class — exact display specs are confirmed
+          with your reservation.
+        </p>
+      ) : null}
+
+      <style>{`@keyframes dss-slot-progress { from { width: 0% } to { width: 100% } }`}</style>
     </section>
   );
 }

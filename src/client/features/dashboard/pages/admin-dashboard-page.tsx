@@ -39,6 +39,26 @@ export function AdminDashboardFeaturePage() {
         description="Review, approve, and track reservations."
         href="/dashboard/admin/bookings"
       />
+      <Card
+        title="Playlists"
+        description="Order creatives into playlists for each digital screen."
+        href="/dashboard/admin/playlists"
+      />
+      <Card
+        title="Scheduling"
+        description="Book playlists onto digital screens for specific time windows."
+        href="/dashboard/admin/schedules"
+      />
+      <Card
+        title="Playback"
+        description="See what each digital screen is playing now and preview rotations."
+        href="/dashboard/admin/playback"
+      />
+      <Card
+        title="Impressions"
+        description="Track how many times each creative has played across screens."
+        href="/dashboard/admin/impressions"
+      />
     </DashboardShell>
   );
 }

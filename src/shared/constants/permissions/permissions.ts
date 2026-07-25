@@ -18,4 +18,26 @@ export const PERMISSIONS = {
   BILLBOARDS_CREATE: 'billboards.create',
   BILLBOARDS_UPDATE: 'billboards.update',
   BILLBOARDS_DELETE: 'billboards.delete',
+
+  // Creative Permissions
+  CREATIVES_READ: 'creatives.read',
+  CREATIVES_CREATE: 'creatives.create',
+  CREATIVES_UPDATE: 'creatives.update',
+  CREATIVES_DELETE: 'creatives.delete',
+  CREATIVES_MODERATE: 'creatives.moderate',
+
+  // Playlist Permissions
+  PLAYLISTS_READ: 'playlists.read',
+  PLAYLISTS_CREATE: 'playlists.create',
+  PLAYLISTS_UPDATE: 'playlists.update',
+  PLAYLISTS_DELETE: 'playlists.delete',
+
+  // Schedule Permissions
+  SCHEDULES_READ: 'schedules.read',
+  SCHEDULES_CREATE: 'schedules.create',
+  SCHEDULES_UPDATE: 'schedules.update',
+  SCHEDULES_DELETE: 'schedules.delete',
+
+  // Impression Permissions
+  IMPRESSIONS_READ: 'impressions.read',
 } as const;
