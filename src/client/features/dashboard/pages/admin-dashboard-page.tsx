@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { DashboardShell } from '@/client/features/dashboard/components/dashboard-shell';
+import LogoutButtonContainer from '../components/logout-button-container';
 
 function Card({ title, description, href }: { title: string; description: string; href: string }) {
   return (
@@ -59,6 +60,7 @@ export function AdminDashboardFeaturePage() {
         description="Track how many times each creative has played across screens."
         href="/dashboard/admin/impressions"
       />
+      <LogoutButtonContainer />
     </DashboardShell>
   );
 }

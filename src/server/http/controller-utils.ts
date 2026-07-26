@@ -48,8 +48,7 @@ export function handleControllerError(error: unknown, message: string) {
   }
 
   if (error instanceof Error) {
-    console.error('Error:', error.message);
-    return apiResponse.internal(message);
+    return apiResponse.error(error.message, 400);
   }
 
   return apiResponse.internal(message);

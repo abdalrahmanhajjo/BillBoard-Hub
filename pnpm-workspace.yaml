@@ -1,5 +1,6 @@
 allowBuilds:
   # Next.js image optimization — needs its native binary built/linked.
+  core-js: false
   sharp: true
   # Native resolver used by eslint-config-next's import plugin.
   unrs-resolver: true

@@ -1,21 +1,22 @@
+import { ApiResponseError, ApiResponseSuccess } from '@/shared/types/response';
 import { NextResponse } from 'next/server';
 
 type ErrorDetails = Record<string, unknown> | undefined;
 
 export const apiResponse = {
-  ok<T>(data: T, status = 200) {
+  ok<T>(data: T, status = 200): NextResponse<ApiResponseSuccess<T>> {
     return NextResponse.json({ ok: true, data }, { status });
   },
 
-  success(status = 200) {
-    return NextResponse.json({ ok: true }, { status });
+  success(status = 200): NextResponse<ApiResponseSuccess<undefined>> {
+    return NextResponse.json({ ok: true, data: undefined }, { status });
   },
 
-  error(message: string, status = 400, details?: ErrorDetails) {
+  error(message: string, status = 400, details?: ErrorDetails): NextResponse<ApiResponseError> {
     return NextResponse.json(
       {
         ok: false,
-        error: message,
+        message,
         ...(details ? { details } : {}),
       },
       { status },

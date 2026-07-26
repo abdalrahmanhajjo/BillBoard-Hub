@@ -10,9 +10,16 @@ import type { LoginSchemaInput } from '@/shared/contracts/auth/login.schema';
 import { loginSchema } from '@/shared/contracts/auth/login.schema';
 import type { RegisterSchemaInput } from '@/shared/contracts/auth/register.schema';
 import { registerSchema } from '@/shared/contracts/auth/register.schema';
+import type {
+  LoginResponse,
+  LogoutResponse,
+  MeResponse,
+  RefreshResponse,
+  RegisterResponse,
+} from '@/shared/types/auth';
 
 export const authController = {
-  async login(payload: LoginSchemaInput) {
+  async login(payload: LoginSchemaInput): Promise<LoginResponse> {
     const parsed = loginSchema.safeParse(payload);
 
     if (!parsed.success) {
@@ -34,7 +41,7 @@ export const authController = {
     }
   },
 
-  async logout() {
+  async logout(): Promise<LogoutResponse> {
     try {
       await signOut({ redirect: false });
       return apiResponse.success(200);
@@ -43,7 +50,7 @@ export const authController = {
     }
   },
 
-  async me() {
+  async me(): Promise<MeResponse> {
     try {
       const session = await requireSession();
       const user = await authService.getCurrentUser(session.user.id, session.user);
@@ -59,7 +66,7 @@ export const authController = {
     }
   },
 
-  async refresh() {
+  async refresh(): Promise<RefreshResponse> {
     try {
       const session = await requireSession();
 
@@ -76,7 +83,7 @@ export const authController = {
     }
   },
 
-  async register(payload: RegisterSchemaInput) {
+  async register(payload: RegisterSchemaInput): Promise<RegisterResponse> {
     const parsed = registerSchema.safeParse(payload);
 
     if (!parsed.success) {
