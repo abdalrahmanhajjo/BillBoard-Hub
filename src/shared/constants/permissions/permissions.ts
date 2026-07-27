@@ -17,4 +17,17 @@ export const PERMISSIONS = {
   BILLBOARDS_READ: 'billboards.read',
   BILLBOARDS_CREATE: 'billboards.create',
   BILLBOARDS_UPDATE: 'billboards.update',
+
+  // Campaign Permissions
+  CAMPAIGNS_CREATE: 'campaigns.create',
+  CAMPAIGNS_READ_ANY: 'campaigns.read:any',
+  CAMPAIGNS_READ_SELF: 'campaigns.read:self',
+  CAMPAIGNS_UPDATE_SELF: 'campaigns.update:self',
+  CAMPAIGNS_ASSIGN_BILLBOARDS: 'campaigns.assign_billboards',
+
+  // Ad Creative Permissions
+  CREATIVES_CREATE: 'creatives.create',
+  CREATIVES_READ_ANY: 'creatives.read:any',
+  CREATIVES_READ_SELF: 'creatives.read:self',
+  CREATIVES_DELETE_SELF: 'creatives.delete:self',
 } as const;

@@ -1,10 +1,5 @@
-import { ModulePlaceholderPage } from '@/client/features/dashboard/components/module-placeholder-page';
+import { AdvertiserCampaignsPage } from '@/client/features/campaigns/pages/advertiser-campaigns-page';
 
-export default function AdvertiserCampaignsPage() {
-  return (
-    <ModulePlaceholderPage
-      title="Advertiser Campaigns"
-      description="Manage campaign lifecycles, schedules, and performance status."
-    />
-  );
+export default function AdvertiserCampaignsRoute() {
+  return <AdvertiserCampaignsPage />;
 }
