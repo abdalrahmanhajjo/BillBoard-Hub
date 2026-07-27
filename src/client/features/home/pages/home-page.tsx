@@ -5,7 +5,9 @@ import { BillboardFormats } from '@/client/features/home/components/billboard-fo
 import { InventoryShowcase } from '@/client/features/home/components/inventory-showcase';
 import { Stats } from '@/client/features/home/components/stats';
 import { Features } from '@/client/features/home/components/features';
+import { Reviews } from '@/client/features/home/components/reviews';
 import { Faq } from '@/client/features/home/components/faq';
+import { Contact } from '@/client/features/home/components/contact';
 import { Cta } from '@/client/features/home/components/cta';
 import type { HomeData } from '@/client/features/home/home.types';
 import { HomeAtmosphere } from '@/client/features/home/components/home-atmosphere';
@@ -20,7 +22,9 @@ export function HomePage({ billboards, marketOverview, stats }: HomeData) {
       <InventoryShowcase billboards={billboards} />
       <Stats stats={stats} />
       <Features />
+      <Reviews />
       <Faq />
+      <Contact />
       <Cta />
     </HomeAtmosphere>
   );

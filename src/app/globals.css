@@ -129,6 +129,50 @@
   }
 }
 
+@keyframes marquee-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Live "aurora" page backdrop: large blurred colour fields drift and scale over
+   a light base for an ambient, video-like motion background (no images). */
+@keyframes aurora-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(8%, 6%, 0) scale(1.18);
+  }
+  66% {
+    transform: translate3d(-6%, 10%, 0) scale(1.06);
+  }
+}
+
+@keyframes aurora-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.08);
+  }
+  50% {
+    transform: translate3d(-10%, -8%, 0) scale(1.24);
+  }
+}
+
+@keyframes aurora-c {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(9%, -7%, 0) scale(1.14);
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -162,6 +206,7 @@
   .home-atmosphere-content > section:nth-child(4),
   .home-atmosphere-content > section:nth-child(7) {
     background-color: color-mix(in oklab, #eef4ff 72%, transparent);
+    -webkit-backdrop-filter: blur(2px);
     backdrop-filter: blur(2px);
   }
 

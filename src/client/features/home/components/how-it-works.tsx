@@ -34,7 +34,7 @@ export function HowItWorks() {
           <motion.div
             aria-hidden
             style={{ height: reduce ? '100%' : fillHeight }}
-            className="absolute top-0 left-4 w-0.5 -translate-x-1/2 rounded-full bg-gradient-to-b from-blue-500 to-blue-600 md:left-1/2"
+            className="absolute top-0 left-4 w-0.5 -translate-x-1/2 rounded-full bg-linear-to-b from-blue-500 to-blue-600 md:left-1/2"
           />
 
           <div className="space-y-8 md:space-y-8">

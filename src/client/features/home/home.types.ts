@@ -80,6 +80,13 @@ export type FaqItem = {
   answer: string;
 };
 
+export type Review = {
+  quote: string;
+  author: string;
+  role: string;
+  rating: number;
+};
+
 export type StatItem = {
   icon: LucideIcon;
   value: number;

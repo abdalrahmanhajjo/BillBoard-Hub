@@ -20,7 +20,7 @@ export function Hero({ marketOverview, stats }: HeroProps) {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section className="border-b border-zinc-100 bg-gradient-to-b from-white to-zinc-50/60">
+    <section className="border-b border-zinc-100 bg-linear-to-b from-white to-zinc-50/60">
       <Container className="flex items-center py-12 sm:py-16 lg:min-h-[calc(100svh-5rem)] lg:py-24">
         <div className="grid w-full min-w-0 items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-24">
           <motion.div

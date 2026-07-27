@@ -24,7 +24,7 @@ export function MapPanel({ marketOverview, stats }: MapPanelProps) {
     <div className="min-w-0 rounded-[24px] border border-zinc-200 bg-white p-3 shadow-2xl shadow-zinc-900/10 sm:rounded-3xl sm:p-4">
       <div className="grid gap-4 sm:grid-cols-[1.5fr_1fr]">
         {/* Stylized map of Lebanon */}
-        <div className="relative h-64 overflow-hidden rounded-2xl bg-gradient-to-br from-sky-50 via-blue-50 to-cyan-50 sm:h-80">
+        <div className="relative h-64 overflow-hidden rounded-2xl bg-linear-to-br from-sky-50 via-blue-50 to-cyan-50 sm:h-80">
           <div
             className="absolute inset-0 opacity-[0.12]"
             style={{

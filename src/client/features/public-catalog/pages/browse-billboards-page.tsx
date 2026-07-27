@@ -140,7 +140,7 @@ export function BrowseBillboardsPage({
   };
 
   return (
-    <section className="bg-zinc-50/60 text-zinc-950">
+    <section className="text-zinc-950">
       <div className="mx-auto w-full max-w-[1600px] px-4 pt-7 pb-28 sm:px-8 sm:py-10 lg:px-16 lg:py-12 xl:px-24">
         <div className="mb-6 sm:hidden">
           <h1 className="text-[2rem] leading-[1.05] font-semibold tracking-[-0.04em] text-zinc-950">

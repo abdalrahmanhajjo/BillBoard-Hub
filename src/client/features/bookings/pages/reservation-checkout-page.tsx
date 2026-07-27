@@ -270,7 +270,7 @@ export function ReservationCheckoutPage({
   };
 
   return (
-    <div className="min-h-full bg-zinc-50/70 text-zinc-950">
+    <div className="min-h-full text-zinc-950">
       <div className="mx-auto w-full max-w-295 px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
         <nav className="flex flex-wrap items-center gap-1.5 text-xs text-zinc-500">
           <Link href="/" className="hover:text-zinc-800">

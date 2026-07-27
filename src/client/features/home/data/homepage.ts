@@ -28,6 +28,7 @@ import type {
   HowItWorksStep,
   NavGroup,
   NavItem,
+  Review,
   SocialLink,
   StatItem,
 } from '@/client/features/home/home.types';
@@ -36,7 +37,7 @@ export const brandName = 'Boardly';
 
 export const navLinks: NavItem[] = [
   { label: 'How It Works', href: '/#how-it-works' },
-  { label: 'Pricing', href: '/#pricing' },
+  { label: 'Reviews', href: '/#reviews' },
   { label: 'FAQ', href: '/#faq' },
   { label: 'Contact', href: '/#contact' },
 ];
@@ -239,13 +240,58 @@ export const faqs: FaqItem[] = [
   },
 ];
 
+export const reviews: Review[] = [
+  {
+    quote:
+      'Booking a highway billboard used to take a week of phone calls. With Boardly our campaign was live in two days.',
+    author: 'Rana Khoury',
+    role: 'Marketing Lead, Retail brand',
+    rating: 5,
+  },
+  {
+    quote:
+      'Real-time availability and the digital screen rotation made planning our product launch effortless.',
+    author: 'Karim Haddad',
+    role: 'Founder, D2C startup',
+    rating: 5,
+  },
+  {
+    quote:
+      'As an agency we manage dozens of placements — the dashboard and reporting save us hours every week.',
+    author: 'Lea Mansour',
+    role: 'Media Director, Agency',
+    rating: 5,
+  },
+  {
+    quote:
+      'Transparent locations and traffic data meant no surprises. Our reach estimates were spot on.',
+    author: 'Tarek Saad',
+    role: 'Growth Manager',
+    rating: 5,
+  },
+  {
+    quote:
+      'The team helped us pick the right mix of rooftop and street-level. Genuinely great local know-how.',
+    author: 'Nour Aoun',
+    role: 'Brand Manager',
+    rating: 5,
+  },
+  {
+    quote:
+      'From reservation to going live, everything was in one place. Exactly what out-of-home needed.',
+    author: 'Elie Gharios',
+    role: 'CMO, Consumer goods',
+    rating: 5,
+  },
+];
+
 export const footerColumns: FooterColumnData[] = [
   {
     title: 'Product',
     links: [
       { label: 'Marketplace', href: '/billboards' },
       { label: 'How It Works', href: '/#how-it-works' },
-      { label: 'Pricing', href: '/#pricing' },
+      { label: 'Reviews', href: '/#reviews' },
       { label: 'FAQ', href: '/#faq' },
       { label: 'Request a Demo', href: '/register' },
     ],

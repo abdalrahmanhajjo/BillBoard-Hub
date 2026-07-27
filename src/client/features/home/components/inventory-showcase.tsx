@@ -153,7 +153,7 @@ export function InventoryShowcase({ billboards }: InventoryShowcaseProps) {
           transition={{ duration: 0.65, ease }}
           className="max-w-4xl"
         >
-          <h2 className="max-w-3xl text-4xl leading-[0.96] font-semibold tracking-[-0.05em] text-balance sm:text-5xl lg:text-7xl">
+          <h2 className="max-w-3xl text-4xl leading-[0.96] font-semibold tracking-tighter text-balance sm:text-5xl lg:text-7xl">
             Four placements worth seeing first.
           </h2>
           <p className="mt-6 max-w-xl text-base leading-7 text-zinc-600 dark:text-zinc-400">

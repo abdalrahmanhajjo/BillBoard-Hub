@@ -17,7 +17,7 @@ export function FormatCard({ format }: { format: BillboardFormat }) {
       className="group flex h-full flex-col overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-sm transition-shadow hover:border-blue-200 hover:shadow-lg"
     >
       <div
-        className={`flex aspect-4/3 items-center justify-center overflow-hidden bg-gradient-to-br ${format.gradient}`}
+        className={`flex aspect-4/3 items-center justify-center overflow-hidden bg-linear-to-br ${format.gradient}`}
       >
         <Icon
           className="h-12 w-12 text-zinc-700 transition-transform duration-300 group-hover:scale-110"

@@ -34,7 +34,7 @@ export function Faq() {
             <p className="text-xs font-semibold tracking-[0.16em] text-blue-600 uppercase">
               Before you book
             </p>
-            <h2 className="mt-5 max-w-4xl text-4xl leading-[0.96] font-semibold tracking-[-0.05em] text-balance sm:text-5xl lg:text-7xl">
+            <h2 className="mt-5 max-w-4xl text-4xl leading-[0.96] font-semibold tracking-tighter text-balance sm:text-5xl lg:text-7xl">
               Questions, answered clearly.
             </h2>
           </div>

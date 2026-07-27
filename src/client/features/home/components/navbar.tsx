@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, Globe, LayoutDashboard, LogOut, Menu, UserRound } from 'lucide-react';
+import { ChevronDown, LayoutDashboard, LogOut, Menu, UserRound } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'motion/react';
 import { cn } from '@/client/ui/lib/utils';
@@ -14,6 +14,7 @@ import {
   SheetTrigger,
 } from '@/client/ui/components/ui/sheet';
 import { Container } from '@/client/features/home/components/container';
+import { BrandLogo } from '@/client/features/home/components/brand-logo';
 import { navLinks, exploreGroup, brandName } from '@/client/features/home/data/homepage';
 import type { UserRole } from '@/shared/types/user';
 import { Button } from '@/client/ui/components/ui/button';
@@ -32,18 +33,12 @@ type NavbarProps = {
 
 function BrandMark() {
   return (
-    <Link href="/" className="flex items-center gap-2.5">
-      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white">
-        <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden>
-          <path
-            d="M12 3 4 8v8l8 5 8-5V8l-8-5Z"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </span>
-      <span className="text-xl font-semibold tracking-tight text-zinc-900">{brandName}</span>
+    <Link
+      href="/"
+      aria-label={`${brandName} home`}
+      className="rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+    >
+      <BrandLogo />
     </Link>
   );
 }
@@ -156,15 +151,6 @@ export function Navbar({ user }: NavbarProps) {
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
-            <Button
-              type="button"
-              variant="ghost"
-              className="inline-flex items-center gap-1 text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
-            >
-              <Globe className="h-4 w-4" aria-hidden />
-              EN
-              <ChevronDown className="h-3.5 w-3.5" aria-hidden />
-            </Button>
             {user ? (
               <div
                 className="relative"

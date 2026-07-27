@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Separator } from '@/client/ui/components/ui/separator';
 import { Container } from '@/client/features/home/components/container';
+import { BrandLogo } from '@/client/features/home/components/brand-logo';
 import { FooterColumn } from '@/client/features/home/components/footer-column';
 import {
   FacebookIcon,
@@ -28,25 +29,11 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer id="contact" className="border-t border-zinc-200 bg-zinc-50">
+    <footer className="border-t border-zinc-200 bg-zinc-50">
       <Container className="py-12 sm:py-16 lg:py-20">
         <div className="grid gap-10 lg:grid-cols-[1.5fr_repeat(4,1fr)_1.2fr] lg:gap-12">
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
-                <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden>
-                  <path
-                    d="M12 3 4 8v8l8 5 8-5V8l-8-5Z"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-              <span className="text-lg font-semibold tracking-tight text-zinc-900">
-                {brandName}
-              </span>
-            </div>
+            <BrandLogo markClassName="size-8" textClassName="text-lg" />
             <p className="max-w-xs text-sm leading-relaxed text-zinc-500">{footerDescription}</p>
             <div className="flex items-center gap-3">
               {socialLinks.map((social) => {
