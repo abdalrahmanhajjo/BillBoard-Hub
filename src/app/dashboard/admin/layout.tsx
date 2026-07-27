@@ -12,6 +12,10 @@ export default async function AdminDashboardLayout({
     redirect('/login');
   }
 
+  if (session.user.role === USER_ROLES.ADVERTISER) {
+    redirect('/dashboard/advertiser');
+  }
+
   if (session.user.role !== USER_ROLES.ADMIN) {
     redirect('/unauthorized');
   }
