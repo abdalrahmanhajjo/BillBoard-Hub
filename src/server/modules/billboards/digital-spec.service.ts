@@ -2,7 +2,7 @@ import { billboardRepository } from '@/server/modules/billboards/billboard.repos
 import { digitalSpecRepository } from '@/server/modules/billboards/digital-spec.repository';
 import { toDigitalSpec, toPublicDigitalSpec } from '@/server/modules/billboards/digital-spec.utils';
 import { authorizationPolicy } from '@/shared/policies';
-import { BadRequestError, NotFoundError } from '@/shared/http/http-error';
+import { BadRequestError, NotFoundError } from '@/server/http/http-error';
 import { BILLBOARD_TYPES } from '@/shared/constants/billboard';
 import type { UpsertDigitalSpecSchemaOutput } from '@/shared/contracts/billboard/digital-spec.schema';
 import type { DigitalSpec, PublicDigitalSpec } from '@/shared/types/billboard';

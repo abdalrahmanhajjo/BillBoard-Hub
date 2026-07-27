@@ -2,7 +2,7 @@ import { AuthError } from 'next-auth';
 import type { Session } from 'next-auth';
 import { auth } from '@/auth';
 import { apiResponse } from '@/server/http/api-response';
-import { HttpError, NotFoundError, UnauthorizedError } from '@/shared/http/http-error';
+import { HttpError, NotFoundError, UnauthorizedError } from '@/server/http/http-error';
 
 export function validationMessage(
   issues: Array<{ message?: string }> | undefined,

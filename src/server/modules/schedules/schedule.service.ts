@@ -3,7 +3,7 @@ import { toSchedule } from '@/server/modules/schedules/schedule.utils';
 import { billboardRepository } from '@/server/modules/billboards/billboard.repository';
 import { playlistRepository } from '@/server/modules/playlists/playlist.repository';
 import { authorizationPolicy } from '@/shared/policies';
-import { BadRequestError, ConflictError, NotFoundError } from '@/shared/http/http-error';
+import { BadRequestError, ConflictError, NotFoundError } from '@/server/http/http-error';
 import { BILLBOARD_TYPES } from '@/shared/constants/billboard';
 import { SCHEDULE_STATUSES } from '@/shared/constants/schedule';
 import type {

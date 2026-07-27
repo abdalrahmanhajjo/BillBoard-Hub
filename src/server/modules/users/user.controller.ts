@@ -4,7 +4,7 @@ import {
   requireSession,
   validationMessage,
 } from '@/server/http/controller-utils';
-import { NotFoundError } from '@/shared/http/http-error';
+import { NotFoundError } from '@/server/http/http-error';
 import { userService } from '@/server/modules/users/user.service';
 import type {
   CreateUserSchemaInput,

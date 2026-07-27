@@ -104,6 +104,7 @@ export function toBooking(doc: BookingDocument): Booking {
       currency: doc.pricing.currency as BookingCurrency,
     },
     status: doc.status as BookingStatus,
+    paymentStatus: doc.paymentStatus,
     createdAt: doc.createdAt ? new Date(doc.createdAt).toISOString() : undefined,
     updatedAt: doc.updatedAt ? new Date(doc.updatedAt).toISOString() : undefined,
   };

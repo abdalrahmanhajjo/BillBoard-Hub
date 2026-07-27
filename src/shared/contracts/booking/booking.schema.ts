@@ -65,7 +65,7 @@ export const createBookingSchema = z
     }),
     paymentMethod: z.enum(PAYMENT_METHODS),
     invoice: z.object({
-      currency: z.enum(BOOKING_CURRENCIES).default('USD'),
+      currency: z.enum(BOOKING_CURRENCIES).default('usd'),
       email: z.email('A valid invoice email is required.').trim().toLowerCase(),
       poNumber: z.string().trim().max(60, 'PO number is too long.').optional(),
     }),

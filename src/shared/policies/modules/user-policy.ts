@@ -1,7 +1,7 @@
 import type { User, UserRole } from '@/shared/types/user';
 import { USER_ROLES } from '@/shared/constants/user-roles';
 import { assert } from '../policy-utils';
-import { ForbiddenError, UnauthorizedError } from '@/shared/http/http-error';
+import { ForbiddenError, UnauthorizedError } from '@/server/http/http-error';
 import { PERMISSIONS } from '@/shared/constants/permissions/permissions';
 
 export const userPolicy = {

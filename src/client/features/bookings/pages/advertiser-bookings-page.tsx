@@ -8,23 +8,28 @@ import type { Billboard } from '@/shared/types/billboard';
 import type { Booking, BookingStatus } from '@/shared/types/booking';
 import { billboardClientService } from '@/client/features/billboards/services/billboard-client.service';
 import { bookingClientService } from '@/client/features/bookings/services/booking-client.service';
+import { paymentClientService } from '@/client/features/payments/services/payment-client.service';
 
 type LoadStatus = 'loading' | 'ready' | 'error';
 
 const STATUS_STYLES: Record<BookingStatus, string> = {
-  pending: 'border-amber-200 bg-amber-50 text-amber-700',
-  approved: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-  rejected: 'border-red-200 bg-red-50 text-red-700',
-  completed: 'border-blue-200 bg-blue-50 text-blue-700',
-  cancelled: 'border-zinc-200 bg-zinc-100 text-zinc-500',
+  PENDING: 'border-amber-200 bg-amber-50 text-amber-700',
+  APPROVED: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+  REJECTED: 'border-red-200 bg-red-50 text-red-700',
+  CONFIRMED: 'border-blue-200 bg-blue-50 text-blue-700',
+  ACTIVE: 'border-cyan-200 bg-cyan-50 text-cyan-700',
+  COMPLETED: 'border-blue-200 bg-blue-50 text-blue-700',
+  CANCELLED: 'border-zinc-200 bg-zinc-100 text-zinc-500',
 };
 
 const STATUS_LABELS: Record<BookingStatus, string> = {
-  pending: 'Pending',
-  approved: 'Approved',
-  rejected: 'Rejected',
-  completed: 'Completed',
-  cancelled: 'Cancelled',
+  PENDING: 'Pending',
+  APPROVED: 'Approved',
+  REJECTED: 'Rejected',
+  CONFIRMED: 'Confirmed',
+  ACTIVE: 'Active',
+  COMPLETED: 'Completed',
+  CANCELLED: 'Cancelled',
 };
 
 const CANCELLABLE: BookingStatus[] = [BOOKING_STATUSES.PENDING, BOOKING_STATUSES.APPROVED];
@@ -45,6 +50,7 @@ export function AdvertiserBookingsPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [payingId, setPayingId] = useState<string | null>(null);
 
   const loadAll = useCallback(async () => {
     const [bookingsResult, billboardsResult] = await Promise.all([
@@ -96,6 +102,27 @@ export function AdvertiserBookingsPage() {
     booking.status === BOOKING_STATUSES.APPROVED && booking.endDate < today
       ? BOOKING_STATUSES.COMPLETED
       : booking.status;
+
+  const handlePayNow = async (booking: Booking) => {
+    setActionError(null);
+    setPayingId(booking.id);
+
+    const result = await paymentClientService.createCheckoutSession(booking.id);
+    setPayingId(null);
+
+    if (!result.ok) {
+      setActionError(result.error ?? 'Unable to start payment checkout.');
+      return;
+    }
+
+    const url = (result.data as { url?: string } | undefined)?.url;
+    if (!url) {
+      setActionError('Checkout URL is missing from payment response.');
+      return;
+    }
+
+    window.location.href = url;
+  };
 
   const handleRefresh = async () => {
     setActionError(null);
@@ -167,7 +194,12 @@ export function AdvertiserBookingsPage() {
           {bookings.map((booking) => {
             const billboard = billboardsById.get(booking.billboardId);
             const shown = displayStatus(booking);
-            const canCancel = CANCELLABLE.includes(booking.status) && shown !== 'completed';
+            const canCancel =
+              CANCELLABLE.includes(booking.status) && shown !== BOOKING_STATUSES.COMPLETED;
+            const canPayNow =
+              booking.status === BOOKING_STATUSES.APPROVED &&
+              booking.paymentStatus !== 'PAID' &&
+              shown !== BOOKING_STATUSES.COMPLETED;
             return (
               <article
                 key={booking.id}
@@ -189,7 +221,7 @@ export function AdvertiserBookingsPage() {
                     {formatDate(booking.startDate)} – {formatDate(booking.endDate)} (
                     {booking.pricing.days} days)
                   </p>
-                  {shown === 'rejected' ? (
+                  {shown === BOOKING_STATUSES.REJECTED ? (
                     <p className="mt-1 text-xs text-red-600">
                       This request was not accepted. You can submit a new reservation with different
                       dates.
@@ -215,6 +247,16 @@ export function AdvertiserBookingsPage() {
                     >
                       <XCircle className="size-3.5" aria-hidden />
                       {cancellingId === booking.id ? 'Cancelling…' : 'Cancel'}
+                    </button>
+                  ) : null}
+                  {canPayNow ? (
+                    <button
+                      type="button"
+                      onClick={() => handlePayNow(booking)}
+                      disabled={payingId === booking.id}
+                      className="inline-flex items-center gap-1.5 rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                    >
+                      {payingId === booking.id ? 'Redirecting…' : 'Pay Now'}
                     </button>
                   ) : null}
                 </div>

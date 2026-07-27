@@ -29,7 +29,7 @@ const userSchema = new Schema<UserRecord>(
     },
     role: {
       type: String,
-      enum: [USER_ROLES.ADMIN, USER_ROLES.ADVERTISER],
+      enum: Object.values(USER_ROLES),
       required: true,
       default: USER_ROLES.ADVERTISER,
       index: true,

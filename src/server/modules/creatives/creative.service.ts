@@ -2,7 +2,7 @@ import { creativeRepository } from '@/server/modules/creatives/creative.reposito
 import { toCreative } from '@/server/modules/creatives/creative.utils';
 import type { CreativeDocument } from '@/server/modules/creatives/creative.model';
 import { authorizationPolicy } from '@/shared/policies';
-import { ForbiddenError, NotFoundError } from '@/shared/http/http-error';
+import { ForbiddenError, NotFoundError } from '@/server/http/http-error';
 import { CREATIVE_STATUSES } from '@/shared/constants/creative';
 import type {
   CreateCreativeSchemaOutput,

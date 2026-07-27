@@ -1,15 +1,16 @@
-import {
-  BOOKING_CURRENCIES,
-  BOOKING_STATUSES,
-  CAMPAIGN_OBJECTIVES,
-  PAYMENT_METHODS,
-} from '@/shared/constants/booking';
+import { BOOKING_STATUSES } from '@/shared/constants/booking';
+import { BOOKING_PAYMENT_STATUSES } from '@/shared/constants/booking';
+import type { Currency } from '@/shared/types/currency';
+import { PaymentMethod } from '@/shared/types/payment';
+import type { CampaignObjective } from '@/shared/types/campian';
 import type { BookingPricing } from '@/shared/pricing/booking-pricing';
 
 export type BookingStatus = (typeof BOOKING_STATUSES)[keyof typeof BOOKING_STATUSES];
-export type PaymentMethod = (typeof PAYMENT_METHODS)[keyof typeof PAYMENT_METHODS];
-export type CampaignObjective = (typeof CAMPAIGN_OBJECTIVES)[keyof typeof CAMPAIGN_OBJECTIVES];
-export type BookingCurrency = (typeof BOOKING_CURRENCIES)[number];
+export type BookingPaymentStatus =
+  (typeof BOOKING_PAYMENT_STATUSES)[keyof typeof BOOKING_PAYMENT_STATUSES];
+export type BookingCurrency = Currency;
+export type { CampaignObjective };
+export type { PaymentMethod };
 
 export type BookingBilling = {
   contactName: string;
@@ -26,7 +27,7 @@ export type BookingCompany = {
 };
 
 export type BookingInvoice = {
-  currency: BookingCurrency;
+  currency: Currency;
   email: string;
   poNumber?: string;
 };
@@ -49,8 +50,9 @@ export type Booking = {
   company: BookingCompany;
   paymentMethod: PaymentMethod;
   invoice: BookingInvoice;
-  pricing: BookingPricing & { currency: BookingCurrency };
+  pricing: BookingPricing & { currency: Currency };
   status: BookingStatus;
+  paymentStatus?: BookingPaymentStatus;
   createdAt?: string;
   updatedAt?: string;
 };

@@ -7,7 +7,7 @@ import { billboardRepository } from '@/server/modules/billboards/billboard.repos
 import { playlistRepository } from '@/server/modules/playlists/playlist.repository';
 import { creativeRepository } from '@/server/modules/creatives/creative.repository';
 import { authorizationPolicy } from '@/shared/policies';
-import { BadRequestError, NotFoundError } from '@/shared/http/http-error';
+import { BadRequestError, NotFoundError } from '@/server/http/http-error';
 import { BILLBOARD_TYPES } from '@/shared/constants/billboard';
 import type { RecordImpressionSchemaOutput } from '@/shared/contracts/impression/impression.schema';
 import type { Impression, ImpressionAnalytics } from '@/shared/types/impression';

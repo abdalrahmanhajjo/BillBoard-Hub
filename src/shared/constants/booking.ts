@@ -1,9 +1,21 @@
+import { CURRENCIES } from './currencies';
+import { CAMPAIGN_OBJECTIVES } from './campain';
+
 export const BOOKING_STATUSES = {
-  PENDING: 'pending',
-  APPROVED: 'approved',
-  REJECTED: 'rejected',
-  COMPLETED: 'completed',
-  CANCELLED: 'cancelled',
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  CONFIRMED: 'CONFIRMED',
+  ACTIVE: 'ACTIVE',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export const BOOKING_PAYMENT_STATUSES = {
+  UNPAID: 'UNPAID',
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  FAILED: 'FAILED',
 } as const;
 
 export const PAYMENT_METHODS = {
@@ -13,21 +25,14 @@ export const PAYMENT_METHODS = {
   CASH: 'cash',
 } as const;
 
-export const CAMPAIGN_OBJECTIVES = {
-  AWARENESS: 'awareness',
-  PRODUCT_LAUNCH: 'product_launch',
-  STORE_VISITS: 'store_visits',
-  ENGAGEMENT: 'engagement',
-} as const;
+export const BOOKING_CURRENCIES = Object.values(CURRENCIES).map((currency) => currency.code);
+export { CAMPAIGN_OBJECTIVES };
 
-export const BOOKING_CURRENCIES = ['USD', 'EUR', 'LBP'] as const;
-
-/**
- * Statuses that occupy a billboard's calendar for conflict detection. Only
- * *approved* reservations block future bookings — pending requests do not, so
- * multiple advertisers may request the same dates until an admin approves one.
- */
-export const BLOCKING_BOOKING_STATUSES = [BOOKING_STATUSES.APPROVED] as const;
+export const BLOCKING_BOOKING_STATUSES = [
+  BOOKING_STATUSES.APPROVED,
+  BOOKING_STATUSES.CONFIRMED,
+  BOOKING_STATUSES.ACTIVE,
+] as const;
 
 // Pricing rates for the reservation quote. Centralized so finance can tune them.
 export const BOOKING_SERVICE_FEE_RATE = 0.055;

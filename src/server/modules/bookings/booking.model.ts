@@ -1,5 +1,10 @@
 import { model, models, Schema } from 'mongoose';
-import { BOOKING_CURRENCIES, BOOKING_STATUSES, PAYMENT_METHODS } from '@/shared/constants/booking';
+import {
+  BOOKING_CURRENCIES,
+  BOOKING_PAYMENT_STATUSES,
+  BOOKING_STATUSES,
+  PAYMENT_METHODS,
+} from '@/shared/constants/booking';
 import type { BookingRecord } from '@/server/modules/bookings/booking.types';
 
 const bookingSchema = new Schema(
@@ -46,6 +51,13 @@ const bookingSchema = new Schema(
       enum: Object.values(BOOKING_STATUSES),
       required: true,
       default: BOOKING_STATUSES.PENDING,
+      index: true,
+    },
+    paymentStatus: {
+      type: String,
+      enum: Object.values(BOOKING_PAYMENT_STATUSES),
+      required: true,
+      default: BOOKING_PAYMENT_STATUSES.UNPAID,
       index: true,
     },
   },

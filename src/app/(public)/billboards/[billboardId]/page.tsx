@@ -2,7 +2,7 @@ import { cache } from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BILLBOARD_TYPES } from '@/shared/constants/billboard';
-import { NotFoundError } from '@/shared/http/http-error';
+import { NotFoundError } from '@/server/http/http-error';
 import { billboardService } from '@/server/modules/billboards/billboard.service';
 import { digitalSpecService } from '@/server/modules/billboards/digital-spec.service';
 import type { PublicBillboard, PublicDigitalSpec } from '@/shared/types/billboard';

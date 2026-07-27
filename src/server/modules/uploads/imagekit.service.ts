@@ -1,5 +1,5 @@
 import { getUploadAuthParams } from '@imagekit/next/server';
-import { HttpError } from '@/shared/http/http-error';
+import { HttpError } from '@/server/http/http-error';
 
 export type ImageKitAuthParams = {
   token: string;

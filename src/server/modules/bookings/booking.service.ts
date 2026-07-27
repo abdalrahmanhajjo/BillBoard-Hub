@@ -12,10 +12,11 @@ import {
   ConflictError,
   ForbiddenError,
   NotFoundError,
-} from '@/shared/http/http-error';
+} from '@/server/http/http-error';
 import { BILLBOARD_STATUSES, BILLBOARD_TYPES } from '@/shared/constants/billboard';
 import {
   BLOCKING_BOOKING_STATUSES,
+  BOOKING_PAYMENT_STATUSES,
   BOOKING_STATUSES,
   STATIC_RESERVATION_DAILY_LIMIT,
 } from '@/shared/constants/booking';
@@ -96,6 +97,7 @@ export const bookingService = {
       invoice: input.invoice,
       pricing: { ...pricing, currency: input.invoice.currency },
       status: BOOKING_STATUSES.PENDING,
+      paymentStatus: BOOKING_PAYMENT_STATUSES.UNPAID,
     };
 
     const created = await bookingRepository.create(record);

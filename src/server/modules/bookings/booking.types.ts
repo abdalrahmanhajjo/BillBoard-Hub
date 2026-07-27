@@ -3,6 +3,7 @@ import type {
   BookingBilling,
   BookingCompany,
   BookingCurrency,
+  BookingPaymentStatus,
   BookingInvoice,
   BookingStatus,
   CampaignObjective,
@@ -26,6 +27,7 @@ export type BookingRecord = {
   invoice: BookingInvoice;
   pricing: BookingPricing & { currency: BookingCurrency };
   status: BookingStatus;
+  paymentStatus: BookingPaymentStatus;
 };
 
 export type BookingFilter = {

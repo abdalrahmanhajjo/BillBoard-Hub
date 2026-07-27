@@ -1,5 +1,5 @@
 import { rolePermissionMap } from '../constants/permissions';
-import { ForbiddenError } from '../http/http-error';
+import { ForbiddenError } from '@/server/http/http-error';
 import { Permission } from '../types/permissions';
 import { UserRole } from '../types/user';
 

@@ -7,7 +7,7 @@ import { toCreative } from '@/server/modules/creatives/creative.utils';
 import { billboardRepository } from '@/server/modules/billboards/billboard.repository';
 import { buildRotationSummary } from '@/server/modules/rotation/rotation.utils';
 import { authorizationPolicy } from '@/shared/policies';
-import { BadRequestError, NotFoundError } from '@/shared/http/http-error';
+import { BadRequestError, NotFoundError } from '@/server/http/http-error';
 import { BILLBOARD_TYPES } from '@/shared/constants/billboard';
 import type { Creative } from '@/shared/types/creative';
 import type { NowPlaying, RotationSummary } from '@/shared/types/rotation';

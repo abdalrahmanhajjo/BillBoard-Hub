@@ -1,7 +1,7 @@
 import { billboardRepository } from '@/server/modules/billboards/billboard.repository';
 import { toBillboard, toPublicBillboard } from '@/server/modules/billboards/billboard.utils';
 import { authorizationPolicy } from '@/shared/policies';
-import { ConflictError, NotFoundError } from '@/shared/http/http-error';
+import { ConflictError, NotFoundError } from '@/server/http/http-error';
 import { isBillboardBookable } from '@/shared/utils/billboard-availability';
 import type {
   CreateBillboardSchemaOutput,

@@ -1,7 +1,13 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { useForm, useWatch, type UseFormRegisterReturn } from 'react-hook-form';
+import {
+  useForm,
+  useWatch,
+  type SubmitErrorHandler,
+  type SubmitHandler,
+  type UseFormRegisterReturn,
+} from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import {
@@ -182,7 +188,7 @@ export function ReservationCheckoutPage({
       },
       company: { name: '', commercialRegister: '', address: '', country: 'Lebanon' },
       paymentMethod: PAYMENT_METHODS.CARD,
-      invoice: { currency: 'USD', email: viewer?.email ?? '', poNumber: '' },
+      invoice: { currency: 'usd', email: viewer?.email ?? '', poNumber: '' },
       termsAccepted: false,
     },
   });
@@ -230,7 +236,7 @@ export function ReservationCheckoutPage({
     }
   };
 
-  const onValid = async (values: CreateBookingSchemaInput) => {
+  const onValid: SubmitHandler<CreateBookingSchemaInput> = async (values) => {
     setServerError(null);
     setStatus('submitting');
     const result = await bookingClientService.create(values);
@@ -245,7 +251,7 @@ export function ReservationCheckoutPage({
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const onInvalid = () => {
+  const onInvalid: SubmitErrorHandler<CreateBookingSchemaInput> = () => {
     if (typeof window !== 'undefined') {
       document
         .querySelector('[aria-invalid="true"]')
@@ -1153,7 +1159,7 @@ function ConfirmationPanel({
             Ref {booking.reference}
           </span>
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 capitalize">
-            {booking.status === 'pending' ? 'Pending review' : booking.status}
+            {booking.status === 'PENDING' ? 'Pending review' : booking.status}
           </span>
         </div>
 

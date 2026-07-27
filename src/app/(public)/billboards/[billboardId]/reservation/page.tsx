@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { auth } from '@/auth';
 import { billboardService } from '@/server/modules/billboards/billboard.service';
-import { NotFoundError } from '@/shared/http/http-error';
+import { NotFoundError } from '@/server/http/http-error';
 import type { PublicBillboard } from '@/shared/types/billboard';
 import { ReservationCheckoutPage } from '@/client/features/bookings/pages/reservation-checkout-page';
 

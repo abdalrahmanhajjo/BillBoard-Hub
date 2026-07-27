@@ -115,6 +115,42 @@ Key files:
 - `src/server/modules/auth/*`
 - `src/server/modules/users/user.model.ts`
 
+## Payments (Stripe)
+
+Payment flow uses Stripe Checkout with webhook confirmation:
+
+1. Advertiser creates a reservation (`PENDING`).
+2. Admin approves reservation (`APPROVED`).
+3. Advertiser clicks `Pay Now` from advertiser reservations.
+4. Backend creates Stripe Checkout Session.
+5. Stripe webhook confirms payment and marks reservation payment state as paid.
+
+Payment endpoints:
+
+- `POST /api/v1/payments/checkout`
+- `GET /api/v1/payments/:bookingId`
+- `POST /api/v1/webhooks/stripe`
+
+Payment pages:
+
+- `/payment/success`
+- `/payment/cancel`
+
+Webhook events handled:
+
+- `checkout.session.completed`
+- `payment_intent.succeeded`
+- `payment_intent.payment_failed`
+- `charge.refunded`
+
+Security notes:
+
+- Webhook signature verification is required.
+- Processed Stripe events are persisted for idempotency.
+- Checkout and webhook endpoints are rate-limited.
+- Pricing is calculated server-side from stored reservation totals.
+- Duplicate paid reservations are blocked.
+
 ## Local Setup
 
 1. Create `.env.local`:
@@ -124,6 +160,9 @@ MONGODB_URI=<your-mongodb-connection-string>
 MONGODB_DB_NAME=billboard_hub
 AUTH_SECRET=<your-auth-secret>
 NEXTAUTH_URL=http://localhost:3000
+STRIPE_SECRET_KEY=<your-stripe-secret-key>
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=<your-stripe-publishable-key>
+STRIPE_WEBHOOK_SECRET=<your-stripe-webhook-secret>
 ```
 
 2. Install dependencies:
