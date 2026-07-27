@@ -1,4 +1,6 @@
 import { auth } from '@/auth';
+import AuthLayout from '@/client/layouts/auth-layout';
+import { SessionProvider } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 
 export default async function DashboardLayout({
@@ -12,5 +14,9 @@ export default async function DashboardLayout({
     redirect('/login');
   }
 
-  return <>{children}</>;
+  return (
+    <SessionProvider session={session}>
+      <AuthLayout>{children}</AuthLayout>
+    </SessionProvider>
+  );
 }

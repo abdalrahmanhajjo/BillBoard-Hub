@@ -338,10 +338,10 @@ curl -b cookies.txt -X PUT http://localhost:3000/api/v1/billboards/{id}/digital-
 
 ## 4. Frontend pages (browser, admin session)
 
-| URL                                                     | What to test                                                                                                                       |
-| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `http://localhost:3000/dashboard/admin/billboards`      | Inventory list, **search box**, create form, colored status badges, inline status change per row, "Digital specifications" manager |
-| `http://localhost:3000/dashboard/admin/billboards/{id}` | Details view (all fields + images + digital specs) and the **Edit** toggle (description, price, location, images, status)          |
+| URL                                                | What to test                                                                                                                       |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `http://localhost:3000/user/admin/billboards`      | Inventory list, **search box**, create form, colored status badges, inline status change per row, "Digital specifications" manager |
+| `http://localhost:3000/user/admin/billboards/{id}` | Details view (all fields + images + digital specs) and the **Edit** toggle (description, price, location, images, status)          |
 
 ---
 

@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { authProtectedPrefixes } from '@/server/middleware';
+import { authProtectedPrefix } from '@/server/middleware';
 
 function hasSessionCookie(request: NextRequest): boolean {
   const cookieHeader = request.headers.get('cookie') ?? '';
@@ -17,10 +17,9 @@ export function proxy(request: NextRequest) {
   const isLoggedIn = hasSessionCookie(request);
   const pathname = nextUrl.pathname;
 
-  const isDashboardRoot = pathname === '/dashboard';
-  const isProtectedByAuth = authProtectedPrefixes.some((prefix) => pathname.startsWith(prefix));
+  const isProtectedByAuth = pathname.startsWith(authProtectedPrefix);
 
-  if ((isProtectedByAuth || isDashboardRoot) && !isLoggedIn) {
+  if (isProtectedByAuth && !isLoggedIn) {
     return NextResponse.redirect(new URL('/login', nextUrl));
   }
 
@@ -28,5 +27,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: ['/user/:path*'],
 };

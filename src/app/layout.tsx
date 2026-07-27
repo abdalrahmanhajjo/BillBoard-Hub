@@ -3,6 +3,7 @@ import { Inter, Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/client/ui/lib/utils';
 import QueryProvider from '@/client/providers/query-provider';
+import { ThemeProvider } from '@/client/ui/providers/theme-provider';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -40,9 +41,19 @@ export default function RootLayout({
         'font-sans',
         inter.variable,
       )}
+      suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

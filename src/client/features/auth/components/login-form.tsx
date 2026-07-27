@@ -28,7 +28,7 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
   const onSubmit = async (values: LoginSchemaInput) => {
     try {
       await loginMutation.mutateAsync(values);
-      router.push('/dashboard');
+      router.push('/user');
       router.refresh();
     } catch {}
   };
