@@ -6,7 +6,7 @@ import { BorderBeam } from '@/client/ui/components/ui/border-beam';
 
 export function LoginFeaturePage() {
   return (
-    <section className="mx-auto grid min-h-[calc(100vh-2rem)] w-full max-w-6xl items-center gap-6 px-3 py-6 lg:min-h-[760px] lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch lg:px-6">
+    <section className="mx-auto grid min-h-[calc(100vh-2rem)] w-full max-w-6xl items-center px-3 py-6 lg:min-h-[760px] lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch lg:px-6">
       <AuthBrandPanel
         title="Run high-impact billboard campaigns"
         subtitle="Sign in to manage reservations, approvals, creatives, and campaign performance from one dashboard."
@@ -15,7 +15,7 @@ export function LoginFeaturePage() {
       />
 
       <div className="animate-in fade-in slide-in-from-right-4 flex h-full w-full duration-700">
-        <div className="relative flex h-full w-full flex-col rounded-3xl bg-white/95 p-6 shadow-xl backdrop-blur-sm sm:p-8">
+        <div className="relative flex h-full w-full flex-col overflow-hidden rounded-3xl rounded-s-none rounded-l-none bg-white/95 p-6 shadow-xl backdrop-blur-sm sm:p-8">
           <header className="mb-6 space-y-2">
             <p className="text-xs font-semibold tracking-[0.14em] text-blue-600 uppercase">
               Welcome Back

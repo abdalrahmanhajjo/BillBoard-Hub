@@ -62,7 +62,7 @@ export function RegisterForm(props: React.ComponentProps<'div'>) {
                 <Input
                   id="first-name"
                   className="h-11 pl-10"
-                  placeholder="Jane"
+                  placeholder="John"
                   disabled={registerAccount.isPending || loginMutation.isPending}
                   {...form.register('firstName')}
                 />
@@ -130,7 +130,6 @@ export function RegisterForm(props: React.ComponentProps<'div'>) {
                 {form.formState.errors.confirmPassword.message}
               </FieldDescription>
             ) : null}
-            <FieldDescription>Must be at least 8 characters long.</FieldDescription>
           </Field>
           <Field>
             <Button

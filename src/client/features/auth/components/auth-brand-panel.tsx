@@ -28,7 +28,7 @@ const highlights = [
 
 export function AuthBrandPanel({ title, subtitle, imageUrl, imageAlt }: AuthBrandPanelProps) {
   return (
-    <aside className="relative hidden h-full overflow-hidden rounded-3xl border border-blue-100 bg-linear-to-br from-blue-600 via-cyan-600 to-teal-500 p-7 text-white shadow-2xl lg:block">
+    <aside className="relative hidden h-full overflow-hidden rounded-3xl rounded-r-none border border-blue-100 bg-linear-to-br from-blue-600 via-cyan-600 to-teal-500 p-7 text-white shadow-2xl lg:block">
       <div className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-white/20 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-cyan-200/20 blur-3xl" />
 
