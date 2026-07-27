@@ -26,4 +26,9 @@ export const digitalSpecRepository = {
 
     return saved as DigitalSpecDocument;
   },
+
+  async deleteByBillboardId(billboardId: string): Promise<void> {
+    await connectToDatabase();
+    await DigitalSpecModel.deleteOne({ billboardId }).exec();
+  },
 };

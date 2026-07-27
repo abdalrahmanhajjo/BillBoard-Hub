@@ -14,12 +14,12 @@ BillBoard Hub is a role-based SaaS dashboard for managing traditional and digita
 ## Application Areas
 
 - Guest
-	- `/login`
-	- `/register`
-	- `/forgot-password`
+  - `/login`
+  - `/register`
+  - `/forgot-password`
 - Authenticated Dashboard
-	- `/dashboard/admin/*`
-	- `/dashboard/advertiser/*`
+  - `/dashboard/admin/*`
+  - `/dashboard/advertiser/*`
 
 ## Architecture
 
@@ -29,6 +29,7 @@ BillBoard Hub is a role-based SaaS dashboard for managing traditional and digita
 - `src/client/features`: feature-owned UI and client logic
 
 Each feature owns:
+
 - components
 - hooks
 - pages
@@ -59,9 +60,9 @@ Route handlers and server actions must delegate to services. Business logic belo
 
 - Permission constants: `src/shared/constants/permissions/*`
 - Policy layer: `src/shared/policies/*`
-- Request guard: `src/middleware.ts`
+- Request guard: `src/proxy.ts`
 
-`src/middleware.ts` runs in Edge runtime and performs coarse route/session checks only.
+`src/proxy.ts` runs in Edge runtime and performs coarse route/session checks only.
 Role enforcement is handled in server layouts and in the service/policy layer.
 
 This keeps middleware Edge-compatible while preserving strict server-side authorization.
@@ -110,7 +111,7 @@ Key files:
 - `src/server/modules/auth/tokens.ts`
 - `src/server/http/api-response.ts`
 - `src/server/http/controller-utils.ts`
-- `src/middleware.ts`
+- `src/proxy.ts`
 - `src/server/modules/auth/*`
 - `src/server/modules/users/user.model.ts`
 

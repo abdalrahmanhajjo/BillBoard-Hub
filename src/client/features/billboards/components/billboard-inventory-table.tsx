@@ -104,7 +104,7 @@ export function BillboardInventoryTable({
                 </td>
                 <td className="px-2 py-3">
                   <div className="flex items-center gap-2.5">
-                    <div className="size-11 shrink-0 overflow-hidden rounded-md bg-gradient-to-br from-sky-100 to-slate-200">
+                    <div className="size-11 shrink-0 overflow-hidden rounded-md bg-linear-to-br from-sky-100 to-slate-200">
                       {billboard.images[0] ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img

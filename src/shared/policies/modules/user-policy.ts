@@ -1,7 +1,7 @@
 import type { User, UserRole } from '@/shared/types/user';
 import { USER_ROLES } from '@/shared/constants/user-roles';
 import { assert } from '../policy-utils';
-import { UnauthorizedError } from '@/shared/http/http-error';
+import { ForbiddenError, UnauthorizedError } from '@/shared/http/http-error';
 import { PERMISSIONS } from '@/shared/constants/permissions/permissions';
 
 export const userPolicy = {
@@ -35,7 +35,7 @@ export const userPolicy = {
       return;
     }
 
-    throw new UnauthorizedError('You cannot access this user.');
+    throw new ForbiddenError('You cannot access this user.');
   },
 
   assertCanDeleteUser(actor: User, targetUserId: string): void {
@@ -49,7 +49,7 @@ export const userPolicy = {
       return;
     }
 
-    throw new UnauthorizedError('You cannot delete this user.');
+    throw new ForbiddenError('You cannot delete this user.');
   },
 
   assertCanUpdateUser(actor: User, targetUserId: string): void {
@@ -67,6 +67,6 @@ export const userPolicy = {
       return;
     }
 
-    throw new UnauthorizedError('You cannot update this user.');
+    throw new ForbiddenError('You cannot update this user.');
   },
 };

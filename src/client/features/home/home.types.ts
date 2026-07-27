@@ -26,6 +26,7 @@ export type HomeData = {
 export type NavItem = {
   label: string;
   href: string;
+  description?: string;
 };
 
 export type NavGroup = {
@@ -77,6 +78,13 @@ export type FeatureItem = {
 export type FaqItem = {
   question: string;
   answer: string;
+};
+
+export type Review = {
+  quote: string;
+  author: string;
+  role: string;
+  rating: number;
 };
 
 export type StatItem = {

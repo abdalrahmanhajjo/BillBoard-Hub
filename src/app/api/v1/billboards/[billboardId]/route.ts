@@ -17,7 +17,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
   }
 }
 
-export async function PUT(request: Request, { params }: RouteContext) {
+async function handleUpdate(request: Request, { params }: RouteContext) {
   try {
     const session = await requireSession();
     const { billboardId } = await params;
@@ -28,6 +28,11 @@ export async function PUT(request: Request, { params }: RouteContext) {
     return handleControllerError(error, 'Billboard update failed.');
   }
 }
+
+// PATCH is the canonical verb for partial billboard updates; PUT is kept as an
+// alias for backward compatibility.
+export const PATCH = handleUpdate;
+export const PUT = handleUpdate;
 
 export async function DELETE(_request: Request, { params }: RouteContext) {
   try {

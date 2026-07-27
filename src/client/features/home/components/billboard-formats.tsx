@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, MoveUpRight } from 'lucide-react';
+import { ArrowRight, MoveUpRight, Pause, Play } from 'lucide-react';
 import {
   AnimatePresence,
   motion,
@@ -14,11 +14,16 @@ import {
 } from 'motion/react';
 import { Container } from '@/client/features/home/components/container';
 import { billboardFormats } from '@/client/features/home/data/homepage';
+import { Button } from '@/client/ui/components/ui/button';
 
 const ease = [0.16, 1, 0.3, 1] as const;
+const AUTOPLAY_MS = 6000;
 
 export function BillboardFormats() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [hovering, setHovering] = useState(false);
   const reduceMotion = useReducedMotion();
   const pointerX = useMotionValue(0);
   const pointerY = useMotionValue(0);
@@ -31,6 +36,45 @@ export function BillboardFormats() {
 
   const activeFormat = billboardFormats[activeIndex];
   const ActiveIcon = activeFormat.icon;
+  // Pause the reel while the mouse is over the section so it never switches
+  // away while the visitor is exploring a format.
+  const playing = isPlaying && !reduceMotion && !hovering;
+
+  // Autoplay: cycle through formats like a looping video reel.
+  useEffect(() => {
+    if (!playing) return;
+    const id = setTimeout(() => {
+      setDirection(1);
+      setActiveIndex((index) => (index + 1) % billboardFormats.length);
+    }, AUTOPLAY_MS);
+    return () => clearTimeout(id);
+  }, [activeIndex, playing]);
+
+  const select = (index: number) => {
+    setDirection(index >= activeIndex ? 1 : -1);
+    setActiveIndex(index);
+  };
+
+  const imageVariants = {
+    enter: (dir: number) =>
+      reduceMotion
+        ? { opacity: 0 }
+        : { opacity: 0, scale: 1.06, filter: 'blur(16px)', x: dir >= 0 ? '5%' : '-5%' },
+    center: reduceMotion
+      ? { opacity: 1, scale: 1.03, filter: 'blur(0px)', x: 0 }
+      : { opacity: 1, scale: 1.2, filter: 'blur(0px)', x: 0 },
+    exit: (dir: number) =>
+      reduceMotion
+        ? { opacity: 0 }
+        : { opacity: 0, scale: 1.26, filter: 'blur(18px)', x: dir >= 0 ? '-5%' : '5%' },
+  };
+
+  const contentVariants = {
+    enter: (dir: number) =>
+      reduceMotion ? { opacity: 0 } : { opacity: 0, y: dir >= 0 ? 22 : -22 },
+    center: { opacity: 1, y: 0 },
+    exit: (dir: number) => (reduceMotion ? { opacity: 0 } : { opacity: 0, y: dir >= 0 ? -18 : 18 }),
+  };
 
   return (
     <section
@@ -50,7 +94,7 @@ export function BillboardFormats() {
               <span className="h-px w-10 bg-blue-600" aria-hidden />
               Billboard formats
             </div>
-            <h2 className="max-w-4xl text-4xl leading-[0.96] font-semibold tracking-[-0.05em] text-balance sm:text-5xl lg:text-7xl">
+            <h2 className="max-w-4xl text-4xl leading-[0.96] font-semibold tracking-tighter text-balance sm:text-5xl lg:text-7xl">
               One city. Five ways to own the moment.
             </h2>
           </div>
@@ -65,7 +109,11 @@ export function BillboardFormats() {
           </div>
         </motion.div>
 
-        <div className="mt-12 grid gap-4 sm:mt-14 lg:mt-20 lg:grid-cols-[1.45fr_.85fr] lg:gap-5">
+        <div
+          className="mt-12 grid gap-4 sm:mt-14 lg:mt-20 lg:grid-cols-[1.45fr_.85fr] lg:gap-5"
+          onPointerEnter={() => setHovering(true)}
+          onPointerLeave={() => setHovering(false)}
+        >
           <motion.article
             initial={reduceMotion ? false : { opacity: 0, scale: 0.97 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -80,57 +128,107 @@ export function BillboardFormats() {
               pointerX.set(0);
               pointerY.set(0);
             }}
-            className="relative aspect-[4/5] min-h-[460px] overflow-hidden rounded-[24px] bg-zinc-900 shadow-[0_32px_80px_rgba(24,24,27,.14)] sm:aspect-auto sm:min-h-[620px] sm:rounded-[28px] lg:min-h-[680px]"
+            className="relative aspect-4/5 min-h-[460px] overflow-hidden rounded-[24px] bg-zinc-900 shadow-[0_32px_80px_rgba(24,24,27,.14)] sm:aspect-auto sm:min-h-[620px] sm:rounded-[28px] lg:min-h-[680px]"
             style={{ perspective: 1200 }}
           >
-            <AnimatePresence initial={false}>
-              <motion.div
-                key={activeFormat.image}
-                initial={reduceMotion ? false : { opacity: 0, scale: 1.1 }}
-                animate={{ opacity: 1, scale: 1.04 }}
-                exit={reduceMotion ? undefined : { opacity: 0, scale: 1.01 }}
-                transition={{ duration: 0.7, ease }}
-                className="absolute -inset-4"
-                style={{
-                  x: imageX,
-                  y: imageY,
-                  rotateX: imageRotateX,
-                  rotateY: imageRotateY,
-                }}
-              >
-                <Image
-                  src={activeFormat.image}
-                  alt={activeFormat.imageAlt}
-                  fill
-                  sizes="(min-width: 1024px) 60vw, 100vw"
-                  className="object-cover"
-                />
-              </motion.div>
-            </AnimatePresence>
+            <motion.div
+              className="absolute -inset-4"
+              style={{ x: imageX, y: imageY, rotateX: imageRotateX, rotateY: imageRotateY }}
+            >
+              <AnimatePresence initial={false} custom={direction}>
+                <motion.div
+                  key={activeFormat.image}
+                  custom={direction}
+                  variants={imageVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{
+                    opacity: { duration: 0.55, ease },
+                    filter: { duration: 0.6, ease },
+                    x: { duration: 0.75, ease },
+                    scale: {
+                      duration: reduceMotion ? 0.6 : AUTOPLAY_MS / 1000 + 1.4,
+                      ease: reduceMotion ? ease : 'linear',
+                    },
+                  }}
+                  className="absolute inset-0"
+                >
+                  <Image
+                    src={activeFormat.image}
+                    alt={activeFormat.imageAlt}
+                    fill
+                    sizes="(min-width: 1024px) 60vw, 100vw"
+                    className="object-cover"
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(9,9,11,.02)_30%,rgba(9,9,11,.78)_100%)]" />
 
             <div className="absolute inset-x-0 top-0 flex items-center justify-between p-5 text-white sm:p-8">
-              <span className="rounded-full border border-white/25 bg-zinc-950/25 px-3 py-1.5 text-xs font-semibold backdrop-blur-md">
-                Format {String(activeIndex + 1).padStart(2, '0')}
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-zinc-950/25 px-3 py-1.5 text-xs font-semibold backdrop-blur-md">
+                <span className="relative flex size-2">
+                  {playing ? (
+                    <span className="absolute inline-flex size-full rounded-full bg-red-500/70 motion-safe:animate-ping" />
+                  ) : null}
+                  <span
+                    className={`relative inline-flex size-2 rounded-full ${
+                      playing ? 'bg-red-500' : 'bg-white/50'
+                    }`}
+                  />
+                </span>
+                {playing ? 'Now playing' : 'Paused'}
               </span>
-              <span className="text-xs font-medium text-white/70">
-                {String(activeIndex + 1).padStart(2, '0')} /{' '}
-                {String(billboardFormats.length).padStart(2, '0')}
-              </span>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsPlaying((value) => !value)}
+                  aria-label={isPlaying ? 'Pause autoplay' : 'Play autoplay'}
+                  className="flex size-9 items-center justify-center rounded-full border border-white/25 bg-zinc-950/25 backdrop-blur-md transition-colors hover:bg-zinc-950/40"
+                >
+                  {isPlaying ? (
+                    <Pause className="size-4" aria-hidden />
+                  ) : (
+                    <Play className="size-4" aria-hidden />
+                  )}
+                </button>
+                <span className="text-xs font-medium text-white/70">
+                  {String(activeIndex + 1).padStart(2, '0')} /{' '}
+                  {String(billboardFormats.length).padStart(2, '0')}
+                </span>
+              </div>
             </div>
 
             <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-9 lg:p-11">
-              <AnimatePresence mode="wait">
+              {/* Persistent icon frame — only the glyph crossfades, so it never
+                  blinks out when switching formats. */}
+              <div className="mb-5 flex size-12 items-center justify-center rounded-2xl border border-white/25 bg-white/12 backdrop-blur-md">
+                <span className="relative block size-5">
+                  <AnimatePresence initial={false}>
+                    <motion.span
+                      key={activeIndex}
+                      initial={reduceMotion ? false : { opacity: 0, scale: 0.55, rotate: -25 }}
+                      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                      exit={reduceMotion ? undefined : { opacity: 0, scale: 0.55, rotate: 25 }}
+                      transition={{ duration: 0.32, ease }}
+                      className="absolute inset-0 flex items-center justify-center"
+                    >
+                      <ActiveIcon className="size-5" aria-hidden />
+                    </motion.span>
+                  </AnimatePresence>
+                </span>
+              </div>
+              <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
                   key={activeFormat.title}
-                  initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={reduceMotion ? undefined : { opacity: 0, y: -12 }}
+                  custom={direction}
+                  variants={contentVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
                   transition={{ duration: 0.42, ease }}
                 >
-                  <div className="mb-5 flex size-12 items-center justify-center rounded-2xl border border-white/25 bg-white/12 backdrop-blur-md">
-                    <ActiveIcon className="size-5" aria-hidden />
-                  </div>
                   <h3 className="max-w-lg text-3xl leading-none font-semibold tracking-[-0.04em] sm:text-5xl">
                     {activeFormat.title}
                   </h3>
@@ -154,6 +252,16 @@ export function BillboardFormats() {
                 <span className="hidden text-xs text-white/60 sm:block">Live inventory</span>
               </div>
             </div>
+
+            {/* Playback scrubber — fills over each format like a video timeline. */}
+            <motion.div
+              key={activeIndex}
+              className="absolute inset-x-0 bottom-0 h-1 origin-left bg-white/75"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: playing ? 1 : 0 }}
+              transition={{ duration: playing ? AUTOPLAY_MS / 1000 : 0, ease: 'linear' }}
+              style={{ transformOrigin: 'left' }}
+            />
           </motion.article>
 
           <motion.div
@@ -171,15 +279,19 @@ export function BillboardFormats() {
               const active = index === activeIndex;
 
               return (
-                <motion.button
+                <Button
                   key={format.title}
+                  render={
+                    <motion.button
+                      variants={{
+                        hidden: { opacity: 0, x: reduceMotion ? 0 : 22 },
+                        visible: { opacity: 1, x: 0, transition: { duration: 0.55, ease } },
+                      }}
+                    />
+                  }
                   type="button"
-                  variants={{
-                    hidden: { opacity: 0, x: reduceMotion ? 0 : 22 },
-                    visible: { opacity: 1, x: 0, transition: { duration: 0.55, ease } },
-                  }}
-                  onClick={() => setActiveIndex(index)}
-                  onPointerEnter={() => setActiveIndex(index)}
+                  variant="ghost"
+                  onClick={() => select(index)}
                   aria-pressed={active}
                   className={`group relative flex min-h-24 snap-start items-center gap-3 rounded-2xl border border-zinc-200 px-4 text-left transition-colors sm:auto-cols-[62%] sm:px-6 lg:min-h-0 lg:flex-1 lg:gap-4 lg:rounded-none lg:border-0 lg:border-b lg:px-7 lg:last:border-b-0 dark:border-zinc-800 ${
                     active
@@ -234,7 +346,7 @@ export function BillboardFormats() {
                     }`}
                     aria-hidden
                   />
-                </motion.button>
+                </Button>
               );
             })}
           </motion.div>

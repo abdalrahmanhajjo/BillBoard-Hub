@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, Globe, LayoutDashboard, LogOut, Menu, UserRound } from 'lucide-react';
+import { ChevronDown, LayoutDashboard, LogOut, Menu, UserRound } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'motion/react';
 import { cn } from '@/client/ui/lib/utils';
@@ -14,8 +14,10 @@ import {
   SheetTrigger,
 } from '@/client/ui/components/ui/sheet';
 import { Container } from '@/client/features/home/components/container';
-import { navLinks, solutionsGroup, brandName } from '@/client/features/home/data/homepage';
+import { BrandLogo } from '@/client/features/home/components/brand-logo';
+import { navLinks, exploreGroup, brandName } from '@/client/features/home/data/homepage';
 import type { UserRole } from '@/shared/types/user';
+import { Button } from '@/client/ui/components/ui/button';
 
 type NavbarUser = {
   name?: string;
@@ -31,18 +33,12 @@ type NavbarProps = {
 
 function BrandMark() {
   return (
-    <Link href="/" className="flex items-center gap-2.5">
-      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white">
-        <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden>
-          <path
-            d="M12 3 4 8v8l8 5 8-5V8l-8-5Z"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </span>
-      <span className="text-xl font-semibold tracking-tight text-zinc-900">{brandName}</span>
+    <Link
+      href="/"
+      aria-label={`${brandName} home`}
+      className="rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+    >
+      <BrandLogo />
     </Link>
   );
 }
@@ -72,7 +68,7 @@ function roleLabel(role: UserRole): string {
 
 export function Navbar({ user }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
-  const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const [exploreOpen, setExploreOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const { scrollY } = useScroll();
 
@@ -94,52 +90,46 @@ export function Navbar({ user }: NavbarProps) {
           <BrandMark />
 
           <nav className="hidden items-center gap-1 lg:flex">
-            <Link
-              href="/billboards"
-              className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
-            >
-              Billboards
-            </Link>
-            <Link
-              href="/#how-it-works"
-              className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
-            >
-              How It Works
-            </Link>
-
             <div
               className="relative"
-              onMouseEnter={() => setSolutionsOpen(true)}
-              onMouseLeave={() => setSolutionsOpen(false)}
+              onMouseEnter={() => setExploreOpen(true)}
+              onMouseLeave={() => setExploreOpen(false)}
             >
-              <button
-                type="button"
-                aria-expanded={solutionsOpen}
+              <Link
+                href="/billboards"
+                aria-expanded={exploreOpen}
                 className="inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
               >
-                {solutionsGroup.label}
+                {exploreGroup.label}
                 <ChevronDown
-                  className={cn('h-4 w-4 transition-transform', solutionsOpen && 'rotate-180')}
+                  className={cn('h-4 w-4 transition-transform', exploreOpen && 'rotate-180')}
                   aria-hidden
                 />
-              </button>
+              </Link>
               <AnimatePresence>
-                {solutionsOpen ? (
+                {exploreOpen ? (
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-full left-0 w-52 pt-2"
+                    className="absolute top-full left-0 w-72 pt-2"
                   >
-                    <ul className="overflow-hidden rounded-xl border border-zinc-200 bg-white py-1 shadow-lg">
-                      {solutionsGroup.items.map((item) => (
+                    <ul className="overflow-hidden rounded-xl border border-zinc-200 bg-white p-1.5 shadow-lg">
+                      {exploreGroup.items.map((item) => (
                         <li key={item.label}>
                           <Link
                             href={item.href}
-                            className="block px-4 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
+                            className="block rounded-lg px-3 py-2 transition-colors hover:bg-zinc-50"
                           >
-                            {item.label}
+                            <span className="block text-sm font-medium text-zinc-900">
+                              {item.label}
+                            </span>
+                            {item.description ? (
+                              <span className="mt-0.5 block text-xs text-zinc-500">
+                                {item.description}
+                              </span>
+                            ) : null}
                           </Link>
                         </li>
                       ))}
@@ -149,34 +139,27 @@ export function Navbar({ user }: NavbarProps) {
               </AnimatePresence>
             </div>
 
-            {['Pricing', 'FAQ', 'Contact'].map((label) => (
+            {navLinks.map((link) => (
               <Link
-                key={label}
-                href={`/#${label.toLowerCase()}`}
+                key={link.label}
+                href={link.href}
                 className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
               >
-                {label}
+                {link.label}
               </Link>
             ))}
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
-            <button
-              type="button"
-              className="inline-flex items-center gap-1 text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
-            >
-              <Globe className="h-4 w-4" aria-hidden />
-              EN
-              <ChevronDown className="h-3.5 w-3.5" aria-hidden />
-            </button>
             {user ? (
               <div
                 className="relative"
                 onMouseEnter={() => setAccountOpen(true)}
                 onMouseLeave={() => setAccountOpen(false)}
               >
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={() => setAccountOpen((open) => !open)}
                   aria-expanded={accountOpen}
                   className="flex items-center gap-2 rounded-full border border-zinc-200 bg-white py-1.5 pr-3 pl-1.5 text-left shadow-sm transition-colors hover:border-zinc-300"
@@ -194,7 +177,7 @@ export function Navbar({ user }: NavbarProps) {
                     )}
                     aria-hidden
                   />
-                </button>
+                </Button>
 
                 <AnimatePresence>
                   {accountOpen ? (
@@ -219,14 +202,15 @@ export function Navbar({ user }: NavbarProps) {
                           <LayoutDashboard className="size-4 text-zinc-400" aria-hidden />
                           Open dashboard
                         </Link>
-                        <button
+                        <Button
                           type="button"
+                          variant="destructive"
                           onClick={() => signOut({ redirectTo: '/' })}
                           className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
                         >
                           <LogOut className="size-4" aria-hidden />
                           Sign out
-                        </button>
+                        </Button>
                       </div>
                     </motion.div>
                   ) : null}
@@ -253,8 +237,9 @@ export function Navbar({ user }: NavbarProps) {
           <Sheet>
             <SheetTrigger
               render={
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
                   aria-label="Open menu"
                   className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-zinc-700 hover:bg-zinc-100 lg:hidden"
                 />
@@ -270,9 +255,10 @@ export function Navbar({ user }: NavbarProps) {
                 <BrandMark />
               </SheetTitle>
               <nav className="flex flex-col gap-1 p-4">
-                {[...navLinks, ...solutionsGroup.items].map((item) => (
+                {[...exploreGroup.items, ...navLinks].map((item) => (
                   <SheetClose
                     key={item.label}
+                    nativeButton={false}
                     render={
                       <Link
                         href={item.href}
@@ -299,6 +285,7 @@ export function Navbar({ user }: NavbarProps) {
                       </div>
                     </div>
                     <SheetClose
+                      nativeButton={false}
                       render={
                         <Link
                           href="/dashboard"
@@ -309,18 +296,20 @@ export function Navbar({ user }: NavbarProps) {
                       <LayoutDashboard className="size-4" aria-hidden />
                       Open Dashboard
                     </SheetClose>
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
                       onClick={() => signOut({ redirectTo: '/' })}
                       className="flex min-h-12 items-center justify-center gap-2 rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-semibold text-zinc-700"
                     >
                       <LogOut className="size-4" aria-hidden />
                       Sign out
-                    </button>
+                    </Button>
                   </>
                 ) : (
                   <>
                     <SheetClose
+                      nativeButton={false}
                       render={
                         <Link
                           href="/login"
@@ -332,6 +321,7 @@ export function Navbar({ user }: NavbarProps) {
                       Login
                     </SheetClose>
                     <SheetClose
+                      nativeButton={false}
                       render={
                         <Link
                           href="/register"

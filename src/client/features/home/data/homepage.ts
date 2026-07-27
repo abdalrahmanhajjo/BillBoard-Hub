@@ -28,6 +28,7 @@ import type {
   HowItWorksStep,
   NavGroup,
   NavItem,
+  Review,
   SocialLink,
   StatItem,
 } from '@/client/features/home/home.types';
@@ -35,20 +36,37 @@ import type {
 export const brandName = 'Boardly';
 
 export const navLinks: NavItem[] = [
-  { label: 'Billboards', href: '/billboards' },
   { label: 'How It Works', href: '/#how-it-works' },
-  { label: 'Pricing', href: '/#pricing' },
+  { label: 'Reviews', href: '/#reviews' },
   { label: 'FAQ', href: '/#faq' },
   { label: 'Contact', href: '/#contact' },
 ];
 
-export const solutionsGroup: NavGroup = {
-  label: 'Solutions',
+/* "Billboards" mega-item: the trigger links to the full catalog, and each item
+   deep-links into a real, working view of the inventory. */
+export const exploreGroup: NavGroup = {
+  label: 'Billboards',
   items: [
-    { label: 'For Brands', href: '/#formats' },
-    { label: 'For Agencies', href: '/#formats' },
-    { label: 'Campaign Planning', href: '/#features' },
-    { label: 'Audience Targeting', href: '/#features' },
+    {
+      label: 'All billboards',
+      href: '/billboards',
+      description: 'Browse every placement across Lebanon',
+    },
+    {
+      label: 'Digital screens',
+      href: '/billboards?type=digital',
+      description: 'Dynamic LED displays with rotating ads',
+    },
+    {
+      label: 'Static billboards',
+      href: '/billboards?type=static',
+      description: 'Classic printed roadside formats',
+    },
+    {
+      label: 'Formats & placements',
+      href: '/#formats',
+      description: 'Highway, rooftop, mall, and street-level',
+    },
   ],
 };
 
@@ -198,12 +216,12 @@ export const faqs: FaqItem[] = [
   {
     question: 'How do I book a billboard campaign?',
     answer:
-      'Search inventory by location and format, pick your billboards and dates, then request a quote or book instantly. Our team handles the rest of the execution.',
+      'Browse inventory by location and format, choose a placement and preferred dates, then send a reservation request. Our team confirms availability, final pricing, and production details before anything is booked.',
   },
   {
     question: 'Can I see availability and pricing online?',
     answer:
-      'Yes. Every billboard shows real-time availability and transparent pricing directly on its listing — no back-and-forth required.',
+      'Every listing shows its current inventory status and monthly media rate. Because campaign dates can overlap, our team performs a final availability check before confirming your reservation.',
   },
   {
     question: 'What formats and locations are available?',
@@ -218,7 +236,52 @@ export const faqs: FaqItem[] = [
   {
     question: 'Can you help plan my campaign?',
     answer:
-      'Absolutely. Our team offers campaign planning, audience targeting, and reach estimates so you can invest with confidence.',
+      'Yes. Our planning team can recommend locations, formats, campaign length, and audience coverage based on your objectives and budget.',
+  },
+];
+
+export const reviews: Review[] = [
+  {
+    quote:
+      'Booking a highway billboard used to take a week of phone calls. With Boardly our campaign was live in two days.',
+    author: 'Rana Khoury',
+    role: 'Marketing Lead, Retail brand',
+    rating: 5,
+  },
+  {
+    quote:
+      'Real-time availability and the digital screen rotation made planning our product launch effortless.',
+    author: 'Karim Haddad',
+    role: 'Founder, D2C startup',
+    rating: 5,
+  },
+  {
+    quote:
+      'As an agency we manage dozens of placements — the dashboard and reporting save us hours every week.',
+    author: 'Lea Mansour',
+    role: 'Media Director, Agency',
+    rating: 5,
+  },
+  {
+    quote:
+      'Transparent locations and traffic data meant no surprises. Our reach estimates were spot on.',
+    author: 'Tarek Saad',
+    role: 'Growth Manager',
+    rating: 5,
+  },
+  {
+    quote:
+      'The team helped us pick the right mix of rooftop and street-level. Genuinely great local know-how.',
+    author: 'Nour Aoun',
+    role: 'Brand Manager',
+    rating: 5,
+  },
+  {
+    quote:
+      'From reservation to going live, everything was in one place. Exactly what out-of-home needed.',
+    author: 'Elie Gharios',
+    role: 'CMO, Consumer goods',
+    rating: 5,
   },
 ];
 
@@ -228,7 +291,7 @@ export const footerColumns: FooterColumnData[] = [
     links: [
       { label: 'Marketplace', href: '/billboards' },
       { label: 'How It Works', href: '/#how-it-works' },
-      { label: 'Pricing', href: '/#pricing' },
+      { label: 'Reviews', href: '/#reviews' },
       { label: 'FAQ', href: '/#faq' },
       { label: 'Request a Demo', href: '/register' },
     ],

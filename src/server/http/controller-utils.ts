@@ -14,7 +14,7 @@ export function validationMessage(
 export async function requireSession(): Promise<Session> {
   const session = await auth();
 
-  if (!session?.user?.id) {
+  if (!session?.user?.id || !session.user.isActive) {
     throw new UnauthorizedError('Not authenticated.');
   }
 
@@ -36,14 +36,21 @@ export function handleControllerError(error: unknown, message: string) {
   }
 
   if (error instanceof HttpError) {
-    console.error('HttpError:', error.message, 'Status:', error.status);
     return apiResponse.error(error.message, error.status);
+  }
+
+  if (error instanceof SyntaxError) {
+    return apiResponse.badRequest('Invalid JSON payload.');
+  }
+
+  if ((error as { code?: number } | null)?.code === 11000) {
+    return apiResponse.conflict('A record with these details already exists.');
   }
 
   if (error instanceof Error) {
     console.error('Error:', error.message);
-    return apiResponse.error(error.message, 400);
+    return apiResponse.internal(message);
   }
 
-  return apiResponse.error(message, 400);
+  return apiResponse.internal(message);
 }

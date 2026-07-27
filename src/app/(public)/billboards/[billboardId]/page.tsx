@@ -42,13 +42,13 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
     const billboard = await loadPublicBillboard(billboardId);
 
     return {
-      title: `${billboard.name} | BillBoard Hub`,
+      title: billboard.name,
       description:
         billboard.description ??
         `${billboard.name} in ${billboard.location.city}, ${billboard.location.country}.`,
     };
   } catch {
-    return { title: 'Billboard | BillBoard Hub' };
+    return { title: 'Billboard' };
   }
 }
 
@@ -66,5 +66,22 @@ export default async function BillboardDetailsRoute({ params }: RouteParams) {
     }
   }
 
-  return <BillboardDetailsPage billboard={billboard} spec={spec} />;
+  let relatedBillboards: PublicBillboard[] = [];
+  try {
+    relatedBillboards = (await billboardService.listPublic())
+      .filter((item) => item.id !== billboardId)
+      .sort((a, b) => {
+        const sameCityDifference =
+          Number(b.location.city === billboard.location.city) -
+          Number(a.location.city === billboard.location.city);
+        return sameCityDifference || Number(b.isAvailable) - Number(a.isAvailable);
+      })
+      .slice(0, 3);
+  } catch {
+    relatedBillboards = [];
+  }
+
+  return (
+    <BillboardDetailsPage billboard={billboard} spec={spec} relatedBillboards={relatedBillboards} />
+  );
 }

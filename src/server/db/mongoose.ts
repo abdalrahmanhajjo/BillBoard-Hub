@@ -29,8 +29,6 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
     return cache.conn;
   }
 
-  console.log('Connecting to MongoDB...');
-  console.log('MongoDB URI:', mongoUri);
   if (!cache.promise) {
     cache.promise = mongoose.connect(mongoUri, {
       dbName: process.env.MONGODB_DB_NAME ?? 'billboard-hub',

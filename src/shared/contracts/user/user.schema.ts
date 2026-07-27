@@ -1,14 +1,19 @@
 import { z } from 'zod';
 import { USER_ROLES } from '@/shared/constants/user-roles';
 
+const passwordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters.')
+  .max(128, 'Password must be at most 128 characters.');
+
 export const createUserSchema = z
   .object({
     firstName: z.string().trim().min(2, 'First name is required.'),
     lastName: z.string().trim().min(2, 'Last name is required.'),
     email: z.email('Please enter a valid email address.').trim().toLowerCase(),
     role: z.enum(USER_ROLES),
-    password: z.string().min(8, 'Password must be at least 8 characters.'),
-    confirmPassword: z.string().min(8, 'Confirm password must be at least 8 characters.'),
+    password: passwordSchema,
+    confirmPassword: passwordSchema,
   })
   .refine((value) => value.password === value.confirmPassword, {
     path: ['confirmPassword'],
@@ -30,8 +35,8 @@ export const updateUserInfoSchema = z
 
 export const resetPasswordSchema = z
   .object({
-    password: z.string().min(8, 'Password must be at least 8 characters.'),
-    confirmPassword: z.string().min(8, 'Confirm password must be at least 8 characters.'),
+    password: passwordSchema,
+    confirmPassword: passwordSchema,
   })
   .refine((value) => value.password === value.confirmPassword, {
     path: ['confirmPassword'],

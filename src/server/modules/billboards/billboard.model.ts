@@ -32,8 +32,8 @@ const billboardSchema = new Schema<BillboardRecord>(
       country: { type: String, required: true, trim: true, index: true },
     },
     dimensions: {
-      width: { type: Number, required: true, min: 0 },
-      height: { type: Number, required: true, min: 0 },
+      width: { type: Number, required: true, min: 0.01 },
+      height: { type: Number, required: true, min: 0.01 },
       unit: {
         type: String,
         enum: Object.values(DIMENSION_UNITS),
@@ -44,11 +44,12 @@ const billboardSchema = new Schema<BillboardRecord>(
     monthlyPrice: {
       type: Number,
       required: true,
-      min: 0,
+      min: 0.01,
     },
     trafficCount: {
       type: Number,
-      min: 0,
+      required: true,
+      min: 1,
     },
     status: {
       type: String,

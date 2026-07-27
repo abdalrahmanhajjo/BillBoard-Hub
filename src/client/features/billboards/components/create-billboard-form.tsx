@@ -1,19 +1,46 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch, type FieldPath } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import {
   createBillboardSchema,
   type CreateBillboardSchemaInput,
 } from '@/shared/contracts/billboard/billboard.schema';
-import { BILLBOARD_STATUSES, BILLBOARD_TYPES, DIMENSION_UNITS } from '@/shared/constants/billboard';
+import {
+  upsertDigitalSpecSchema,
+  type UpsertDigitalSpecSchemaInput,
+} from '@/shared/contracts/billboard/digital-spec.schema';
+import {
+  BILLBOARD_STATUSES,
+  BILLBOARD_TYPES,
+  DIMENSION_UNITS,
+  SCREEN_STATUSES,
+} from '@/shared/constants/billboard';
+import type { Billboard } from '@/shared/types/billboard';
 import { billboardClientService } from '@/client/features/billboards/services/billboard-client.service';
 import { BillboardImageInput } from '@/client/features/billboards/components/billboard-image-input';
 
 type CreateBillboardFormProps = {
   onCreated?: () => void;
 };
+
+// Client form schema: the base billboard fields plus the (raw string) digital
+// spec fields. The spec is only validated/sent when Type is Digital.
+const digitalSpecFieldsSchema = z.object({
+  resolution: z.object({ width: z.string(), height: z.string() }),
+  brightness: z.string(),
+  slotDurationSeconds: z.string(),
+  rotatingAdsCount: z.string(),
+  screenStatus: z.enum(SCREEN_STATUSES),
+});
+
+const createBillboardFormSchema = createBillboardSchema.extend({
+  digitalSpec: digitalSpecFieldsSchema.optional(),
+});
+
+type CreateBillboardFormInput = z.input<typeof createBillboardFormSchema>;
 
 const inputClassName = 'w-full rounded-md border border-zinc-300 px-3 py-2';
 
@@ -27,11 +54,13 @@ export function CreateBillboardForm({ onCreated }: CreateBillboardFormProps) {
   const {
     register,
     handleSubmit,
+    control,
     reset,
     setValue,
+    setError,
     formState: { errors },
-  } = useForm<CreateBillboardSchemaInput>({
-    resolver: zodResolver(createBillboardSchema),
+  } = useForm<CreateBillboardFormInput>({
+    resolver: zodResolver(createBillboardFormSchema),
     defaultValues: {
       name: '',
       code: '',
@@ -43,26 +72,78 @@ export function CreateBillboardForm({ onCreated }: CreateBillboardFormProps) {
       monthlyPrice: '',
       trafficCount: '',
       images: [],
+      digitalSpec: {
+        resolution: { width: '', height: '' },
+        brightness: '',
+        slotDurationSeconds: '',
+        rotatingAdsCount: '',
+        screenStatus: SCREEN_STATUSES.OFF,
+      },
     },
   });
+
+  const isDigital = useWatch({ control, name: 'type' }) === BILLBOARD_TYPES.DIGITAL;
 
   const handleImagesChange = (next: string[]) => {
     setImages(next);
     setValue('images', next, { shouldValidate: true });
   };
 
-  const onSubmit = (values: CreateBillboardSchemaInput) => {
+  const onSubmit = (values: CreateBillboardFormInput) => {
     setSubmitError(null);
     setSubmitSuccess(null);
 
+    const creatingDigital = values.type === BILLBOARD_TYPES.DIGITAL;
+
+    // Validate the screen specs up front so we never create a digital billboard
+    // without its specification.
+    let specPayload: UpsertDigitalSpecSchemaInput | null = null;
+    if (creatingDigital) {
+      const parsed = upsertDigitalSpecSchema.safeParse(values.digitalSpec);
+      if (!parsed.success) {
+        parsed.error.issues.forEach((issue) => {
+          setError(`digitalSpec.${issue.path.join('.')}` as FieldPath<CreateBillboardFormInput>, {
+            message: issue.message,
+          });
+        });
+        return;
+      }
+      specPayload = values.digitalSpec as UpsertDigitalSpecSchemaInput;
+    }
+
+    // Strip the client-only digitalSpec before sending the billboard payload.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { digitalSpec, ...billboardPayload } = values;
+
     startTransition(async () => {
-      const result = await billboardClientService.create(values);
+      const result = await billboardClientService.create(
+        billboardPayload as CreateBillboardSchemaInput,
+      );
       if (!result.ok) {
         setSubmitError(result.error ?? 'Billboard creation failed.');
         return;
       }
 
-      setSubmitSuccess('Billboard created and added to inventory.');
+      const created = result.data as Billboard | undefined;
+
+      if (creatingDigital && specPayload && created?.id) {
+        const specResult = await billboardClientService.saveDigitalSpec(created.id, specPayload);
+        if (!specResult.ok) {
+          setSubmitError(
+            `Billboard created, but saving the screen specs failed: ${
+              specResult.error ?? 'unknown error'
+            }. Add them from Digital specifications.`,
+          );
+          onCreated?.();
+          return;
+        }
+      }
+
+      setSubmitSuccess(
+        creatingDigital
+          ? 'Digital billboard and screen specifications created.'
+          : 'Billboard created and added to inventory.',
+      );
       reset();
       setImages([]);
       onCreated?.();
@@ -240,13 +321,14 @@ export function CreateBillboardForm({ onCreated }: CreateBillboardFormProps) {
 
         <div className="space-y-1">
           <label htmlFor="trafficCount" className="text-sm font-medium">
-            Traffic Count (optional)
+            Monthly Traffic
           </label>
           <input
             id="trafficCount"
             type="number"
-            min="0"
+            min="1"
             step="1"
+            required
             className={inputClassName}
             {...register('trafficCount', {
               setValueAs: (value) =>
@@ -259,6 +341,127 @@ export function CreateBillboardForm({ onCreated }: CreateBillboardFormProps) {
         </div>
       </div>
 
+      {isDigital ? (
+        <fieldset className="space-y-4 rounded-md border border-blue-200 bg-blue-50/40 p-4">
+          <legend className="px-1 text-sm font-semibold text-blue-700">
+            Digital screen specifications
+          </legend>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1">
+              <label htmlFor="resolutionWidth" className="text-sm font-medium">
+                Resolution Width (px)
+              </label>
+              <input
+                id="resolutionWidth"
+                type="number"
+                step="1"
+                className={inputClassName}
+                {...register('digitalSpec.resolution.width')}
+              />
+              {errors.digitalSpec?.resolution?.width ? (
+                <p className="text-sm text-red-600">
+                  {errors.digitalSpec.resolution.width.message}
+                </p>
+              ) : null}
+            </div>
+
+            <div className="space-y-1">
+              <label htmlFor="resolutionHeight" className="text-sm font-medium">
+                Resolution Height (px)
+              </label>
+              <input
+                id="resolutionHeight"
+                type="number"
+                step="1"
+                className={inputClassName}
+                {...register('digitalSpec.resolution.height')}
+              />
+              {errors.digitalSpec?.resolution?.height ? (
+                <p className="text-sm text-red-600">
+                  {errors.digitalSpec.resolution.height.message}
+                </p>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1">
+              <label htmlFor="brightness" className="text-sm font-medium">
+                Brightness (nits)
+              </label>
+              <input
+                id="brightness"
+                type="number"
+                step="any"
+                className={inputClassName}
+                {...register('digitalSpec.brightness')}
+              />
+              {errors.digitalSpec?.brightness ? (
+                <p className="text-sm text-red-600">{errors.digitalSpec.brightness.message}</p>
+              ) : null}
+            </div>
+
+            <div className="space-y-1">
+              <label htmlFor="slotDurationSeconds" className="text-sm font-medium">
+                Slot Duration (seconds)
+              </label>
+              <input
+                id="slotDurationSeconds"
+                type="number"
+                step="any"
+                className={inputClassName}
+                {...register('digitalSpec.slotDurationSeconds')}
+              />
+              {errors.digitalSpec?.slotDurationSeconds ? (
+                <p className="text-sm text-red-600">
+                  {errors.digitalSpec.slotDurationSeconds.message}
+                </p>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1">
+              <label htmlFor="rotatingAdsCount" className="text-sm font-medium">
+                Number of Rotating Ads
+              </label>
+              <input
+                id="rotatingAdsCount"
+                type="number"
+                step="1"
+                className={inputClassName}
+                {...register('digitalSpec.rotatingAdsCount')}
+              />
+              {errors.digitalSpec?.rotatingAdsCount ? (
+                <p className="text-sm text-red-600">
+                  {errors.digitalSpec.rotatingAdsCount.message}
+                </p>
+              ) : null}
+            </div>
+
+            <div className="space-y-1">
+              <label htmlFor="screenStatus" className="text-sm font-medium">
+                Screen Status
+              </label>
+              <select
+                id="screenStatus"
+                className={inputClassName}
+                {...register('digitalSpec.screenStatus')}
+              >
+                <option value={SCREEN_STATUSES.ON}>On</option>
+                <option value={SCREEN_STATUSES.OFF}>Off</option>
+                <option value={SCREEN_STATUSES.STANDBY}>Standby</option>
+                <option value={SCREEN_STATUSES.FAULT}>Fault</option>
+              </select>
+              {errors.digitalSpec?.screenStatus ? (
+                <p className="text-sm text-red-600">{errors.digitalSpec.screenStatus.message}</p>
+              ) : null}
+            </div>
+          </div>
+        </fieldset>
+      ) : null}
+
       <div className="space-y-1">
         <span className="text-sm font-medium">Images</span>
         <BillboardImageInput value={images} onChange={handleImagesChange} disabled={isPending} />
@@ -270,7 +473,11 @@ export function CreateBillboardForm({ onCreated }: CreateBillboardFormProps) {
         disabled={isPending}
         className="w-full rounded-md bg-black px-4 py-2 text-white disabled:opacity-60"
       >
-        {isPending ? 'Creating billboard...' : 'Create billboard'}
+        {isPending
+          ? 'Creating billboard...'
+          : isDigital
+            ? 'Create digital billboard'
+            : 'Create billboard'}
       </button>
     </form>
   );

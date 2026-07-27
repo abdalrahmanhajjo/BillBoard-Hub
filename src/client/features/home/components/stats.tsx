@@ -24,7 +24,7 @@ export function Stats({ stats }: { stats: HomeStats }) {
           transition={{ duration: 0.65, ease }}
           className="max-w-3xl"
         >
-          <h2 className="text-4xl leading-[0.96] font-semibold tracking-[-0.05em] text-balance sm:text-5xl lg:text-7xl">
+          <h2 className="text-4xl leading-[0.96] font-semibold tracking-tighter text-balance sm:text-5xl lg:text-7xl">
             Lebanon, measured in real reach.
           </h2>
           <p className="mt-6 max-w-xl text-base leading-7 text-zinc-600 dark:text-zinc-400">

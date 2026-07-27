@@ -11,14 +11,14 @@ export function Cta() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section id="pricing" className="scroll-mt-24 bg-white">
+    <section className="bg-white">
       <Container className="pb-20 sm:pb-24 lg:pb-32">
         <motion.div
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="relative flex flex-col gap-7 overflow-hidden rounded-[24px] border border-blue-100 bg-gradient-to-br from-blue-50 to-blue-100/60 p-6 sm:gap-8 sm:rounded-3xl sm:p-10 lg:flex-row lg:items-center lg:justify-between lg:p-16"
+          className="relative flex flex-col gap-7 overflow-hidden rounded-[24px] border border-blue-100 bg-linear-to-br from-blue-50 to-blue-100/60 p-6 sm:gap-8 sm:rounded-3xl sm:p-10 lg:flex-row lg:items-center lg:justify-between lg:p-16"
         >
           {/* Subtle animated background blobs */}
           <motion.div

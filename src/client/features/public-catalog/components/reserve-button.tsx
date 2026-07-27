@@ -1,44 +1,35 @@
-'use client';
+import { Button } from '@/client/ui/components/ui/button';
 
-import { useState } from 'react';
+type ReserveButtonProps = {
+  isAvailable: boolean;
+  href?: string;
+  label?: string;
+};
 
-/**
- * Visible reservation call-to-action for the billboard details page.
- *
- * The reservation/booking flow is delivered by a separate epic, so this button
- * is intentionally a placeholder: it is disabled when the billboard is not
- * available and acknowledges the click otherwise. Wire it to the booking flow
- * once that module exists.
- */
-export function ReserveButton({ isAvailable }: { isAvailable: boolean }) {
-  const [showNotice, setShowNotice] = useState(false);
-
+export function ReserveButton({
+  isAvailable,
+  href = '#campaign-inquiry',
+  label = 'Reserve this billboard',
+}: ReserveButtonProps) {
   if (!isAvailable) {
     return (
-      <button
+      <Button
         type="button"
         disabled
-        className="w-full rounded-md bg-zinc-200 px-4 py-2.5 text-sm font-medium text-zinc-500 sm:w-auto"
+        className="min-h-12 w-full rounded-xl bg-zinc-200 px-4 text-sm font-semibold text-zinc-500"
       >
         Currently unavailable
-      </button>
+      </Button>
     );
   }
 
   return (
-    <div className="space-y-2">
-      <button
-        type="button"
-        onClick={() => setShowNotice(true)}
-        className="w-full rounded-md bg-black px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800 sm:w-auto"
-      >
-        Reserve this billboard
-      </button>
-      {showNotice ? (
-        <p className="text-sm text-zinc-600" role="status">
-          Thanks for your interest — online reservations are coming soon.
-        </p>
-      ) : null}
-    </div>
+    <Button
+      render={<a href={href} />}
+      nativeButton={false}
+      className="min-h-12 w-full rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+    >
+      {label}
+    </Button>
   );
 }

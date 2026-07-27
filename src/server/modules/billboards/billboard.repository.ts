@@ -3,27 +3,27 @@ import {
   BillboardModel,
   type BillboardDocument,
 } from '@/server/modules/billboards/billboard.model';
-import type { BillboardRecord } from '@/server/modules/billboards/billboard.types';
+import type {
+  BillboardRecord,
+  BillboardSearchFilters,
+} from '@/server/modules/billboards/billboard.types';
+import { buildBillboardFilterQuery } from '@/server/modules/billboards/billboard.utils';
 import type { BillboardStatus } from '@/shared/types/billboard';
 
 export const billboardRepository = {
   async create(data: BillboardRecord): Promise<BillboardDocument> {
     await connectToDatabase();
     const created = await BillboardModel.create(data);
-
     return created.toObject() as BillboardDocument;
   },
-
   async findByCode(code: string): Promise<BillboardDocument | null> {
     await connectToDatabase();
     return BillboardModel.findOne({ code }).lean<BillboardDocument>().exec();
   },
-
   async findById(billboardId: string): Promise<BillboardDocument | null> {
     await connectToDatabase();
     return BillboardModel.findById(billboardId).lean<BillboardDocument>().exec();
   },
-
   async updateStatus(
     billboardId: string,
     status: BillboardStatus,
@@ -33,7 +33,6 @@ export const billboardRepository = {
       .lean<BillboardDocument>()
       .exec();
   },
-
   async updateById(
     billboardId: string,
     data: Partial<BillboardRecord>,
@@ -43,10 +42,10 @@ export const billboardRepository = {
       .lean<BillboardDocument>()
       .exec();
   },
-
-  async findMany(): Promise<BillboardDocument[]> {
+  async findMany(filters: BillboardSearchFilters = {}): Promise<BillboardDocument[]> {
     await connectToDatabase();
-    return BillboardModel.find().sort({ createdAt: -1 }).lean<BillboardDocument[]>().exec();
+    const query = buildBillboardFilterQuery(filters);
+    return BillboardModel.find(query).sort({ createdAt: -1 }).lean<BillboardDocument[]>().exec();
   },
 
   async deleteById(billboardId: string): Promise<BillboardDocument | null> {
