@@ -7,6 +7,7 @@ import type {
   BookingStatus,
   CampaignObjective,
   PaymentMethod,
+  PaymentStatus,
 } from '@/shared/types/booking';
 
 export type BookingRecord = {
@@ -23,6 +24,7 @@ export type BookingRecord = {
   billing: BookingBilling;
   company: BookingCompany;
   paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
   invoice: BookingInvoice;
   pricing: BookingPricing & { currency: BookingCurrency };
   status: BookingStatus;

@@ -1,25 +1,23 @@
 'use client';
 
-import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginSchemaInput } from '@/shared/contracts/auth/login.schema';
-import { authClientService } from '@/client/features/auth/services/auth-client.service';
+import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/client/ui/components/ui/field';
 import { Button } from '@/client/ui/components/ui/button';
 import { Input } from '@/client/ui/components/ui/input';
-import { Label } from '@/client/ui/components/ui/label';
+import { cn } from '@/client/ui/lib/utils';
+import { useLogin } from '../hooks/use-login';
+import { Alert } from '@/client/ui/components/ui/alert';
+import Link from 'next/link';
+import { ArrowRight, Lock, Mail } from 'lucide-react';
 
-export function LoginForm() {
-  const [isPending, startTransition] = useTransition();
-  const [submitError, setSubmitError] = useState<string | null>(null);
+export default function LoginForm({ className, ...props }: React.ComponentProps<'form'>) {
   const router = useRouter();
+  const loginMutation = useLogin();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginSchemaInput>({
+  const form = useForm<LoginSchemaInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
@@ -27,78 +25,85 @@ export function LoginForm() {
     },
   });
 
-  const onSubmit = (values: LoginSchemaInput) => {
-    setSubmitError(null);
-    startTransition(async () => {
-      const result = await authClientService.login(values);
-      if (!result.ok) {
-        setSubmitError(result.error ?? 'Login failed.');
-        return;
-      }
-
-      router.push('/dashboard');
+  const onSubmit = async (values: LoginSchemaInput) => {
+    try {
+      await loginMutation.mutateAsync(values);
+      router.push('/user');
       router.refresh();
-    });
+    } catch {}
   };
 
   return (
-    <form className="w-full max-w-md space-y-4" onSubmit={handleSubmit(onSubmit)}>
-      {submitError ? (
-        <p
-          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
-          role="alert"
-        >
-          {submitError}
-        </p>
-      ) : null}
-
-      <div className="space-y-1">
-        <Label htmlFor="email" className="text-sm font-medium">
-          Email
-        </Label>
-        <Input
-          id="email"
-          type="email"
-          autoComplete="email"
-          className="h-11 w-full rounded-lg border-zinc-300 px-3"
-          aria-invalid={Boolean(errors.email)}
-          aria-describedby={errors.email ? 'login-email-error' : undefined}
-          {...register('email')}
-        />
-        {errors.email ? (
-          <p id="login-email-error" className="text-sm text-red-600">
-            {errors.email.message}
-          </p>
+    <form
+      className={cn('flex flex-col gap-5', className)}
+      onSubmit={form.handleSubmit(onSubmit)}
+      {...props}
+    >
+      <FieldGroup>
+        {loginMutation.error ? (
+          <Alert className="border-red-200 bg-red-50 text-red-700">
+            {loginMutation.error.message}
+          </Alert>
         ) : null}
-      </div>
-
-      <div className="space-y-1">
-        <Label htmlFor="password" className="text-sm font-medium">
-          Password
-        </Label>
-        <Input
-          id="password"
-          type="password"
-          autoComplete="current-password"
-          className="h-11 w-full rounded-lg border-zinc-300 px-3"
-          aria-invalid={Boolean(errors.password)}
-          aria-describedby={errors.password ? 'login-password-error' : undefined}
-          {...register('password')}
-        />
-        {errors.password ? (
-          <p id="login-password-error" className="text-sm text-red-600">
-            {errors.password.message}
-          </p>
-        ) : null}
-      </div>
-
-      <Button
-        type="submit"
-        disabled={isPending}
-        className="min-h-11 w-full rounded-lg bg-blue-600 px-4 text-white hover:bg-blue-700 disabled:opacity-60"
-      >
-        {isPending ? 'Signing in...' : 'Sign in'}
-      </Button>
+        <Field>
+          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <div className="relative">
+            <Mail className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+            <Input
+              id="email"
+              type="email"
+              placeholder="name@company.com"
+              disabled={loginMutation.isPending}
+              className="h-11 pl-10"
+              {...form.register('email')}
+            />
+          </div>
+          {form.formState.errors.email ? (
+            <FieldDescription className="text-red-500">
+              {form.formState.errors.email.message}
+            </FieldDescription>
+          ) : null}
+        </Field>
+        <Field>
+          <div className="flex items-center justify-between">
+            <FieldLabel htmlFor="password">Password</FieldLabel>
+            <Link
+              href="/forgot-password"
+              className="text-xs font-medium text-blue-700 transition-colors hover:text-blue-600"
+            >
+              Forgot password?
+            </Link>
+          </div>
+          <div className="relative">
+            <Lock className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+            <Input
+              id="password"
+              type="password"
+              disabled={loginMutation.isPending}
+              className="h-11 pl-10"
+              {...form.register('password')}
+            />
+          </div>
+          {form.formState.errors.password ? (
+            <FieldDescription className="text-red-500">
+              {form.formState.errors.password.message}
+            </FieldDescription>
+          ) : null}
+        </Field>
+        <Field>
+          <Button
+            type="submit"
+            disabled={loginMutation.isPending}
+            className="h-11 w-full gap-2 rounded-xl bg-blue-600 text-white transition-colors hover:bg-blue-700"
+          >
+            {loginMutation.isPending ? 'Logging in...' : 'Login'}
+            {!loginMutation.isPending ? <ArrowRight className="h-4 w-4" /> : null}
+          </Button>
+          <FieldDescription className="mt-1 text-xs text-zinc-500">
+            You will be redirected to your role dashboard after sign in.
+          </FieldDescription>
+        </Field>
+      </FieldGroup>
     </form>
   );
 }

@@ -18,8 +18,8 @@ BillBoard Hub is a role-based SaaS dashboard for managing traditional and digita
   - `/register`
   - `/forgot-password`
 - Authenticated Dashboard
-  - `/dashboard/admin/*`
-  - `/dashboard/advertiser/*`
+  - `/user/admin/*`
+  - `/user/advertiser/*`
 
 ## Architecture
 

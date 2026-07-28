@@ -1,25 +1,23 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { registerSchema, type RegisterSchemaInput } from '@/shared/contracts/auth/register.schema';
-import { authClientService } from '@/client/features/auth/services/auth-client.service';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/client/ui/components/ui/button';
+import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/client/ui/components/ui/field';
 import { Input } from '@/client/ui/components/ui/input';
-import { Label } from '@/client/ui/components/ui/label';
+import { useForm } from 'react-hook-form';
+import { useRegister } from '../hooks/use-register';
+import { type RegisterSchemaInput, registerSchema } from '@/shared/contracts/auth/register.schema';
+import { Alert } from '@/client/ui/components/ui/alert';
+import { useLogin } from '../hooks/use-login';
+import { ArrowRight, Lock, Mail, UserRound } from 'lucide-react';
 
-export function RegisterForm() {
-  const [isPending, startTransition] = useTransition();
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+export function RegisterForm(props: React.ComponentProps<'div'>) {
+  const router = useRouter();
+  const registerAccount = useRegister();
+  const loginMutation = useLogin();
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<RegisterSchemaInput>({
+  const form = useForm<RegisterSchemaInput>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       firstName: '',
@@ -30,126 +28,128 @@ export function RegisterForm() {
     },
   });
 
-  const onSubmit = (values: RegisterSchemaInput) => {
-    setSubmitError(null);
-    setSubmitSuccess(null);
+  const submitError = registerAccount.error?.message;
+  const loginError = loginMutation.error?.message;
 
-    startTransition(async () => {
-      const result = await authClientService.register(values);
-      if (!result.ok) {
-        setSubmitError(result.error ?? 'Registration failed.');
-        return;
-      }
+  const onSubmit = async (values: RegisterSchemaInput) => {
+    await registerAccount.mutateAsync(values);
 
-      setSubmitSuccess('Account created. You can now sign in.');
-      reset();
+    await loginMutation.mutateAsync({
+      email: values.email,
+      password: values.password,
     });
+
+    form.reset();
+    router.push('/dashboard/advertiser');
+    router.refresh();
   };
 
   return (
-    <form className="w-full max-w-md space-y-4" onSubmit={handleSubmit(onSubmit)}>
-      {submitError ? (
-        <p
-          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
-          role="alert"
-        >
-          {submitError}
-        </p>
-      ) : null}
-
-      {submitSuccess ? (
-        <p
-          className="rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700"
-          role="status"
-        >
-          {submitSuccess}
-        </p>
-      ) : null}
-
-      <div className="space-y-1">
-        <Label htmlFor="firstName" className="text-sm font-medium">
-          First Name
-        </Label>
-        <Input
-          id="firstName"
-          autoComplete="given-name"
-          className="h-11 w-full rounded-lg border-zinc-300 px-3"
-          aria-invalid={Boolean(errors.firstName)}
-          {...register('firstName')}
-        />
-        {errors.firstName ? (
-          <p className="text-sm text-red-600">{errors.firstName.message}</p>
+    <div {...props}>
+      <form className="p-0" onSubmit={form.handleSubmit(onSubmit)}>
+        {submitError ? (
+          <Alert className="mb-4 border-red-200 bg-red-50 text-red-700">{submitError}</Alert>
         ) : null}
-      </div>
-
-      <div className="space-y-1">
-        <Label htmlFor="lastName" className="text-sm font-medium">
-          Last Name
-        </Label>
-        <Input
-          id="lastName"
-          autoComplete="family-name"
-          className="h-11 w-full rounded-lg border-zinc-300 px-3"
-          aria-invalid={Boolean(errors.lastName)}
-          {...register('lastName')}
-        />
-        {errors.lastName ? <p className="text-sm text-red-600">{errors.lastName.message}</p> : null}
-      </div>
-
-      <div className="space-y-1">
-        <Label htmlFor="email" className="text-sm font-medium">
-          Email
-        </Label>
-        <Input
-          id="email"
-          type="email"
-          autoComplete="email"
-          className="h-11 w-full rounded-lg border-zinc-300 px-3"
-          aria-invalid={Boolean(errors.email)}
-          {...register('email')}
-        />
-        {errors.email ? <p className="text-sm text-red-600">{errors.email.message}</p> : null}
-      </div>
-
-      <div className="space-y-1">
-        <Label htmlFor="password" className="text-sm font-medium">
-          Password
-        </Label>
-        <Input
-          id="password"
-          type="password"
-          autoComplete="new-password"
-          className="h-11 w-full rounded-lg border-zinc-300 px-3"
-          aria-invalid={Boolean(errors.password)}
-          {...register('password')}
-        />
-        {errors.password ? <p className="text-sm text-red-600">{errors.password.message}</p> : null}
-      </div>
-
-      <div className="space-y-1">
-        <Label htmlFor="confirmPassword" className="text-sm font-medium">
-          Confirm Password
-        </Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          autoComplete="new-password"
-          className="h-11 w-full rounded-lg border-zinc-300 px-3"
-          aria-invalid={Boolean(errors.confirmPassword)}
-          {...register('confirmPassword')}
-        />
-        {errors.confirmPassword ? (
-          <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
+        {loginError ? (
+          <Alert className="mb-4 border-red-200 bg-red-50 text-red-700">{loginError}</Alert>
         ) : null}
-      </div>
-
-      <Button
-        type="submit"
-        disabled={isPending}
-        className="min-h-11 w-full rounded-lg bg-blue-600 px-4 text-white hover:bg-blue-700 disabled:opacity-60"
-      >
-        {isPending ? 'Creating account...' : 'Create account'}
-      </Button>
-    </form>
+        <FieldGroup>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Field>
+              <FieldLabel htmlFor="first-name">First Name</FieldLabel>
+              <div className="relative">
+                <UserRound className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                <Input
+                  id="first-name"
+                  className="h-11 pl-10"
+                  placeholder="John"
+                  disabled={registerAccount.isPending || loginMutation.isPending}
+                  {...form.register('firstName')}
+                />
+              </div>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="last-name">Last Name</FieldLabel>
+              <div className="relative">
+                <UserRound className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                <Input
+                  id="last-name"
+                  className="h-11 pl-10"
+                  placeholder="Smith"
+                  disabled={registerAccount.isPending || loginMutation.isPending}
+                  {...form.register('lastName')}
+                />
+              </div>
+            </Field>
+          </div>
+          <Field>
+            <FieldLabel htmlFor="email">Email</FieldLabel>
+            <div className="relative">
+              <Mail className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+              <Input
+                id="email"
+                type="email"
+                className="h-11 pl-10"
+                placeholder="john@example.com"
+                disabled={registerAccount.isPending || loginMutation.isPending}
+                {...form.register('email')}
+              />
+            </div>
+          </Field>
+          <Field>
+            <Field className="grid grid-cols-2 gap-4">
+              <Field>
+                <FieldLabel htmlFor="user-password">Password</FieldLabel>
+                <div className="relative">
+                  <Lock className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                  <Input
+                    id="user-password"
+                    type="password"
+                    className="h-11 pl-10"
+                    disabled={registerAccount.isPending || loginMutation.isPending}
+                    {...form.register('password')}
+                  />
+                </div>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
+                <div className="relative">
+                  <Lock className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    className="h-11 pl-10"
+                    disabled={registerAccount.isPending || loginMutation.isPending}
+                    {...form.register('confirmPassword')}
+                  />
+                </div>
+              </Field>
+            </Field>
+            {form.formState.errors.confirmPassword ? (
+              <FieldDescription className="text-red-500">
+                {form.formState.errors.confirmPassword.message}
+              </FieldDescription>
+            ) : null}
+          </Field>
+          <Field>
+            <Button
+              type="submit"
+              disabled={registerAccount.isPending || loginMutation.isPending}
+              className="h-11 w-full gap-2 rounded-xl bg-blue-600 text-white transition-colors hover:bg-blue-700"
+            >
+              {registerAccount.isPending || loginMutation.isPending
+                ? 'Creating account...'
+                : 'Create Account'}
+              {!registerAccount.isPending && !loginMutation.isPending ? (
+                <ArrowRight className="h-4 w-4" />
+              ) : null}
+            </Button>
+            {registerAccount.isPending || loginMutation.isPending ? (
+              <FieldDescription>Creating your account and signing you in...</FieldDescription>
+            ) : null}
+          </Field>
+        </FieldGroup>
+      </form>
+    </div>
   );
 }

@@ -1,4 +1,5 @@
 import type { CreateBookingSchemaInput } from '@/shared/contracts/booking/booking.schema';
+import type { BookingStatus } from '@/shared/types/booking';
 
 async function parseResponse(response: Response) {
   const payload = await response.json();
@@ -10,7 +11,7 @@ async function parseResponse(response: Response) {
 
 type BookingListFilter = {
   billboardId?: string;
-  status?: string;
+  status?: BookingStatus;
 };
 
 export const bookingClientService = {
@@ -40,6 +41,16 @@ export const bookingClientService = {
     const response = await fetch(`/api/v1/bookings/${encodeURIComponent(bookingId)}/cancel`, {
       method: 'POST',
       credentials: 'include',
+    });
+    return parseResponse(response);
+  },
+
+  async updateStatus(bookingId: string, status: Extract<BookingStatus, 'approved' | 'rejected'>) {
+    const response = await fetch(`/api/v1/bookings/${encodeURIComponent(bookingId)}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ status }),
     });
     return parseResponse(response);
   },

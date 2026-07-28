@@ -17,6 +17,7 @@ import { BILLBOARD_STATUSES, BILLBOARD_TYPES } from '@/shared/constants/billboar
 import {
   BLOCKING_BOOKING_STATUSES,
   BOOKING_STATUSES,
+  PAYMENT_STATUSES,
   STATIC_RESERVATION_DAILY_LIMIT,
 } from '@/shared/constants/booking';
 import { computeBookingPricing, inclusiveDays } from '@/shared/pricing/booking-pricing';
@@ -93,6 +94,7 @@ export const bookingService = {
       billing: input.billing,
       company: input.company,
       paymentMethod: input.paymentMethod,
+      paymentStatus: PAYMENT_STATUSES.PENDING,
       invoice: input.invoice,
       pricing: { ...pricing, currency: input.invoice.currency },
       status: BOOKING_STATUSES.PENDING,
