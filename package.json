@@ -12,7 +12,11 @@
     "format": "prettier --write ./src/**/*.{ts,tsx,js,jsx,json,css,scss,md}",
     "format:check": "prettier --check ./src/**/*.{ts,tsx,js,jsx,json,css,scss,md}",
     "test": "vitest run",
-    "prepare": "husky"
+    "prepare": "husky",
+    "migrate": "node scripts/migrate.mjs",
+    "migrate:status": "node scripts/migrate.mjs --status",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.11.3",
@@ -45,6 +49,7 @@
   },
   "devDependencies": {
     "@next/env": "^16.2.12",
+    "@playwright/test": "^1.62.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
