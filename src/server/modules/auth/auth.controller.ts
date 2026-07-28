@@ -10,6 +10,23 @@ import type { LoginSchemaInput } from '@/shared/contracts/auth/login.schema';
 import { loginSchema } from '@/shared/contracts/auth/login.schema';
 import type { RegisterSchemaInput } from '@/shared/contracts/auth/register.schema';
 import { registerSchema } from '@/shared/contracts/auth/register.schema';
+import type {
+  ForgotPasswordSchemaInput,
+  ResetPasswordSchemaInput,
+} from '@/shared/contracts/auth/password-reset.schema';
+import {
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  resetTokenSchema,
+} from '@/shared/contracts/auth/password-reset.schema';
+import { passwordResetService } from '@/server/modules/auth/password-reset.service';
+
+/**
+ * Identical for registered and unregistered addresses — the endpoint must not
+ * reveal which emails have accounts.
+ */
+const RESET_REQUESTED_MESSAGE =
+  'If that email address has an account, a reset link is on its way. Check your inbox and spam folder.';
 
 export const authController = {
   async login(payload: LoginSchemaInput) {
@@ -91,6 +108,74 @@ export const authController = {
       return apiResponse.ok(user, 201);
     } catch (error) {
       return handleControllerError(error, 'Registration failed.');
+    }
+  },
+
+  async forgotPassword(payload: ForgotPasswordSchemaInput, requestedFrom?: string) {
+    const parsed = forgotPasswordSchema.safeParse(payload);
+
+    if (!parsed.success) {
+      return apiResponse.badRequest(
+        validationMessage(parsed.error.issues, 'Enter the email address on your account.'),
+      );
+    }
+
+    try {
+      const { previewUrl, previewNote } = await passwordResetService.request(parsed.data, {
+        requestedFrom,
+      });
+
+      // Both preview fields are populated only for local development without a
+      // mail provider; see PasswordResetRequestResult.
+      return apiResponse.ok({
+        message: RESET_REQUESTED_MESSAGE,
+        ...(previewUrl ? { previewUrl } : {}),
+        ...(previewNote ? { previewNote } : {}),
+      });
+    } catch (error) {
+      return handleControllerError(
+        error,
+        'We could not start the password reset right now. Try again.',
+      );
+    }
+  },
+
+  async verifyResetToken(token: string | null) {
+    const parsed = resetTokenSchema.safeParse(token ?? '');
+
+    // A malformed token is simply an unusable one — there is nothing to report
+    // beyond that, so the shape check and the lookup share a response.
+    if (!parsed.success) {
+      return apiResponse.ok({ valid: false });
+    }
+
+    try {
+      return apiResponse.ok({ valid: await passwordResetService.isTokenUsable(parsed.data) });
+    } catch (error) {
+      return handleControllerError(error, 'We could not check that reset link. Try again.');
+    }
+  },
+
+  async resetPassword(payload: ResetPasswordSchemaInput) {
+    const parsed = resetPasswordSchema.safeParse(payload);
+
+    if (!parsed.success) {
+      return apiResponse.badRequest(
+        validationMessage(parsed.error.issues, 'Check the new password and try again.'),
+      );
+    }
+
+    try {
+      await passwordResetService.reset(parsed.data);
+
+      return apiResponse.ok({
+        message: 'Your password has been updated. Sign in with your new password.',
+      });
+    } catch (error) {
+      return handleControllerError(
+        error,
+        'We could not update your password right now. Try again.',
+      );
     }
   },
 };

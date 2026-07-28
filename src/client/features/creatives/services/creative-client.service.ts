@@ -1,5 +1,6 @@
 import type {
   CreateCreativeSchemaInput,
+  UpdateCreativeSchemaInput,
   UpdateCreativeStatusSchemaInput,
 } from '@/shared/contracts/creative/creative.schema';
 import { apiRequest } from '@/client/ui/lib/api-client';
@@ -18,6 +19,16 @@ export const creativeClientService = {
     return apiRequest('/api/v1/creatives', {
       method: 'GET',
       credentials: 'include',
+    });
+  },
+
+  /** PATCH /creatives/:id — the API accepts name and duration only. */
+  async update(creativeId: string, payload: UpdateCreativeSchemaInput) {
+    return apiRequest(`/api/v1/creatives/${encodeURIComponent(creativeId)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload),
     });
   },
 

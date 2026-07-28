@@ -4,7 +4,7 @@ import { checkRateLimit, requestClientKey } from '@/server/http/rate-limit';
 
 export async function POST(request: Request) {
   const key = `payments-checkout:${requestClientKey(request)}`;
-  const limit = checkRateLimit(key, 30, 60_000);
+  const limit = await checkRateLimit(key, 30, 60_000);
 
   if (!limit.allowed) {
     return apiResponse.error('Too many checkout attempts. Please retry shortly.', 429, {

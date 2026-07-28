@@ -1,21 +1,45 @@
 import { z } from 'zod';
-
-const passwordSchema = z
-  .string()
-  .min(8, 'Password must be at least 8 characters.')
-  .max(128, 'Password must be at most 128 characters.');
+import { emailSchema, personNameSchema } from '@/shared/contracts/auth/identity.schema';
+import {
+  containsIdentityToken,
+  strongPasswordSchema,
+} from '@/shared/contracts/auth/password.schema';
 
 export const registerSchema = z
   .object({
-    firstName: z.string().trim().min(2, 'Enter a first name with at least 2 characters.'),
-    lastName: z.string().trim().min(2, 'Enter a last name with at least 2 characters.'),
-    email: z.email('Please enter a valid email address.').trim().toLowerCase(),
-    password: passwordSchema,
-    confirmPassword: passwordSchema,
+    firstName: personNameSchema('first name'),
+    lastName: personNameSchema('last name'),
+    email: emailSchema,
+    password: strongPasswordSchema,
+    confirmPassword: z.string().min(1, 'Re-enter your password to confirm it.'),
+    acceptTerms: z.boolean(),
   })
-  .refine((value) => value.password === value.confirmPassword, {
-    path: ['confirmPassword'],
-    message: 'Passwords do not match.',
+  .superRefine((value, ctx) => {
+    if (value.password !== value.confirmPassword) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['confirmPassword'],
+        message: 'Both passwords must match.',
+      });
+    }
+
+    const emailHandle = value.email.split('@')[0] ?? '';
+    if (containsIdentityToken(value.password, [value.firstName, value.lastName, emailHandle])) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['password'],
+        message: 'Your password cannot contain your name or email address.',
+      });
+    }
+
+    if (!value.acceptTerms) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['acceptTerms'],
+        message: 'Accept the Terms of Service and Privacy Policy to continue.',
+      });
+    }
   });
 
 export type RegisterSchemaInput = z.input<typeof registerSchema>;
+export type RegisterSchemaOutput = z.output<typeof registerSchema>;

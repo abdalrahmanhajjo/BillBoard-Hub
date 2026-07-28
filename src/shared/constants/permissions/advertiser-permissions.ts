@@ -33,6 +33,9 @@ export const ADVERTISER_PERMISSIONS: Permission[] = [
   PERMISSIONS.AD_CREATIVES_CREATE,
   PERMISSIONS.AD_CREATIVES_READ_SELF,
   PERMISSIONS.AD_CREATIVES_DELETE_SELF,
+  // Impression Permissions (advertisers see delivery for their own creatives)
+  PERMISSIONS.IMPRESSIONS_READ_SELF,
+
   // Payment Permissions (advertisers pay for and view their own reservations)
   PERMISSIONS.PAYMENTS_CREATE,
   PERMISSIONS.PAYMENTS_READ,

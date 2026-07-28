@@ -9,6 +9,7 @@ export type ImpressionFilter = {
   billboardId?: string;
   creativeId?: string;
   playlistId?: string;
+  advertiserId?: string;
 };
 
 function buildMatch(filter: ImpressionFilter): Record<string, unknown> {
@@ -16,6 +17,7 @@ function buildMatch(filter: ImpressionFilter): Record<string, unknown> {
   if (filter.billboardId) match.billboardId = filter.billboardId;
   if (filter.creativeId) match.creativeId = filter.creativeId;
   if (filter.playlistId) match.playlistId = filter.playlistId;
+  if (filter.advertiserId) match.advertiserId = filter.advertiserId;
   return match;
 }
 

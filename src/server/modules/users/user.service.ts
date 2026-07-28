@@ -8,9 +8,9 @@ import type {
 } from '@/shared/contracts/user/user.schema';
 import type { User } from '@/shared/types/user';
 import { authorizationPolicy } from '@/shared/policies';
-import { ConflictError } from '@/shared/http/http-error';
+import { BadRequestError, ConflictError } from '@/shared/http/http-error';
 
-const SALT_ROUNDS = Number(process.env.SALT_ROUNDS);
+const SALT_ROUNDS = Number(process.env.SALT_ROUNDS) || 12;
 
 export const userService = {
   async create(input: CreateUserSchemaInput, actor?: User): Promise<User> {
@@ -52,6 +52,27 @@ export const userService = {
     }
 
     return toUser(user);
+  },
+
+  /**
+   * Replaces a password outside the usual actor/permission path: the caller must
+   * already have proved ownership some other way (a single-use reset token).
+   * Anything acting on behalf of a signed-in actor belongs in `updateById`.
+   */
+  async replacePassword(userId: string, newPassword: string): Promise<void> {
+    const user = await userRepository.findByIdWithPassword(userId);
+
+    if (!user || !user.isActive) {
+      throw new BadRequestError('This account can no longer be updated. Contact support for help.');
+    }
+
+    const isSameAsCurrent = await bcrypt.compare(newPassword, user.passwordHash);
+    if (isSameAsCurrent) {
+      throw new BadRequestError('Choose a password you have not used on this account before.');
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+    await userRepository.updateById(userId, { passwordHash });
   },
 
   async getById(userId: string, actor: User): Promise<User | null> {

@@ -88,6 +88,71 @@ sets `RefreshTokenMissing`.
 - API errors must not reveal whether a specific email exists.
 - Logs must never include passwords, hashes, session cookies, tokens, or MongoDB URIs.
 
+### Password policy
+
+`src/shared/contracts/auth/password.schema.ts` is the single source of truth. `PASSWORD_RULES`
+drives both `strongPasswordSchema` (server rejection) and the browser strength meter, so the
+checklist a user sees cannot drift from what the server accepts.
+
+- 8–128 characters, no leading or trailing whitespace
+- At least one lowercase letter, one uppercase letter, and one number
+- A symbol raises the strength score but is not required
+- A short deny list blocks common credential-stuffing guesses
+- Registration additionally rejects passwords containing the user's own name or email handle
+
+Sign-in validates presence only. Applying strength rules at login would lock out accounts created
+under an older policy and would leak the current policy to attackers.
+
+## Password reset
+
+```mermaid
+flowchart TD
+    Request[POST /api/v1/auth/forgot-password]
+    Lookup[Look up user by normalized email]
+    Issue[Invalidate old tokens, store SHA-256 of a new 32-byte token]
+    Mail[mailer.send with the reset link]
+    Verify[GET /api/v1/auth/reset-password?token=]
+    Reset[POST /api/v1/auth/reset-password]
+
+    Request --> Lookup --> Issue --> Mail
+    Verify --> Reset
+```
+
+Module files live in `src/server/modules/auth/password-reset.*`; delivery goes through the
+`src/server/mail` port.
+
+Properties this flow depends on:
+
+- **No account enumeration.** Unknown, inactive, and rate-limited addresses all return the same
+  success message. Delivery failures are logged, never surfaced.
+- **Tokens are stored hashed.** Only the SHA-256 digest is persisted, so a database leak does not
+  yield usable links.
+- **Single use, time limited.** `PASSWORD_RESET_TTL_MS` (default one hour) bounds validity; a
+  successful reset consumes every outstanding token for that user, as does issuing a new one.
+- **Rate limited.** Five requests per client per 15 minutes at the route, plus five per account per
+  hour in the service.
+- **No password reuse.** The new password is compared against the current hash and rejected if
+  unchanged.
+
+Without `RESEND_API_KEY` the mailer prints the message to the server log instead of sending it.
+Production deployments must set `RESEND_API_KEY` and `MAIL_FROM`, or **no user can ever complete a
+reset** — the link is generated correctly but never reaches them.
+
+### Development link preview
+
+Because a log-only link cannot be followed through the UI, `POST /forgot-password` also returns the
+link itself (`previewUrl`) — and, when no link was issued, the reason (`previewNote`). Both are
+gated behind `mailer.allowsLinkPreview()`:
+
+```
+NODE_ENV !== 'production'  AND  RESEND_API_KEY is unset
+```
+
+This deliberately breaks the no-enumeration guarantee, so the gate is the security control. It is
+covered by `src/server/mail/mailer.test.ts`, which asserts the preview is refused in production,
+with a provider configured, and in both combinations. Setting `RESEND_API_KEY` disables it even in
+development.
+
 ## Public device endpoints
 
 Now-playing and impression ingestion are intentionally unauthenticated in the current

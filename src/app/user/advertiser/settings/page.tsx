@@ -1,10 +1,5 @@
-import { ModulePlaceholderPage } from '@/client/features/dashboard/components/module-placeholder-page';
+import { AdvertiserSettingsFeaturePage } from '@/client/features/users/pages/advertiser-settings-page';
 
 export default function AdvertiserSettingsPage() {
-  return (
-    <ModulePlaceholderPage
-      title="Advertiser Settings"
-      description="Configure preferences, notification channels, and account options."
-    />
-  );
+  return <AdvertiserSettingsFeaturePage />;
 }

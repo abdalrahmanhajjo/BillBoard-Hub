@@ -1,6 +1,7 @@
 import { auth } from '@/auth';
 import { USER_ROLES } from '@/shared/constants/user-roles';
 import { redirect } from 'next/navigation';
+import { AdvertiserShell } from '@/client/features/dashboard/components/advertiser-shell';
 
 export default async function AdvertiserDashboardLayout({
   children,
@@ -17,5 +18,5 @@ export default async function AdvertiserDashboardLayout({
     redirect('/unauthorized');
   }
 
-  return <>{children}</>;
+  return <AdvertiserShell>{children}</AdvertiserShell>;
 }

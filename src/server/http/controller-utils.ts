@@ -3,6 +3,7 @@ import type { Session } from 'next-auth';
 import { auth } from '@/auth';
 import { apiResponse } from '@/server/http/api-response';
 import { HttpError, NotFoundError, UnauthorizedError } from '@/shared/http/http-error';
+import { logger } from '@/server/observability/logger';
 import { USER_MESSAGES } from '@/shared/messages/user-messages';
 
 export function validationMessage(
@@ -48,8 +49,11 @@ export function handleControllerError(error: unknown, message: string) {
     return apiResponse.conflict(USER_MESSAGES.duplicate);
   }
 
-  // Unexpected errors: return a generic message so raw internal error text is
-  // never exposed to clients. Intentional, user-facing errors are handled by
-  // the HttpError/validation branches above.
+  // Anything reaching here is unhandled: every intentional, user-facing error
+  // was matched above. The client still gets a generic message, but the real
+  // cause is captured rather than discarded — this is the path that used to
+  // make production failures invisible.
+  logger.captureException(error, { handledBy: 'handleControllerError', clientMessage: message });
+
   return apiResponse.internal(message);
 }

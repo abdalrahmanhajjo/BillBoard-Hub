@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { Pencil } from 'lucide-react';
 
 import {
   Card,
@@ -14,7 +16,11 @@ import {
 import { Badge } from '@/client/ui/components/ui/badge';
 import { CampaignStatusBadge } from '@/client/features/campaigns/components/campaign-status-badge';
 import { AssignBillboardsDialog } from '@/client/features/campaigns/components/assign-billboards-dialog';
+import { CampaignEditDialog } from '@/client/features/campaigns/components/campaign-edit-dialog';
 import { campaignClientService } from '@/client/features/campaigns/services/campaign-client.service';
+import { Button } from '@/client/ui/components/ui/button';
+import { canEditCampaign } from '@/client/features/dashboard/utils/advertiser-capabilities';
+import { ADVERTISER_ROUTES } from '@/shared/constants/routes';
 import type { Campaign } from '@/shared/types/campaign';
 import type { Billboard } from '@/shared/types/billboard';
 
@@ -66,6 +72,9 @@ function CampaignCard({
 }) {
   const [assignedBillboards, setAssignedBillboards] = useState<Billboard[]>([]);
   const [isLoadingAssigned, setIsLoadingAssigned] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const { data: session } = useSession();
+  const editVerdict = canEditCampaign(campaign, session?.user);
 
   const loadAssigned = async () => {
     setIsLoadingAssigned(true);
@@ -98,7 +107,7 @@ function CampaignCard({
 
   return (
     <Card>
-      <Link href={`/dashboard/advertiser/campaigns/${campaign.id}`} className="block">
+      <Link href={`${ADVERTISER_ROUTES.CAMPAIGNS}/${campaign.id}`} className="block">
         <CardHeader>
           <CardTitle>{campaign.name}</CardTitle>
           <CardAction>
@@ -135,9 +144,31 @@ function CampaignCard({
           </div>
         </CardContent>
       </Link>
-      <CardFooter className="border-t-0 bg-transparent px-(--card-spacing) pb-(--card-spacing)">
+      <CardFooter className="flex-wrap gap-2 border-t-0 bg-transparent px-(--card-spacing) pb-(--card-spacing)">
         <AssignBillboardsDialog campaignId={campaign.id} onAssigned={handleAssigned} />
+
+        {/* Campaigns have no DELETE endpoint, so archiving happens by moving the
+            status to "completed" inside this dialog. */}
+        <Button
+          variant="outline"
+          className="h-9 gap-1.5"
+          disabled={!editVerdict.allowed}
+          title={editVerdict.reason}
+          onClick={() => setIsEditing(true)}
+        >
+          <Pencil className="size-3.5" aria-hidden />
+          Edit
+        </Button>
       </CardFooter>
+
+      {isEditing ? (
+        <CampaignEditDialog
+          campaign={campaign}
+          open={isEditing}
+          onOpenChange={setIsEditing}
+          onSaved={onRefresh}
+        />
+      ) : null}
     </Card>
   );
 }
