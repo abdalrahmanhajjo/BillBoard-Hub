@@ -50,14 +50,25 @@ export const impressionService = {
       billboardId,
       playlistId: input.playlistId,
       creativeId: input.creativeId,
+      // Captured at write time so an advertiser's delivery figures survive the
+      // creative later changing hands or being deleted.
+      advertiserId: String(creative.advertiserId),
       scheduleId: input.scheduleId,
       occurredAt,
     });
     return toImpression(created);
   },
 
+  /**
+   * Admins see every screen. Advertisers are forced onto their own
+   * `advertiserId` regardless of what the request asked for, so the same
+   * endpoint cannot be used to read another advertiser's delivery.
+   */
   async getAnalytics(actor: User, filter: ImpressionFilter = {}): Promise<ImpressionAnalytics> {
-    authorizationPolicy.impression.assertCanRead(actor);
+    if (!authorizationPolicy.impression.canReadAny(actor)) {
+      authorizationPolicy.impression.assertCanReadOwn(actor);
+      filter = { ...filter, advertiserId: actor.id };
+    }
 
     const [total, byCreativeRaw, recentDocs] = await Promise.all([
       impressionRepository.countTotal(filter),
