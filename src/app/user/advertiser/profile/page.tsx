@@ -1,10 +1,5 @@
-import { ModulePlaceholderPage } from '@/client/features/dashboard/components/module-placeholder-page';
+import { AdvertiserProfileFeaturePage } from '@/client/features/users/pages/advertiser-profile-page';
 
 export default function AdvertiserProfilePage() {
-  return (
-    <ModulePlaceholderPage
-      title="Advertiser Profile"
-      description="Manage organization profile, contact details, and billing metadata."
-    />
-  );
+  return <AdvertiserProfileFeaturePage />;
 }

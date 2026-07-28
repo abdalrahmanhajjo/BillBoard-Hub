@@ -9,8 +9,14 @@ const ADMIN_ROUTES = {
 const ADVERTISER_ROUTES = {
   HOME: '/',
   DASHBOARD: '/user/advertiser',
+  BILLBOARDS: '/user/advertiser/billboards',
   CAMPAIGNS: '/user/advertiser/campaigns',
   BOOKINGS: '/user/advertiser/bookings',
+  CREATIVES: '/user/advertiser/creatives',
+  INVOICES: '/user/advertiser/invoices',
+  REPORTS: '/user/advertiser/reports',
+  PROFILE: '/user/advertiser/profile',
+  SETTINGS: '/user/advertiser/settings',
 } as const;
 
 const ROLE_LANDING_ROUTES = {
