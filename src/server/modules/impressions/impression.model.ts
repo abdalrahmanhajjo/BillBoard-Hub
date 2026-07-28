@@ -17,6 +17,13 @@ const impressionSchema = new Schema(
       required: true,
       index: true,
     },
+    // Denormalised from the creative at write time so advertiser-scoped
+    // analytics is a single indexed read rather than a join per query.
+    advertiserId: {
+      type: String,
+      required: true,
+      index: true,
+    },
     scheduleId: {
       type: String,
     },
@@ -35,6 +42,7 @@ const impressionSchema = new Schema(
 // Common analytics access paths: per-screen and per-creative over time.
 impressionSchema.index({ billboardId: 1, occurredAt: -1 });
 impressionSchema.index({ creativeId: 1, occurredAt: -1 });
+impressionSchema.index({ advertiserId: 1, occurredAt: -1 });
 
 export type ImpressionDocument = InferSchemaType<typeof impressionSchema> & {
   _id: string;
