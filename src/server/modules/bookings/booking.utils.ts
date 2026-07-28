@@ -8,6 +8,7 @@ import type { BillboardType } from '@/shared/types/billboard';
 import type {
   Booking,
   BookingCurrency,
+  BookingCreativeType,
   BookingStatus,
   CampaignObjective,
   PaymentMethod,
@@ -17,7 +18,7 @@ import type {
 const MS_PER_DAY = 86_400_000;
 
 /** Short, human-friendly reservation reference derived from the id. */
-export function buildReference(id: unknown): string {
+function buildReference(id: unknown): string {
   return `BR-${String(id).slice(-6).toUpperCase()}`;
 }
 
@@ -77,6 +78,8 @@ export function toBooking(doc: BookingDocument): Booking {
     startDate: toIsoDate(doc.startDate),
     endDate: toIsoDate(doc.endDate),
     creativeUrl: doc.creativeUrl ?? undefined,
+    creativeType: doc.creativeType as BookingCreativeType | undefined,
+    creativeDurationSeconds: doc.creativeDurationSeconds ?? undefined,
     billing: {
       contactName: doc.billing.contactName,
       email: doc.billing.email,

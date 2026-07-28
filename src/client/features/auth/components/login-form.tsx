@@ -28,7 +28,7 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
   const onSubmit = async (values: LoginSchemaInput) => {
     try {
       await loginMutation.mutateAsync(values);
-      router.push('/user');
+      router.push('/');
       router.refresh();
     } catch {
       // The failure is surfaced to the user via loginMutation.error below;
@@ -103,7 +103,7 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
             {!loginMutation.isPending ? <ArrowRight className="h-4 w-4" /> : null}
           </Button>
           <FieldDescription className="mt-1 text-xs text-zinc-500">
-            You will be redirected to your role dashboard after sign in.
+            Advertisers continue to the marketplace after signing in.
           </FieldDescription>
         </Field>
       </FieldGroup>

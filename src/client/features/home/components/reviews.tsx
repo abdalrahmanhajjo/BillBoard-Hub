@@ -3,7 +3,6 @@
 import { Quote, Star } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Container } from '@/client/features/home/components/container';
-import { reviews } from '@/client/features/home/data/homepage';
 import type { Review } from '@/client/features/home/home.types';
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -92,7 +91,7 @@ function MarqueeRow({ items, reverse = false }: { items: Review[]; reverse?: boo
   );
 }
 
-export function Reviews() {
+export function Reviews({ reviews }: { reviews: Review[] }) {
   const reduceMotion = useReducedMotion();
   const topRow = reviews;
   const bottomRow = [...reviews].reverse();

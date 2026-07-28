@@ -4,10 +4,7 @@ import { useState, useTransition } from 'react';
 import { useForm, useWatch, type FieldPath } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import {
-  createBillboardSchema,
-  type CreateBillboardSchemaInput,
-} from '@/shared/contracts/billboard/billboard.schema';
+import { createBillboardSchema } from '@/shared/contracts/billboard/billboard.schema';
 import {
   upsertDigitalSpecSchema,
   type UpsertDigitalSpecSchemaInput,
@@ -21,6 +18,7 @@ import {
 import type { Billboard } from '@/shared/types/billboard';
 import { billboardClientService } from '@/client/features/billboards/services/billboard-client.service';
 import { BillboardImageInput } from '@/client/features/billboards/components/billboard-image-input';
+import { FormStatusMessages } from '@/client/features/billboards/components/form-status-messages';
 
 type CreateBillboardFormProps = {
   onCreated?: () => void;
@@ -111,16 +109,16 @@ export function CreateBillboardForm({ onCreated }: CreateBillboardFormProps) {
       specPayload = values.digitalSpec as UpsertDigitalSpecSchemaInput;
     }
 
-    // Strip the client-only digitalSpec before sending the billboard payload.
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { digitalSpec, ...billboardPayload } = values;
+    // Re-parse with the transport contract to strip the client-only digitalSpec
+    // and apply the same transforms used by the server.
+    const billboardPayload = createBillboardSchema.parse(values);
 
     startTransition(async () => {
-      const result = await billboardClientService.create(
-        billboardPayload as CreateBillboardSchemaInput,
-      );
+      const result = await billboardClientService.create(billboardPayload);
       if (!result.ok) {
-        setSubmitError(result.error ?? 'Billboard creation failed.');
+        setSubmitError(
+          result.error ?? 'We could not add this billboard. Review the form and try again.',
+        );
         return;
       }
 
@@ -130,9 +128,9 @@ export function CreateBillboardForm({ onCreated }: CreateBillboardFormProps) {
         const specResult = await billboardClientService.saveDigitalSpec(created.id, specPayload);
         if (!specResult.ok) {
           setSubmitError(
-            `Billboard created, but saving the screen specs failed: ${
-              specResult.error ?? 'unknown error'
-            }. Add them from Digital specifications.`,
+            `The billboard was created, but its screen specifications were not saved. ${
+              specResult.error ?? 'Open Digital specifications and add them there.'
+            }`,
           );
           onCreated?.();
           return;
@@ -141,7 +139,7 @@ export function CreateBillboardForm({ onCreated }: CreateBillboardFormProps) {
 
       setSubmitSuccess(
         creatingDigital
-          ? 'Digital billboard and screen specifications created.'
+          ? 'Digital billboard created with its screen specifications.'
           : 'Billboard created and added to inventory.',
       );
       reset();
@@ -152,17 +150,7 @@ export function CreateBillboardForm({ onCreated }: CreateBillboardFormProps) {
 
   return (
     <form className="w-full space-y-4" onSubmit={handleSubmit(onSubmit)}>
-      {submitError ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {submitError}
-        </p>
-      ) : null}
-
-      {submitSuccess ? (
-        <p className="rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
-          {submitSuccess}
-        </p>
-      ) : null}
+      <FormStatusMessages error={submitError} success={submitSuccess} />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1">

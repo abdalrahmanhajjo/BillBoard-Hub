@@ -13,7 +13,7 @@ export const rotationController = {
       const nowPlaying = await rotationService.getNowPlaying(billboardId);
       return apiResponse.ok(nowPlaying);
     } catch (error) {
-      return handleControllerError(error, 'Getting now playing failed.');
+      return handleControllerError(error, 'We could not load the current playback. Try again.');
     }
   },
 
@@ -26,7 +26,7 @@ export const rotationController = {
       const rotation = await rotationService.getScheduleRotation(actor, scheduleId);
       return apiResponse.ok({ rotation });
     } catch (error) {
-      return handleControllerError(error, 'Getting rotation failed.');
+      return handleControllerError(error, 'We could not load this rotation. Try again.');
     }
   },
 };

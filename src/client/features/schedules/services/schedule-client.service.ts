@@ -1,8 +1,8 @@
-import { apiRequest } from '@/client/lib/response-utils';
 import type {
   CreateScheduleSchemaInput,
   UpdateScheduleSchemaInput,
 } from '@/shared/contracts/schedule/schedule.schema';
+import { apiRequest } from '@/client/ui/lib/api-client';
 
 export const scheduleClientService = {
   async create(payload: CreateScheduleSchemaInput) {
@@ -23,7 +23,7 @@ export const scheduleClientService = {
   },
 
   async update(scheduleId: string, payload: UpdateScheduleSchemaInput) {
-    return apiRequest(`/api/v1/schedules/${scheduleId}`, {
+    return apiRequest(`/api/v1/schedules/${encodeURIComponent(scheduleId)}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -32,7 +32,7 @@ export const scheduleClientService = {
   },
 
   async remove(scheduleId: string) {
-    return apiRequest(`/api/v1/schedules/${scheduleId}`, {
+    return apiRequest(`/api/v1/schedules/${encodeURIComponent(scheduleId)}`, {
       method: 'DELETE',
       credentials: 'include',
     });

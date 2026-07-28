@@ -1,5 +1,6 @@
 import { ApiResponseError, ApiResponseSuccess } from '@/shared/types/response';
 import { NextResponse } from 'next/server';
+import { USER_MESSAGES } from '@/shared/messages/user-messages';
 
 type ErrorDetails = Record<string, unknown> | undefined;
 
@@ -27,23 +28,25 @@ export const apiResponse = {
     return this.error(message, 400, details);
   },
 
-  unauthorized(message = 'Not authenticated.') {
+  unauthorized(message: string = USER_MESSAGES.sessionRequired) {
     return this.error(message, 401);
   },
 
-  forbidden(message = 'Forbidden.') {
+  forbidden(message: string = 'Your account does not have permission for this action.') {
     return this.error(message, 403);
   },
 
-  notFound(message = 'Resource not found.') {
+  notFound(message: string = USER_MESSAGES.notFound) {
     return this.error(message, 404);
   },
 
-  conflict(message = 'Conflict.') {
+  conflict(
+    message: string = 'This change conflicts with existing data. Refresh the page and try again.',
+  ) {
     return this.error(message, 409);
   },
 
-  internal(message = 'Unexpected server error.') {
+  internal(message: string = USER_MESSAGES.serverError) {
     return this.error(message, 500);
   },
 };

@@ -5,10 +5,9 @@ import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import { Container } from '@/client/features/home/components/container';
 import { SectionHeading } from '@/client/features/home/components/section-heading';
 import { TimelineStep } from '@/client/features/home/components/timeline-step';
-import { howItWorksSteps } from '@/client/features/home/data/homepage';
+import type { HowItWorksStep } from '@/client/features/home/home.types';
 
-export function HowItWorks() {
-  const steps = howItWorksSteps;
+export function HowItWorks({ steps }: { steps: HowItWorksStep[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
 

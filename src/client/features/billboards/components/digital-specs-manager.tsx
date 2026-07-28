@@ -30,7 +30,9 @@ export function DigitalSpecsManager({ billboards }: DigitalSpecsManagerProps) {
 
     const result = await billboardClientService.getDigitalSpec(billboardId);
     if (!result.ok) {
-      setSpecError(result.error ?? 'Unable to load specification.');
+      setSpecError(
+        result.error ?? 'We could not load this screen specification. Choose the screen again.',
+      );
       setSpecStatus('error');
       return;
     }

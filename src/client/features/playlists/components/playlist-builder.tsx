@@ -64,7 +64,9 @@ export function PlaylistBuilder({ digitalBillboards, creatives, onCreated }: Pla
         status,
       });
       if (!result.ok) {
-        setError(result.error ?? 'Creating the playlist failed.');
+        setError(
+          result.error ?? 'We could not create this playlist. Review the selections and try again.',
+        );
         return;
       }
       setBillboardId('');
@@ -78,7 +80,10 @@ export function PlaylistBuilder({ digitalBillboards, creatives, onCreated }: Pla
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p
+          role="alert"
+          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+        >
           {error}
         </p>
       ) : null}

@@ -15,7 +15,7 @@ import type { User } from '@/shared/types/user';
 async function assertDigitalBillboard(billboardId: string): Promise<void> {
   const billboard = await billboardRepository.findById(billboardId);
   if (!billboard) {
-    throw new NotFoundError('Billboard not found.');
+    throw new NotFoundError('We could not find this billboard. It may have been removed.');
   }
   if (billboard.type !== BILLBOARD_TYPES.DIGITAL) {
     throw new BadRequestError('Playlists can only be created for digital billboards.');
@@ -50,7 +50,7 @@ export const playlistService = {
     authorizationPolicy.playlist.assertCanRead(actor);
     const playlist = await playlistRepository.findById(playlistId);
     if (!playlist) {
-      throw new NotFoundError('Playlist not found.');
+      throw new NotFoundError('We could not find this playlist. It may have been removed.');
     }
     return toPlaylist(playlist);
   },
@@ -67,7 +67,7 @@ export const playlistService = {
 
     const updated = await playlistRepository.updateById(playlistId, input);
     if (!updated) {
-      throw new NotFoundError('Playlist not found.');
+      throw new NotFoundError('We could not find this playlist. It may have been removed.');
     }
     return toPlaylist(updated);
   },
@@ -76,7 +76,7 @@ export const playlistService = {
     authorizationPolicy.playlist.assertCanDelete(actor);
     const deleted = await playlistRepository.deleteById(playlistId);
     if (!deleted) {
-      throw new NotFoundError('Playlist not found.');
+      throw new NotFoundError('We could not find this playlist. It may have been removed.');
     }
   },
 };

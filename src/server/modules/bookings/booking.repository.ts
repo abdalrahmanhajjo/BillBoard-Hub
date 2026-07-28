@@ -1,7 +1,7 @@
 import { connectToDatabase } from '@/server/db/mongoose';
 import { BookingModel, type BookingDocument } from '@/server/modules/bookings/booking.model';
 import type { BookingFilter, BookingRecord } from '@/server/modules/bookings/booking.types';
-import type { BookingStatus } from '@/shared/types/booking';
+import type { BookingStatus, PaymentStatus } from '@/shared/types/booking';
 
 export const bookingRepository = {
   async create(record: BookingRecord): Promise<BookingDocument> {
@@ -52,6 +52,16 @@ export const bookingRepository = {
   async updateStatus(bookingId: string, status: BookingStatus): Promise<BookingDocument | null> {
     await connectToDatabase();
     return BookingModel.findByIdAndUpdate(bookingId, { status }, { new: true })
+      .lean<BookingDocument>()
+      .exec();
+  },
+
+  async updatePaymentStatus(
+    bookingId: string,
+    paymentStatus: PaymentStatus,
+  ): Promise<BookingDocument | null> {
+    await connectToDatabase();
+    return BookingModel.findByIdAndUpdate(bookingId, { paymentStatus }, { new: true })
       .lean<BookingDocument>()
       .exec();
   },

@@ -7,8 +7,8 @@ const passwordSchema = z
 
 export const registerSchema = z
   .object({
-    firstName: z.string().trim().min(2, 'First name is required.'),
-    lastName: z.string().trim().min(2, 'Last name is required.'),
+    firstName: z.string().trim().min(2, 'Enter a first name with at least 2 characters.'),
+    lastName: z.string().trim().min(2, 'Enter a last name with at least 2 characters.'),
     email: z.email('Please enter a valid email address.').trim().toLowerCase(),
     password: passwordSchema,
     confirmPassword: passwordSchema,

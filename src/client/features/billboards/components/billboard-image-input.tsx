@@ -71,7 +71,11 @@ export function BillboardImageInput({ value, onChange, disabled }: BillboardImag
       }
       if (added.length) onChange([...value, ...added]);
     } catch (uploadError) {
-      setError(uploadError instanceof Error ? uploadError.message : 'Image upload failed.');
+      setError(
+        uploadError instanceof Error
+          ? uploadError.message
+          : 'We could not upload the images. Check the files and try again.',
+      );
     } finally {
       setUploading(false);
       setProgress(0);
@@ -143,7 +147,11 @@ export function BillboardImageInput({ value, onChange, disabled }: BillboardImag
         </div>
       </details>
 
-      {error ? <p className="text-sm text-red-600">{error}</p> : null}
+      {error ? (
+        <p role="alert" className="text-sm text-red-600">
+          {error}
+        </p>
+      ) : null}
 
       {value.length > 0 ? (
         <ul className="flex flex-wrap gap-2">

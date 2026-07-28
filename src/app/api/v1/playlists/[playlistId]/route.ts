@@ -13,7 +13,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
 
     return playlistController.getPlaylist(session.user, playlistId);
   } catch (error) {
-    return handleControllerError(error, 'Getting playlist failed.');
+    return handleControllerError(error, 'We could not load this playlist. Try again.');
   }
 }
 
@@ -25,7 +25,7 @@ async function handleUpdate(request: Request, { params }: RouteContext) {
 
     return playlistController.updatePlaylist(session.user, playlistId, payload);
   } catch (error) {
-    return handleControllerError(error, 'Playlist update failed.');
+    return handleControllerError(error, 'We could not save this playlist. Try again.');
   }
 }
 
@@ -38,6 +38,9 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
     return playlistController.deletePlaylist(session.user, playlistId);
   } catch (error) {
-    return handleControllerError(error, 'Deleting playlist failed.');
+    return handleControllerError(
+      error,
+      'We could not delete this playlist. Refresh and try again.',
+    );
   }
 }

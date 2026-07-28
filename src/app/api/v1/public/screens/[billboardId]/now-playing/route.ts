@@ -11,6 +11,6 @@ export async function GET(_request: Request, { params }: RouteContext) {
 
     return rotationController.getNowPlaying(billboardId);
   } catch (error) {
-    return handleControllerError(error, 'Getting now playing failed.');
+    return handleControllerError(error, 'We could not load the current playback. Try again.');
   }
 }

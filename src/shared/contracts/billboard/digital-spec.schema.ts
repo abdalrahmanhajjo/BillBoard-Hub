@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { SCREEN_STATUSES } from '@/shared/constants/billboard';
 
-export const digitalSpecResolutionSchema = z.object({
+const digitalSpecResolutionSchema = z.object({
   width: z.coerce.number().int().positive('Resolution width must be greater than 0.'),
   height: z.coerce.number().int().positive('Resolution height must be greater than 0.'),
 });

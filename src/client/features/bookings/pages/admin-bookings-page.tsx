@@ -13,11 +13,13 @@ import {
   Clock3,
   Mail,
   MapPin,
+  RefreshCcw,
   Search,
   X,
 } from 'lucide-react';
 import { bookingClientService } from '@/client/features/bookings/services/booking-client.service';
 import { billboardClientService } from '@/client/features/billboards/services/billboard-client.service';
+import { paymentClientService } from '@/client/features/payments/services/payment-client.service';
 import { Badge } from '@/client/ui/components/ui/badge';
 import { Button } from '@/client/ui/components/ui/button';
 import {
@@ -47,6 +49,7 @@ import {
 import { cn } from '@/client/ui/lib/utils';
 import type { Billboard } from '@/shared/types/billboard';
 import type { Booking, BookingStatus, PaymentMethod, PaymentStatus } from '@/shared/types/booking';
+import { PAYMENT_METHODS, PAYMENT_STATUSES } from '@/shared/constants/booking';
 
 const ALL = 'all';
 const statusText: Record<BookingStatus, string> = {
@@ -61,11 +64,13 @@ const paymentText: Record<PaymentStatus, string> = {
   paid: 'Paid',
   partially_paid: 'Partially paid',
   unpaid: 'Unpaid',
+  refund_pending: 'Refund processing',
+  refunded: 'Refunded',
 };
 const methodText: Record<PaymentMethod, string> = {
-  card: 'Card',
+  card: 'Visa · Stripe',
   bank_transfer: 'Bank transfer',
-  e_wallet: 'E-wallet',
+  e_wallet: 'Cash / Whish',
   cash: 'Cash',
 };
 type Row = Booking & { billboard?: Billboard };
@@ -101,6 +106,8 @@ function paymentBadge(status: PaymentStatus) {
     paid: 'border-emerald-200 bg-emerald-50 text-emerald-700',
     partially_paid: 'border-sky-200 bg-sky-50 text-sky-700',
     unpaid: 'border-rose-200 bg-rose-50 text-rose-700',
+    refund_pending: 'border-violet-200 bg-violet-50 text-violet-700',
+    refunded: 'border-slate-200 bg-slate-100 text-slate-600',
   };
   return (
     <Badge variant="outline" className={colors[status]}>
@@ -138,7 +145,7 @@ export function AdminBookingsPage() {
       bookingClientService.updateStatus(id, next),
     onSuccess: (result, variables) => {
       if (!result.ok) {
-        setNotice(result.error);
+        setNotice(result.error ?? null);
         return;
       }
       setNotice(`Reservation ${variables.status}.`);
@@ -148,6 +155,61 @@ export function AdminBookingsPage() {
       void client.invalidateQueries({ queryKey: ['admin-bookings'] });
     },
     onError: () => setNotice('Unable to update this reservation.'),
+  });
+  const reconcilePayment = useMutation({
+    mutationFn: ({
+      id,
+      status: paymentStatus,
+      amountPaid,
+      note,
+    }: {
+      id: string;
+      status: Extract<PaymentStatus, 'paid' | 'partially_paid' | 'unpaid' | 'refunded'>;
+      amountPaid?: number;
+      note?: string;
+    }) =>
+      paymentClientService.recordManualPayment(id, {
+        status: paymentStatus,
+        amountPaid,
+        note,
+      }),
+    onSuccess: (result) => {
+      if (!result.ok || !result.data) {
+        setNotice(result.error ?? 'We could not record this payment.');
+        return;
+      }
+      const booking = result.data.booking;
+      setNotice(`Payment updated to ${paymentText[booking.paymentStatus].toLowerCase()}.`);
+      setSelected((value) => (value?.id === booking.id ? { ...value, ...booking } : value));
+      void client.invalidateQueries({ queryKey: ['admin-bookings'] });
+    },
+    onError: () => setNotice('We could not record this payment. Review the details and try again.'),
+  });
+  const refundPayment = useMutation({
+    mutationFn: (id: string) => paymentClientService.refundCardPayment(id, 'requested_by_customer'),
+    onSuccess: (result, bookingId) => {
+      if (!result.ok || !result.data) {
+        setNotice(result.error ?? 'We could not start this refund.');
+        return;
+      }
+      const refundPending = result.data.payment.status === 'REFUND_PENDING';
+      setNotice(
+        refundPending
+          ? 'Stripe is processing the refund. The reservation remains active until Stripe confirms it.'
+          : 'Stripe refunded the payment and cancelled the reservation.',
+      );
+      setSelected((value) =>
+        value?.id === bookingId
+          ? {
+              ...value,
+              status: refundPending ? value.status : 'cancelled',
+              paymentStatus: refundPending ? 'refund_pending' : 'refunded',
+            }
+          : value,
+      );
+      void client.invalidateQueries({ queryKey: ['admin-bookings'] });
+    },
+    onError: () => setNotice('We could not issue this refund. Check Stripe and try again.'),
   });
   const billboards = useMemo(() => billboardsQuery.data ?? [], [billboardsQuery.data]);
   const rows = useMemo(() => {
@@ -286,13 +348,8 @@ export function AdminBookingsPage() {
       'bg-emerald-50 text-emerald-700',
     ],
     [
-      'Revenue in view',
-      money(
-        allBookings
-          .filter((item) => item.status === 'approved' || item.status === 'completed')
-          .reduce((sum, item) => sum + item.pricing.total, 0),
-        'USD',
-      ),
+      'Payments complete',
+      allBookings.filter((item) => item.paymentStatus === PAYMENT_STATUSES.PAID).length,
       CircleDollarSign,
       'bg-violet-50 text-violet-700',
     ],
@@ -461,7 +518,24 @@ export function AdminBookingsPage() {
             booking={selected}
             close={() => setSelected(null)}
             update={(next) => selected && update.mutate({ id: selected.id, status: next })}
-            pending={update.isPending}
+            pending={update.isPending || reconcilePayment.isPending || refundPayment.isPending}
+            recordPayment={(input) =>
+              selected &&
+              reconcilePayment.mutate({
+                id: selected.id,
+                ...input,
+              })
+            }
+            refund={() => {
+              if (
+                selected &&
+                window.confirm(
+                  `Refund the full payment for ${selected.reference} and cancel the reservation?`,
+                )
+              ) {
+                refundPayment.mutate(selected.id);
+              }
+            }}
           />
         </div>
       </div>
@@ -473,12 +547,26 @@ function Details({
   close,
   update,
   pending,
+  recordPayment,
+  refund,
 }: {
   booking: Row | null;
   close: () => void;
   update: (status: 'approved' | 'rejected') => void;
   pending: boolean;
+  recordPayment: (input: {
+    status: Extract<PaymentStatus, 'paid' | 'partially_paid' | 'unpaid' | 'refunded'>;
+    amountPaid?: number;
+    note?: string;
+  }) => void;
+  refund: () => void;
 }) {
+  const [manualStatus, setManualStatus] = useState<
+    Extract<PaymentStatus, 'paid' | 'partially_paid' | 'unpaid' | 'refunded'>
+  >(PAYMENT_STATUSES.PAID);
+  const [amountPaid, setAmountPaid] = useState('');
+  const [paymentNote, setPaymentNote] = useState('');
+
   return (
     <Card className="h-fit border-white/80 bg-white/90 shadow-xl shadow-slate-200/40">
       <CardHeader>
@@ -530,6 +618,95 @@ function Details({
               <span className="text-sm font-medium">Reservation status</span>
               {bookingBadge(booking.status)}
             </div>
+            {booking.paymentMethod !== PAYMENT_METHODS.CARD ? (
+              <div className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div>
+                  <p className="text-sm font-semibold text-slate-950">Record offline payment</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">
+                    Use this after confirming the transfer, wallet receipt, or cash payment.
+                  </p>
+                </div>
+                <Select
+                  value={manualStatus}
+                  onValueChange={(value) =>
+                    setManualStatus(
+                      (value ?? PAYMENT_STATUSES.PAID) as Extract<
+                        PaymentStatus,
+                        'paid' | 'partially_paid' | 'unpaid' | 'refunded'
+                      >,
+                    )
+                  }
+                >
+                  <SelectTrigger className="w-full bg-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={PAYMENT_STATUSES.PAID}>Paid in full</SelectItem>
+                    <SelectItem value={PAYMENT_STATUSES.PARTIALLY_PAID}>Partially paid</SelectItem>
+                    <SelectItem value={PAYMENT_STATUSES.UNPAID}>Unpaid</SelectItem>
+                    <SelectItem value={PAYMENT_STATUSES.REFUNDED}>Refunded</SelectItem>
+                  </SelectContent>
+                </Select>
+                {manualStatus === PAYMENT_STATUSES.PARTIALLY_PAID ? (
+                  <Input
+                    type="number"
+                    min="0.01"
+                    max={booking.pricing.total}
+                    step="0.01"
+                    value={amountPaid}
+                    onChange={(event) => setAmountPaid(event.target.value)}
+                    placeholder={`Amount received (${booking.pricing.currency})`}
+                    className="bg-white"
+                  />
+                ) : null}
+                <Input
+                  value={paymentNote}
+                  onChange={(event) => setPaymentNote(event.target.value)}
+                  maxLength={500}
+                  placeholder="Receipt or reconciliation note (optional)"
+                  className="bg-white"
+                />
+                <Button
+                  className="w-full"
+                  disabled={
+                    pending ||
+                    (manualStatus === PAYMENT_STATUSES.PARTIALLY_PAID &&
+                      (!amountPaid || Number(amountPaid) <= 0))
+                  }
+                  onClick={() =>
+                    recordPayment({
+                      status: manualStatus,
+                      amountPaid:
+                        manualStatus === PAYMENT_STATUSES.PARTIALLY_PAID
+                          ? Number(amountPaid)
+                          : undefined,
+                      note: paymentNote.trim() || undefined,
+                    })
+                  }
+                >
+                  Record payment status
+                </Button>
+              </div>
+            ) : null}
+            {booking.paymentMethod === PAYMENT_METHODS.CARD &&
+            booking.paymentStatus === PAYMENT_STATUSES.PAID ? (
+              <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4">
+                <p className="text-sm font-semibold text-rose-950">Refund card payment</p>
+                <p className="mt-1 text-xs leading-5 text-rose-700">
+                  This issues a full Stripe refund and cancels the reservation so its dates are
+                  released.
+                </p>
+                <Button
+                  variant="outline"
+                  className="mt-3 w-full border-rose-200 bg-white text-rose-700 hover:bg-rose-100"
+                  disabled={pending}
+                  onClick={refund}
+                >
+                  <RefreshCcw className="size-4" />
+                  Refund and cancel
+                </Button>
+              </div>
+            ) : null}
             {booking.status === 'pending' && (
               <div className="grid gap-2">
                 <Button disabled={pending} onClick={() => update('approved')}>

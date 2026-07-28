@@ -10,6 +10,7 @@ import {
 import { SCREEN_STATUSES } from '@/shared/constants/billboard';
 import type { DigitalSpec } from '@/shared/types/billboard';
 import { billboardClientService } from '@/client/features/billboards/services/billboard-client.service';
+import { FormStatusMessages } from '@/client/features/billboards/components/form-status-messages';
 
 type DigitalSpecFormProps = {
   billboardId: string;
@@ -49,28 +50,21 @@ export function DigitalSpecForm({ billboardId, initialSpec, onSaved }: DigitalSp
     startTransition(async () => {
       const result = await billboardClientService.saveDigitalSpec(billboardId, values);
       if (!result.ok) {
-        setSubmitError(result.error ?? 'Saving digital specification failed.');
+        setSubmitError(
+          result.error ??
+            'We could not save the digital specifications. Review the values and try again.',
+        );
         return;
       }
 
-      setSubmitSuccess('Digital specification saved.');
+      setSubmitSuccess('Digital specifications saved. The screen details are now up to date.');
       onSaved?.();
     });
   };
 
   return (
     <form className="w-full space-y-4" onSubmit={handleSubmit(onSubmit)}>
-      {submitError ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {submitError}
-        </p>
-      ) : null}
-
-      {submitSuccess ? (
-        <p className="rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
-          {submitSuccess}
-        </p>
-      ) : null}
+      <FormStatusMessages error={submitError} success={submitSuccess} />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1">

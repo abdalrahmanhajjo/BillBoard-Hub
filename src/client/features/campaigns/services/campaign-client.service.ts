@@ -1,4 +1,4 @@
-import { apiRequest } from '@/client/lib/response-utils';
+import { apiRequest } from '@/client/ui/lib/api-client';
 import type {
   CreateCampaignSchemaInput,
   UpdateCampaignSchemaInput,

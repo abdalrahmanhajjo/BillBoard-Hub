@@ -1,43 +1,47 @@
 import Link from 'next/link';
+import { ArrowUpRight, House } from 'lucide-react';
 import { DashboardShell } from '@/client/features/dashboard/components/dashboard-shell';
-
-function Card({ title, description, href }: { title: string; description: string; href: string }) {
-  return (
-    <Link
-      href={href}
-      className="rounded-lg border border-zinc-200 bg-white p-5 transition hover:border-zinc-300 hover:shadow-sm"
-    >
-      <h2 className="text-lg font-semibold">{title}</h2>
-      <p className="mt-1 text-sm text-zinc-600">{description}</p>
-    </Link>
-  );
-}
+import { DashboardLinkCard } from '@/client/features/dashboard/components/dashboard-link-card';
+import { Button } from '@/client/ui/components/ui/button';
+import { ADVERTISER_ROUTES } from '@/shared/constants/routes';
 
 export function AdvertiserDashboardFeaturePage() {
   return (
     <DashboardShell
       title="Advertiser Dashboard"
       subtitle="Plan campaigns, upload creatives, and track bookings."
+      actions={
+        <Button
+          variant="outline"
+          render={<Link href={ADVERTISER_ROUTES.HOME} />}
+          nativeButton={false}
+          className="min-h-11 rounded-xl border-zinc-200 bg-white px-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-zinc-50 hover:shadow-md active:translate-y-0"
+        >
+          <House className="size-4" aria-hidden />
+          Website home
+          <ArrowUpRight className="size-3.5 text-zinc-400" aria-hidden />
+        </Button>
+      }
     >
-      <Card
+      <DashboardLinkCard
         title="Marketplace"
         description="Browse and inspect available billboard inventory."
-        href="/dashboard/advertiser/billboards"
+        href="/user/advertiser/billboards"
       />
-      <Card
+      <DashboardLinkCard
         title="Bookings"
         description="Create and track billboard booking requests."
-        href="/dashboard/advertiser/bookings"
+        href="/user/advertiser/bookings"
       />
-      <Card
+      <DashboardLinkCard
         title="Campaigns"
         description="Manage campaign lifecycle and status."
-        href="/dashboard/advertiser/campaigns"
+        href="/user/advertiser/campaigns"
       />
-      <Card
+      <DashboardLinkCard
         title="Creatives"
         description="Upload and organize campaign creatives."
-        href="/dashboard/advertiser/creatives"
+        href="/user/advertiser/creatives"
       />
     </DashboardShell>
   );

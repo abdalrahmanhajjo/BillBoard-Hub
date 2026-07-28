@@ -22,7 +22,10 @@ export const playlistController = {
       const playlist = await playlistService.create(parsed.data, actor);
       return apiResponse.ok(playlist, 201);
     } catch (error) {
-      return handleControllerError(error, 'Playlist creation failed.');
+      return handleControllerError(
+        error,
+        'We could not create this playlist. Review the selections and try again.',
+      );
     }
   },
 
@@ -31,7 +34,7 @@ export const playlistController = {
       const playlists = await playlistService.list(actor, billboardId);
       return apiResponse.ok({ playlists });
     } catch (error) {
-      return handleControllerError(error, 'Getting playlists failed.');
+      return handleControllerError(error, 'We could not load playlists. Try again.');
     }
   },
 
@@ -44,7 +47,7 @@ export const playlistController = {
       const playlist = await playlistService.getById(actor, playlistId);
       return apiResponse.ok({ playlist });
     } catch (error) {
-      return handleControllerError(error, 'Getting playlist failed.');
+      return handleControllerError(error, 'We could not load this playlist. Try again.');
     }
   },
 
@@ -64,7 +67,7 @@ export const playlistController = {
       const playlist = await playlistService.update(actor, playlistId, parsed.data);
       return apiResponse.ok(playlist);
     } catch (error) {
-      return handleControllerError(error, 'Playlist update failed.');
+      return handleControllerError(error, 'We could not save this playlist. Try again.');
     }
   },
 
@@ -77,7 +80,10 @@ export const playlistController = {
       await playlistService.delete(actor, playlistId);
       return apiResponse.ok({ deleted: true });
     } catch (error) {
-      return handleControllerError(error, 'Deleting playlist failed.');
+      return handleControllerError(
+        error,
+        'We could not delete this playlist. Refresh and try again.',
+      );
     }
   },
 };

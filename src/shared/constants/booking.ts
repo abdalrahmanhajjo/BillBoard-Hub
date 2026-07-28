@@ -18,6 +18,8 @@ export const PAYMENT_STATUSES = {
   PAID: 'paid',
   PARTIALLY_PAID: 'partially_paid',
   UNPAID: 'unpaid',
+  REFUND_PENDING: 'refund_pending',
+  REFUNDED: 'refunded',
 } as const;
 
 export const CAMPAIGN_OBJECTIVES = {
@@ -28,6 +30,12 @@ export const CAMPAIGN_OBJECTIVES = {
 } as const;
 
 export const BOOKING_CURRENCIES = ['USD', 'EUR', 'LBP'] as const;
+
+export const BOOKING_CREATIVE_TYPES = {
+  IMAGE: 'image',
+  VIDEO: 'video',
+  DOCUMENT: 'document',
+} as const;
 
 /**
  * Statuses that occupy a billboard's calendar for conflict detection. Only

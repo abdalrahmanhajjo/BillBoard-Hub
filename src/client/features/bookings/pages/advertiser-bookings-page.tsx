@@ -2,12 +2,21 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { CalendarDays, MapPin, RefreshCw, XCircle } from 'lucide-react';
-import { BOOKING_STATUSES } from '@/shared/constants/booking';
+import {
+  CalendarDays,
+  CheckCircle2,
+  CreditCard,
+  Loader2,
+  MapPin,
+  RefreshCw,
+  XCircle,
+} from 'lucide-react';
+import { BOOKING_STATUSES, PAYMENT_METHODS, PAYMENT_STATUSES } from '@/shared/constants/booking';
 import type { Billboard } from '@/shared/types/billboard';
-import type { Booking, BookingStatus } from '@/shared/types/booking';
+import type { Booking, BookingStatus, PaymentMethod, PaymentStatus } from '@/shared/types/booking';
 import { billboardClientService } from '@/client/features/billboards/services/billboard-client.service';
 import { bookingClientService } from '@/client/features/bookings/services/booking-client.service';
+import { paymentClientService } from '@/client/features/payments/services/payment-client.service';
 
 type LoadStatus = 'loading' | 'ready' | 'error';
 
@@ -29,6 +38,31 @@ const STATUS_LABELS: Record<BookingStatus, string> = {
 
 const CANCELLABLE: BookingStatus[] = [BOOKING_STATUSES.PENDING, BOOKING_STATUSES.APPROVED];
 
+const PAYMENT_STYLES: Record<PaymentStatus, string> = {
+  pending: 'border-amber-200 bg-amber-50 text-amber-700',
+  paid: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+  partially_paid: 'border-sky-200 bg-sky-50 text-sky-700',
+  unpaid: 'border-rose-200 bg-rose-50 text-rose-700',
+  refund_pending: 'border-violet-200 bg-violet-50 text-violet-700',
+  refunded: 'border-zinc-200 bg-zinc-100 text-zinc-600',
+};
+
+const PAYMENT_LABELS: Record<PaymentStatus, string> = {
+  pending: 'Payment due',
+  paid: 'Paid',
+  partially_paid: 'Partially paid',
+  unpaid: 'Payment due',
+  refund_pending: 'Refund processing',
+  refunded: 'Refunded',
+};
+
+const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
+  card: 'Visa · Stripe',
+  bank_transfer: 'Bank transfer',
+  e_wallet: 'Cash / Whish',
+  cash: 'Cash',
+};
+
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
     month: 'short',
@@ -45,6 +79,7 @@ export function AdvertiserBookingsPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [payingId, setPayingId] = useState<string | null>(null);
 
   const loadAll = useCallback(async () => {
     const [bookingsResult, billboardsResult] = await Promise.all([
@@ -63,17 +98,9 @@ export function AdvertiserBookingsPage() {
   }, []);
 
   useEffect(() => {
-    let active = true;
     void (async () => {
-      try {
-        await loadAll();
-      } catch {
-        if (active) setStatus('error');
-      }
+      await loadAll();
     })();
-    return () => {
-      active = false;
-    };
   }, [loadAll]);
 
   // Reflect status changes immediately when the advertiser returns to the tab.
@@ -105,16 +132,38 @@ export function AdvertiserBookingsPage() {
   };
 
   const handleCancel = async (booking: Booking) => {
-    if (!window.confirm(`Cancel reservation ${booking.reference}?`)) return;
+    if (
+      !window.confirm(
+        `Cancel reservation ${booking.reference}? The requested dates will be released. This cannot be undone.`,
+      )
+    )
+      return;
     setActionError(null);
     setCancellingId(booking.id);
     const result = await bookingClientService.cancel(booking.id);
     setCancellingId(null);
     if (!result.ok) {
-      setActionError(result.error ?? 'Cancelling the reservation failed.');
+      setActionError(
+        result.error ?? 'We could not cancel this reservation. Refresh the page and try again.',
+      );
       return;
     }
     await loadAll();
+  };
+
+  const handlePay = async (booking: Booking) => {
+    setActionError(null);
+    setPayingId(booking.id);
+    const result = await paymentClientService.createCheckoutSession(booking.id);
+    if (!result.ok || !result.data?.url) {
+      setPayingId(null);
+      setActionError(
+        result.error ??
+          'We could not start secure card checkout. Refresh the reservation and try again.',
+      );
+      return;
+    }
+    window.location.assign(result.data.url);
   };
 
   return (
@@ -138,15 +187,21 @@ export function AdvertiserBookingsPage() {
       </header>
 
       {actionError ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p
+          role="alert"
+          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+        >
           {actionError}
         </p>
       ) : null}
 
       {status === 'loading' ? <p className="text-sm text-zinc-600">Loading…</p> : null}
       {status === 'error' ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          Unable to load your reservations.
+        <p
+          role="alert"
+          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+        >
+          We could not load your reservations. Check your connection and try again.
         </p>
       ) : null}
 
@@ -167,55 +222,109 @@ export function AdvertiserBookingsPage() {
           {bookings.map((booking) => {
             const billboard = billboardsById.get(booking.billboardId);
             const shown = displayStatus(booking);
-            const canCancel = CANCELLABLE.includes(booking.status) && shown !== 'completed';
+            const hasReceivedPayment =
+              booking.paymentStatus === PAYMENT_STATUSES.PAID ||
+              booking.paymentStatus === PAYMENT_STATUSES.PARTIALLY_PAID ||
+              booking.paymentStatus === PAYMENT_STATUSES.REFUND_PENDING;
+            const canCancel =
+              CANCELLABLE.includes(booking.status) && shown !== 'completed' && !hasReceivedPayment;
+            const canPay =
+              booking.paymentMethod === PAYMENT_METHODS.CARD &&
+              booking.status === BOOKING_STATUSES.APPROVED &&
+              (booking.paymentStatus === PAYMENT_STATUSES.PENDING ||
+                booking.paymentStatus === PAYMENT_STATUSES.UNPAID);
             return (
               <article
                 key={booking.id}
-                className="flex flex-col gap-4 rounded-2xl border border-zinc-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between"
+                className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm"
               >
-                <div className="min-w-0 space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="truncate text-base font-semibold">{booking.campaignName}</h2>
-                    <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] font-semibold text-zinc-500">
-                      {booking.reference}
+                <div className="grid gap-5 p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+                  <div className="min-w-0 space-y-1.5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="truncate text-base font-semibold">{booking.campaignName}</h2>
+                      <span className="rounded-lg bg-zinc-100 px-2 py-0.5 font-mono text-[11px] font-semibold text-zinc-500">
+                        {booking.reference}
+                      </span>
+                    </div>
+                    <p className="flex items-center gap-1.5 text-sm text-zinc-500">
+                      <MapPin className="size-3.5 text-blue-600" aria-hidden />
+                      {billboard ? `${billboard.name} — ${billboard.location.city}` : 'Billboard'}
+                    </p>
+                    <p className="flex items-center gap-1.5 text-xs text-zinc-500">
+                      <CalendarDays className="size-3.5 text-zinc-400" aria-hidden />
+                      {formatDate(booking.startDate)} – {formatDate(booking.endDate)} (
+                      {booking.pricing.days} days)
+                    </p>
+                    {shown === 'rejected' ? (
+                      <p className="mt-2 text-xs text-red-600">
+                        This request was not accepted. You can submit a new reservation with
+                        different dates.
+                      </p>
+                    ) : null}
+                    {booking.status === BOOKING_STATUSES.PENDING &&
+                    booking.paymentMethod === PAYMENT_METHODS.CARD ? (
+                      <p className="mt-2 text-xs text-amber-700">
+                        Card payment opens after our team confirms availability and approves the
+                        reservation.
+                      </p>
+                    ) : null}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 sm:max-w-56 sm:justify-end">
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[shown]}`}
+                    >
+                      {STATUS_LABELS[shown]}
+                    </span>
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${PAYMENT_STYLES[booking.paymentStatus]}`}
+                    >
+                      {booking.paymentStatus === PAYMENT_STATUSES.PAID ? (
+                        <CheckCircle2 className="mr-1 size-3.5" aria-hidden />
+                      ) : null}
+                      {PAYMENT_LABELS[booking.paymentStatus]}
+                    </span>
+                    <p className="w-full text-right text-xs text-zinc-500">
+                      {PAYMENT_METHOD_LABELS[booking.paymentMethod]}
+                    </p>
+                    <span className="w-full text-right text-xl font-semibold tracking-tight text-zinc-900 tabular-nums">
+                      {booking.pricing.currency} {money.format(booking.pricing.total)}
                     </span>
                   </div>
-                  <p className="flex items-center gap-1.5 text-sm text-zinc-500">
-                    <MapPin className="size-3.5 text-blue-600" aria-hidden />
-                    {billboard ? `${billboard.name} — ${billboard.location.city}` : 'Billboard'}
-                  </p>
-                  <p className="flex items-center gap-1.5 text-xs text-zinc-500">
-                    <CalendarDays className="size-3.5 text-zinc-400" aria-hidden />
-                    {formatDate(booking.startDate)} – {formatDate(booking.endDate)} (
-                    {booking.pricing.days} days)
-                  </p>
-                  {shown === 'rejected' ? (
-                    <p className="mt-1 text-xs text-red-600">
-                      This request was not accepted. You can submit a new reservation with different
-                      dates.
-                    </p>
-                  ) : null}
                 </div>
 
-                <div className="flex items-center justify-between gap-4 sm:flex-col sm:items-end">
-                  <span
-                    className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[shown]}`}
-                  >
-                    {STATUS_LABELS[shown]}
-                  </span>
-                  <span className="text-sm font-semibold text-zinc-900">
-                    {booking.pricing.currency} {money.format(booking.pricing.total)}
-                  </span>
+                <div className="flex flex-col gap-2 border-t border-zinc-100 bg-zinc-50/70 px-5 py-3 sm:flex-row sm:items-center sm:justify-end">
                   {canCancel ? (
                     <button
                       type="button"
                       onClick={() => handleCancel(booking)}
-                      disabled={cancellingId === booking.id}
-                      className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-50 disabled:opacity-50"
+                      disabled={cancellingId === booking.id || payingId === booking.id}
+                      className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium text-zinc-600 transition-colors hover:bg-white disabled:opacity-50"
                     >
                       <XCircle className="size-3.5" aria-hidden />
-                      {cancellingId === booking.id ? 'Cancelling…' : 'Cancel'}
+                      {cancellingId === booking.id ? 'Cancelling…' : 'Cancel reservation'}
                     </button>
+                  ) : null}
+                  {canPay ? (
+                    <button
+                      type="button"
+                      onClick={() => void handlePay(booking)}
+                      disabled={payingId === booking.id}
+                      className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-60"
+                    >
+                      {payingId === booking.id ? (
+                        <Loader2 className="size-4 animate-spin" aria-hidden />
+                      ) : (
+                        <CreditCard className="size-4" aria-hidden />
+                      )}
+                      {payingId === booking.id ? 'Opening secure checkout…' : 'Pay securely'}
+                    </button>
+                  ) : null}
+                  {booking.paymentStatus === PAYMENT_STATUSES.PAID ? (
+                    <span className="inline-flex min-h-10 items-center justify-center gap-2 px-3 text-xs font-medium text-emerald-700">
+                      <CheckCircle2 className="size-4" aria-hidden />
+                      Payment complete
+                    </span>
                   ) : null}
                 </div>
               </article>

@@ -5,7 +5,7 @@ import type { Playlist } from '@/shared/types/playlist';
 import type { Schedule } from '@/shared/types/schedule';
 
 /** Resolves how long a creative stays on screen. */
-export function resolveDurationSeconds(creative: Creative): number {
+function resolveDurationSeconds(creative: Creative): number {
   return creative.durationSeconds && creative.durationSeconds > 0
     ? creative.durationSeconds
     : DEFAULT_SLOT_SECONDS;
@@ -16,7 +16,7 @@ export function resolveDurationSeconds(creative: Creative): number {
  * that no longer exist (deleted after being added) are skipped; positions
  * reflect the surviving play order.
  */
-export function buildRotationItems(
+function buildRotationItems(
   creativeIds: string[],
   creativesById: Map<string, Creative>,
 ): RotationItem[] {

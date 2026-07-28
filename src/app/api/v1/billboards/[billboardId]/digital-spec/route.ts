@@ -13,7 +13,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
 
     return digitalSpecController.getDigitalSpec(session.user, billboardId);
   } catch (error) {
-    return handleControllerError(error, 'Getting digital specification failed.');
+    return handleControllerError(error, 'We could not load the digital specifications. Try again.');
   }
 }
 
@@ -25,6 +25,9 @@ export async function PUT(request: Request, { params }: RouteContext) {
 
     return digitalSpecController.upsertDigitalSpec(session.user, billboardId, payload);
   } catch (error) {
-    return handleControllerError(error, 'Saving digital specification failed.');
+    return handleControllerError(
+      error,
+      'We could not save the digital specifications. Review the values and try again.',
+    );
   }
 }

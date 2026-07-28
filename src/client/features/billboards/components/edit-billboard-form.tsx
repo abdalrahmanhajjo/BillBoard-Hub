@@ -11,6 +11,7 @@ import { BILLBOARD_STATUSES } from '@/shared/constants/billboard';
 import type { Billboard } from '@/shared/types/billboard';
 import { billboardClientService } from '@/client/features/billboards/services/billboard-client.service';
 import { BillboardImageInput } from '@/client/features/billboards/components/billboard-image-input';
+import { FormStatusMessages } from '@/client/features/billboards/components/form-status-messages';
 
 type EditBillboardFormProps = {
   billboard: Billboard;
@@ -57,7 +58,9 @@ export function EditBillboardForm({ billboard, onSaved, onCancel }: EditBillboar
     startTransition(async () => {
       const result = await billboardClientService.update(billboard.id, values);
       if (!result.ok) {
-        setSubmitError(result.error ?? 'Billboard update failed.');
+        setSubmitError(
+          result.error ?? 'We could not save the billboard changes. Review the form and try again.',
+        );
         return;
       }
 
@@ -67,11 +70,7 @@ export function EditBillboardForm({ billboard, onSaved, onCancel }: EditBillboar
 
   return (
     <form className="w-full space-y-4" onSubmit={handleSubmit(onSubmit)}>
-      {submitError ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {submitError}
-        </p>
-      ) : null}
+      <FormStatusMessages error={submitError} />
 
       <div className="space-y-1">
         <label htmlFor="edit-description" className="text-sm font-medium">

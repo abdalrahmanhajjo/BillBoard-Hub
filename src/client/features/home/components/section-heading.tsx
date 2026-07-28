@@ -1,39 +1,28 @@
 'use client';
 
-import { motion } from 'motion/react';
-import { cn } from '@/client/ui/lib/utils';
-import { fadeUp, staggerContainer, viewportOnce } from '@/client/features/home/lib/animations';
+import { motion, useReducedMotion } from 'motion/react';
+
+const ease = [0.16, 1, 0.3, 1] as const;
 
 type SectionHeadingProps = {
   title: string;
-  subtitle?: string;
-  className?: string;
+  subtitle: string;
 };
 
-/** Consistent, large section title + subtitle with a staggered scroll reveal. */
-export function SectionHeading({ title, subtitle, className }: SectionHeadingProps) {
+export function SectionHeading({ title, subtitle }: SectionHeadingProps) {
+  const reduceMotion = useReducedMotion();
+
   return (
     <motion.div
-      variants={staggerContainer}
-      initial="hidden"
-      whileInView="visible"
-      viewport={viewportOnce}
-      className={cn('mx-auto max-w-3xl text-center', className)}
+      initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.5 }}
+      transition={{ duration: 0.65, ease }}
     >
-      <motion.h2
-        variants={fadeUp}
-        className="text-3xl font-bold tracking-tight text-balance text-zinc-900 sm:text-4xl lg:text-5xl"
-      >
+      <p className="text-xs font-semibold tracking-[0.16em] text-blue-600 uppercase">{subtitle}</p>
+      <h2 className="mt-5 max-w-4xl text-4xl leading-[0.96] font-semibold tracking-tighter text-balance sm:text-5xl lg:text-7xl">
         {title}
-      </motion.h2>
-      {subtitle ? (
-        <motion.p
-          variants={fadeUp}
-          className="mx-auto mt-4 max-w-2xl text-base text-pretty text-zinc-600 lg:text-lg"
-        >
-          {subtitle}
-        </motion.p>
-      ) : null}
+      </h2>
     </motion.div>
   );
 }

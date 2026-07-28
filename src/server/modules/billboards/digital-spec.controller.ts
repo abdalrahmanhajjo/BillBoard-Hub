@@ -18,7 +18,10 @@ export const digitalSpecController = {
 
       return apiResponse.ok({ spec });
     } catch (error) {
-      return handleControllerError(error, 'Getting digital specification failed.');
+      return handleControllerError(
+        error,
+        'We could not load the digital specifications. Try again.',
+      );
     }
   },
 
@@ -32,7 +35,10 @@ export const digitalSpecController = {
 
       return apiResponse.ok({ spec });
     } catch (error) {
-      return handleControllerError(error, 'Getting digital specification failed.');
+      return handleControllerError(
+        error,
+        'We could not load the digital specifications. Try again.',
+      );
     }
   },
 
@@ -54,7 +60,10 @@ export const digitalSpecController = {
 
       return apiResponse.ok(spec);
     } catch (error) {
-      return handleControllerError(error, 'Saving digital specification failed.');
+      return handleControllerError(
+        error,
+        'We could not save the digital specifications. Review the values and try again.',
+      );
     }
   },
 };

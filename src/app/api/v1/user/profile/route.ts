@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   const userId = searchParams.get('id');
 
   if (!userId) {
-    return apiResponse.badRequest('Missing id parameter.');
+    return apiResponse.badRequest('Choose a user before requesting profile details.');
   }
 
   return userController.getUser(userId);

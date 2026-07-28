@@ -14,7 +14,7 @@ export const digitalSpecService = {
 
     const billboard = await billboardRepository.findById(billboardId);
     if (!billboard) {
-      throw new NotFoundError('Billboard not found.');
+      throw new NotFoundError('We could not find this billboard. It may have been removed.');
     }
 
     const spec = await digitalSpecRepository.findByBillboardId(billboardId);
@@ -29,7 +29,7 @@ export const digitalSpecService = {
   async getPublicByBillboard(billboardId: string): Promise<PublicDigitalSpec | null> {
     const billboard = await billboardRepository.findById(billboardId);
     if (!billboard) {
-      throw new NotFoundError('Billboard not found.');
+      throw new NotFoundError('We could not find this billboard. It may have been removed.');
     }
 
     const spec = await digitalSpecRepository.findByBillboardId(billboardId);
@@ -46,7 +46,7 @@ export const digitalSpecService = {
 
     const billboard = await billboardRepository.findById(billboardId);
     if (!billboard) {
-      throw new NotFoundError('Billboard not found.');
+      throw new NotFoundError('We could not find this billboard. It may have been removed.');
     }
 
     if (billboard.type !== BILLBOARD_TYPES.DIGITAL) {

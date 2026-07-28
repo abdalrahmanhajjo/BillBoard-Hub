@@ -13,7 +13,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
 
     return billboardController.getBillboard(session.user, billboardId);
   } catch (error) {
-    return handleControllerError(error, 'Getting billboard failed.');
+    return handleControllerError(error, 'We could not load this billboard. Try again.');
   }
 }
 
@@ -25,7 +25,10 @@ async function handleUpdate(request: Request, { params }: RouteContext) {
 
     return billboardController.updateBillboard(session.user, billboardId, payload);
   } catch (error) {
-    return handleControllerError(error, 'Billboard update failed.');
+    return handleControllerError(
+      error,
+      'We could not save the billboard changes. Review the details and try again.',
+    );
   }
 }
 
@@ -41,6 +44,9 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
     return billboardController.deleteBillboard(session.user, billboardId);
   } catch (error) {
-    return handleControllerError(error, 'Archiving billboard failed.');
+    return handleControllerError(
+      error,
+      'We could not archive this billboard. Refresh and try again.',
+    );
   }
 }

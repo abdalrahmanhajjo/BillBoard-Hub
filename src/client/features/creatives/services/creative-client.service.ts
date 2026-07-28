@@ -1,8 +1,8 @@
-import { apiRequest } from '@/client/lib/response-utils';
 import type {
   CreateCreativeSchemaInput,
   UpdateCreativeStatusSchemaInput,
 } from '@/shared/contracts/creative/creative.schema';
+import { apiRequest } from '@/client/ui/lib/api-client';
 
 export const creativeClientService = {
   async create(payload: CreateCreativeSchemaInput) {
@@ -22,14 +22,14 @@ export const creativeClientService = {
   },
 
   async remove(creativeId: string) {
-    return apiRequest(`/api/v1/creatives/${creativeId}`, {
+    return apiRequest(`/api/v1/creatives/${encodeURIComponent(creativeId)}`, {
       method: 'DELETE',
       credentials: 'include',
     });
   },
 
   async updateStatus(creativeId: string, payload: UpdateCreativeStatusSchemaInput) {
-    return apiRequest(`/api/v1/creatives/${creativeId}/status`, {
+    return apiRequest(`/api/v1/creatives/${encodeURIComponent(creativeId)}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

@@ -7,13 +7,20 @@ if (!MONGODB_URI) {
 }
 
 declare global {
-  var __mongoClientPromise__: Promise<MongoClient> | undefined;
+  var __mongoClient__: MongoClient | undefined;
 }
 
-const client = new MongoClient(MONGODB_URI);
+const client =
+  global.__mongoClient__ ??
+  new MongoClient(MONGODB_URI, {
+    serverSelectionTimeoutMS: 8_000,
+  });
 
-export const mongoClientPromise = global.__mongoClientPromise__ ?? client.connect();
+// Auth.js explicitly recommends a non-connected MongoClient. Passing an eager
+// connection promise can create an unhandled rejection during module loading
+// when DNS or Atlas is temporarily unavailable.
+export const mongoClient = client;
 
 if (process.env.NODE_ENV !== 'production') {
-  global.__mongoClientPromise__ = mongoClientPromise;
+  global.__mongoClient__ = client;
 }

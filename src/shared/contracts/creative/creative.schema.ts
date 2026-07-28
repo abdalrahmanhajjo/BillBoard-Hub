@@ -1,10 +1,14 @@
 import { z } from 'zod';
-import { CREATIVE_STATUSES, CREATIVE_TYPES } from '@/shared/constants/creative';
+import {
+  CREATIVE_STATUSES,
+  CREATIVE_TYPES,
+  MAX_CREATIVE_VIDEO_DURATION_SECONDS,
+} from '@/shared/constants/creative';
 
 const secureAssetUrl = z
   .string()
   .trim()
-  .max(2048, 'Asset URL is too long.')
+  .max(2048, 'Asset URL must be 2,048 characters or fewer.')
   .refine((value) => {
     try {
       return new URL(value).protocol === 'https:';
@@ -13,17 +17,24 @@ const secureAssetUrl = z
     }
   }, 'The creative asset must be a secure (https) URL.');
 
+const videoDuration = z.coerce
+  .number()
+  .positive('Duration must be greater than 0.')
+  .refine(
+    (value) => value < MAX_CREATIVE_VIDEO_DURATION_SECONDS,
+    `Video must be shorter than ${MAX_CREATIVE_VIDEO_DURATION_SECONDS} seconds.`,
+  );
+
 export const createCreativeSchema = z
   .object({
-    name: z.string().trim().min(2, 'Creative name is required.').max(120, 'Name is too long.'),
+    name: z
+      .string()
+      .trim()
+      .min(2, 'Enter a creative name.')
+      .max(120, 'Creative name must be 120 characters or fewer.'),
     type: z.enum(CREATIVE_TYPES),
     assetUrl: secureAssetUrl,
-    durationSeconds: z.coerce
-      .number()
-      .int('Duration must be a whole number of seconds.')
-      .positive('Duration must be greater than 0.')
-      .max(600, 'Duration is too long.')
-      .optional(),
+    durationSeconds: videoDuration.optional(),
   })
   .refine((data) => data.type !== CREATIVE_TYPES.VIDEO || data.durationSeconds !== undefined, {
     message: 'Video creatives require a duration.',
@@ -35,18 +46,13 @@ export const updateCreativeSchema = z
     name: z
       .string()
       .trim()
-      .min(2, 'Creative name is required.')
-      .max(120, 'Name is too long.')
+      .min(2, 'Enter a creative name.')
+      .max(120, 'Creative name must be 120 characters or fewer.')
       .optional(),
-    durationSeconds: z.coerce
-      .number()
-      .int('Duration must be a whole number of seconds.')
-      .positive('Duration must be greater than 0.')
-      .max(600, 'Duration is too long.')
-      .optional(),
+    durationSeconds: videoDuration.optional(),
   })
   .refine((data) => Object.values(data).some((value) => value !== undefined), {
-    message: 'At least one field must be provided.',
+    message: 'Change the creative name or duration before saving.',
   });
 
 export const updateCreativeStatusSchema = z.object({

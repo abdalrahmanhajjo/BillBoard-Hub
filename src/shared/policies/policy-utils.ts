@@ -2,6 +2,7 @@ import { rolePermissionMap } from '../constants/permissions';
 import { ForbiddenError } from '../http/http-error';
 import { Permission } from '../types/permissions';
 import { UserRole } from '../types/user';
+import { permissionDenied } from '@/shared/messages/user-messages';
 
 function hasPermission(role: UserRole, permission: Permission): boolean {
   return rolePermissionMap[role].includes(permission);
@@ -13,6 +14,6 @@ export function can(role: UserRole, permission: Permission): boolean {
 
 export function assert(role: UserRole, permission: Permission, message?: string): void {
   if (!hasPermission(role, permission)) {
-    throw new ForbiddenError(message ?? 'Forbidden.');
+    throw new ForbiddenError(message ?? permissionDenied('perform this action'));
   }
 }

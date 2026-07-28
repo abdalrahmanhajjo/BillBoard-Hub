@@ -8,7 +8,7 @@ export async function GET() {
 
     return creativeController.listCreatives(session.user);
   } catch (error) {
-    return handleControllerError(error, 'Getting creatives failed.');
+    return handleControllerError(error, 'We could not load creatives. Try again.');
   }
 }
 
@@ -19,6 +19,9 @@ export async function POST(request: Request) {
 
     return creativeController.createCreative(payload, session.user);
   } catch (error) {
-    return handleControllerError(error, 'Creative creation failed.');
+    return handleControllerError(
+      error,
+      'We could not add this creative. Review the details and try again.',
+    );
   }
 }

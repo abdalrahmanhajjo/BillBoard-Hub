@@ -1,22 +1,3 @@
-import {
-  BadgeCheck,
-  BarChart3,
-  Building2,
-  Bus,
-  CalendarCheck,
-  FileText,
-  LifeBuoy,
-  MapPin,
-  MonitorPlay,
-  Rocket,
-  Search,
-  Signpost,
-  Store,
-  Tag,
-  Target,
-  Users,
-  Zap,
-} from 'lucide-react';
 import type {
   BillboardFormat,
   BrandItem,
@@ -26,6 +7,7 @@ import type {
   FooterColumnData,
   HeroContent,
   HowItWorksStep,
+  HomepageContent,
   NavGroup,
   NavItem,
   Review,
@@ -70,7 +52,7 @@ export const exploreGroup: NavGroup = {
   ],
 };
 
-export const heroContent: HeroContent = {
+const heroContent: HeroContent = {
   headline: 'Book billboard ads that reach Lebanon.',
   subheadline:
     'The easiest way for brands and agencies to discover, plan, and book out of home campaigns across Lebanon.',
@@ -78,13 +60,16 @@ export const heroContent: HeroContent = {
   primaryCta: { label: 'Get Started', href: '/register' },
   secondaryCta: { label: 'See How It Works', href: '/#how-it-works' },
   chips: [
-    { label: 'Premium inventory', icon: BadgeCheck },
-    { label: 'Real-time availability', icon: Zap },
-    { label: 'Transparent pricing', icon: Tag },
+    { label: 'Verified inventory', icon: 'badge-check' },
+    { label: 'Availability checked before confirmation', icon: 'zap' },
+    { label: 'Clear monthly pricing', icon: 'tag' },
   ],
 };
 
-export const brands: BrandItem[] = [
+// These brands intentionally use the local generated wordmark treatment. Add a
+// `logo` path only after the matching file exists in `public/brands/`; this
+// avoids failed asset requests while keeping the carousel data API extensible.
+const brands: BrandItem[] = [
   { name: 'alfa' },
   { name: 'touch' },
   { name: 'ABC' },
@@ -96,39 +81,39 @@ export const brands: BrandItem[] = [
   { name: 'KIA' },
 ];
 
-export const howItWorksSteps: HowItWorksStep[] = [
+const howItWorksSteps: HowItWorksStep[] = [
   {
     number: 1,
-    icon: Search,
+    icon: 'search',
     title: 'Search & Discover',
     description: 'Find billboards by location, format, audience, and availability.',
   },
   {
     number: 2,
-    icon: CalendarCheck,
+    icon: 'calendar-check',
     title: 'Plan & Book',
     description: 'Choose your dates, compare rates, and instantly request a quote.',
   },
   {
     number: 3,
-    icon: BarChart3,
+    icon: 'bar-chart',
     title: 'Launch & Measure',
-    description: 'We handle the execution while you track performance in real time.',
+    description: 'Coordinate production, confirm launch, and review campaign delivery.',
   },
 ];
 
-export const billboardFormats: BillboardFormat[] = [
+const billboardFormats: BillboardFormat[] = [
   {
-    icon: Signpost,
+    icon: 'signpost',
     title: 'Highway Billboards',
     description: 'High-visibility static billboards along major highways.',
     gradient: 'from-blue-500/15 to-blue-600/5',
-    image: '/images/formats/lebanon-highway-billboard.png',
-    imageAlt: "Large roadside billboard overlooking Lebanon's Mediterranean coast",
+    image: '/images/billboards/jounieh-highway-static.png',
+    imageAlt: 'Large static highway billboard on the Jounieh coastal highway',
     href: '/billboards',
   },
   {
-    icon: MonitorPlay,
+    icon: 'monitor-play',
     title: 'Digital Screens',
     description: 'Dynamic digital billboards in prime urban locations.',
     gradient: 'from-indigo-500/15 to-indigo-600/5',
@@ -137,7 +122,7 @@ export const billboardFormats: BillboardFormat[] = [
     href: '/billboards',
   },
   {
-    icon: Building2,
+    icon: 'building',
     title: 'Rooftop Boards',
     description: 'Large-format billboards on rooftops with skyline visibility.',
     gradient: 'from-emerald-500/15 to-emerald-600/5',
@@ -146,7 +131,7 @@ export const billboardFormats: BillboardFormat[] = [
     href: '/billboards',
   },
   {
-    icon: Store,
+    icon: 'store',
     title: 'Mall Advertising',
     description: 'Engage shoppers inside premium malls.',
     gradient: 'from-amber-500/15 to-amber-600/5',
@@ -155,7 +140,7 @@ export const billboardFormats: BillboardFormat[] = [
     href: '/billboards',
   },
   {
-    icon: Bus,
+    icon: 'bus',
     title: 'Street-Level',
     description: 'Posters, street furniture, and transit placements.',
     gradient: 'from-rose-500/15 to-rose-600/5',
@@ -165,54 +150,65 @@ export const billboardFormats: BillboardFormat[] = [
   },
 ];
 
-export const stats: StatItem[] = [
+const stats: StatItem[] = [
   {
-    icon: BarChart3,
+    icon: 'bar-chart',
     value: 1250,
     suffix: '+',
     label: 'Premium Placements',
     dynamicKey: 'placements',
   },
-  { icon: MapPin, value: 25, suffix: '+', label: 'Cities Across Lebanon', dynamicKey: 'cities' },
-  { icon: Rocket, value: 3400, suffix: '+', label: 'Campaigns Launched' },
-  { icon: Users, value: 320, suffix: '+', label: 'Happy Clients' },
+  {
+    icon: 'map-pin',
+    value: 25,
+    suffix: '+',
+    label: 'Cities Across Lebanon',
+    dynamicKey: 'cities',
+  },
+  { icon: 'rocket', value: 3400, suffix: '+', label: 'Campaigns Launched' },
+  { icon: 'users', value: 320, suffix: '+', label: 'Happy Clients' },
 ];
 
-export const features: FeatureItem[] = [
+const features: FeatureItem[] = [
   {
-    icon: Store,
+    icon: 'store',
     title: 'Marketplace',
     description: 'Access premium inventory with real-time availability and clear pricing.',
+    outcome: 'Inventory + availability',
   },
   {
-    icon: Target,
+    icon: 'target',
     title: 'Campaign Planning',
     description: 'Plan across dates and locations, see reach estimates before you commit.',
+    outcome: 'Dates + reach',
   },
   {
-    icon: Users,
+    icon: 'users',
     title: 'Audiences',
     description: 'Target by location, demographics, and behavior to reach the right people.',
+    outcome: 'Location + audience',
   },
   {
-    icon: BarChart3,
+    icon: 'bar-chart',
     title: 'Analytics',
-    description:
-      'Monitor live performance with attribution, causal insights, and device-level data.',
+    description: 'Review traffic estimates, campaign dates, and placement delivery in one view.',
+    outcome: 'Traffic + delivery',
   },
   {
-    icon: FileText,
+    icon: 'file-text',
     title: 'Reporting',
     description: 'Export clean, automated reports that show what matters most.',
+    outcome: 'Exports + summaries',
   },
   {
-    icon: LifeBuoy,
+    icon: 'life-buoy',
     title: 'Support',
     description: 'Expert guidance, dedicated support, and local know-how when you need it.',
+    outcome: 'Local campaign guidance',
   },
 ];
 
-export const faqs: FaqItem[] = [
+const faqs: FaqItem[] = [
   {
     question: 'How do I book a billboard campaign?',
     answer:
@@ -299,30 +295,30 @@ export const footerColumns: FooterColumnData[] = [
   {
     title: 'Solutions',
     links: [
-      { label: 'For Brands', href: '/#formats' },
-      { label: 'For Agencies', href: '/#formats' },
-      { label: 'Campaign Planning', href: '/#features' },
-      { label: 'Audience Targeting', href: '/#features' },
-      { label: 'Case Studies', href: '/#features' },
+      { label: 'For Brands', href: '/solutions/brands' },
+      { label: 'For Agencies', href: '/solutions/agencies' },
+      { label: 'Campaign Planning', href: '/solutions/campaign-planning' },
+      { label: 'Audience Targeting', href: '/solutions/audience-targeting' },
+      { label: 'Case Studies', href: '/case-studies' },
     ],
   },
   {
     title: 'Resources',
     links: [
-      { label: 'Blog', href: '/#' },
-      { label: 'Guides', href: '/#' },
+      { label: 'Blog', href: '/blog' },
+      { label: 'Guides', href: '/guides' },
       { label: 'Billboard Locations', href: '/billboards' },
-      { label: 'Media Kit', href: '/#' },
-      { label: 'Help Center', href: '/#' },
+      { label: 'Media Kit', href: '/media-kit' },
+      { label: 'Help Center', href: '/help' },
     ],
   },
   {
     title: 'Company',
     links: [
-      { label: 'About Us', href: '/#' },
-      { label: 'Careers', href: '/#' },
-      { label: 'Partners', href: '/#' },
-      { label: 'Press', href: '/#' },
+      { label: 'About Us', href: '/about' },
+      { label: 'Careers', href: '/careers' },
+      { label: 'Partners', href: '/partners' },
+      { label: 'Press', href: '/press' },
     ],
   },
 ];
@@ -342,3 +338,20 @@ export const contactInfo: ContactInfo = {
 
 export const footerDescription =
   'The leading billboard advertising platform in Lebanon. Discover, plan, book, and measure high-impact out of home campaigns.';
+
+/**
+ * Serializable homepage content contract.
+ *
+ * Replace this object with a CMS/repository result to move the marketing copy
+ * to the database; section components do not need to change.
+ */
+export const homepageContent: HomepageContent = {
+  hero: heroContent,
+  brands,
+  howItWorks: howItWorksSteps,
+  formats: billboardFormats,
+  stats,
+  features,
+  faqs,
+  reviews,
+};

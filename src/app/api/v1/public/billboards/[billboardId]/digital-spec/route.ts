@@ -11,6 +11,6 @@ export async function GET(_request: Request, { params }: RouteContext) {
 
     return digitalSpecController.getPublicDigitalSpec(billboardId);
   } catch (error) {
-    return handleControllerError(error, 'Getting digital specification failed.');
+    return handleControllerError(error, 'We could not load the digital specifications. Try again.');
   }
 }

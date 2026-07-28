@@ -3,15 +3,14 @@
 import { motion, useReducedMotion } from 'motion/react';
 import { Container } from '@/client/features/home/components/container';
 import { AnimatedCounter } from '@/client/features/home/components/animated-counter';
-import { stats as statsData } from '@/client/features/home/data/homepage';
-import type { HomeStats } from '@/client/features/home/home.types';
+import type { HomeStats, StatItem } from '@/client/features/home/home.types';
+import { HomeIcon } from '@/client/features/home/components/home-icon';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-export function Stats({ stats }: { stats: HomeStats }) {
+export function Stats({ stats, items }: { stats: HomeStats; items: StatItem[] }) {
   const reduceMotion = useReducedMotion();
-  const [primaryStat, ...supportingStats] = statsData;
-  const PrimaryIcon = primaryStat.icon;
+  const [primaryStat, ...supportingStats] = items;
   const primaryValue = primaryStat.dynamicKey ? stats[primaryStat.dynamicKey] : primaryStat.value;
 
   return (
@@ -69,7 +68,7 @@ export function Stats({ stats }: { stats: HomeStats }) {
                   transition={{ type: 'spring', stiffness: 180, damping: 16 }}
                   className="flex size-14 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-[0_18px_44px_rgba(30,64,175,.24)]"
                 >
-                  <PrimaryIcon className="size-6" aria-hidden />
+                  <HomeIcon name={primaryStat.icon} className="size-6" aria-hidden />
                 </motion.span>
               </div>
 
@@ -97,7 +96,6 @@ export function Stats({ stats }: { stats: HomeStats }) {
             className="flex flex-col rounded-[24px] border border-zinc-200 bg-zinc-50 px-5 sm:rounded-[28px] sm:px-9 lg:col-span-5 dark:border-zinc-800 dark:bg-zinc-900"
           >
             {supportingStats.map((item) => {
-              const Icon = item.icon;
               const value = item.dynamicKey ? stats[item.dynamicKey] : item.value;
 
               return (
@@ -114,7 +112,7 @@ export function Stats({ stats }: { stats: HomeStats }) {
                     transition={{ type: 'spring', stiffness: 260, damping: 18 }}
                     className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-blue-700 transition-colors group-hover:bg-blue-600 group-hover:text-white dark:bg-blue-950 dark:text-blue-300"
                   >
-                    <Icon className="size-5" aria-hidden />
+                    <HomeIcon name={item.icon} className="size-5" aria-hidden />
                   </motion.span>
 
                   <div className="min-w-0 flex-1">

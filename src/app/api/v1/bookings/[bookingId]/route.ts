@@ -12,6 +12,6 @@ export async function GET(_request: Request, { params }: RouteContext) {
 
     return bookingController.getBooking(session.user, bookingId);
   } catch (error) {
-    return handleControllerError(error, 'Getting reservation failed.');
+    return handleControllerError(error, 'We could not load this reservation. Try again.');
   }
 }

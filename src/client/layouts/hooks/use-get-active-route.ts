@@ -10,7 +10,9 @@ export function useGetActiveRoute() {
   const pathname = usePathname();
 
   const activeRoute = useMemo(() => {
-    return ALL_ROUTES.find((route) => pathname.startsWith(route.to));
+    return [...ALL_ROUTES]
+      .sort((a, b) => b.to.length - a.to.length)
+      .find((route) => (route.to === '/' ? pathname === '/' : pathname.startsWith(route.to)));
   }, [pathname]);
 
   return activeRoute || null;

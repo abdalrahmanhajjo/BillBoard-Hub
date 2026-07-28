@@ -3,6 +3,7 @@ import type { Session } from 'next-auth';
 import { auth } from '@/auth';
 import { apiResponse } from '@/server/http/api-response';
 import { HttpError, NotFoundError, UnauthorizedError } from '@/shared/http/http-error';
+import { USER_MESSAGES } from '@/shared/messages/user-messages';
 
 export function validationMessage(
   issues: Array<{ message?: string }> | undefined,
@@ -15,7 +16,7 @@ export async function requireSession(): Promise<Session> {
   const session = await auth();
 
   if (!session?.user?.id || !session.user.isActive) {
-    throw new UnauthorizedError('Not authenticated.');
+    throw new UnauthorizedError(USER_MESSAGES.sessionRequired);
   }
 
   return session;
@@ -23,7 +24,7 @@ export async function requireSession(): Promise<Session> {
 
 export function handleControllerError(error: unknown, message: string) {
   if (error instanceof AuthError) {
-    return apiResponse.unauthorized('Invalid email or password.');
+    return apiResponse.unauthorized(USER_MESSAGES.invalidCredentials);
   }
 
   if (error instanceof NotFoundError) {
@@ -32,7 +33,7 @@ export function handleControllerError(error: unknown, message: string) {
 
   // Catch invalid MongoDB ObjectId format
   if (error && (error as { name?: string; message?: string }).name === 'CastError') {
-    return apiResponse.notFound('Not found.');
+    return apiResponse.notFound(USER_MESSAGES.notFound);
   }
 
   if (error instanceof HttpError) {
@@ -40,11 +41,11 @@ export function handleControllerError(error: unknown, message: string) {
   }
 
   if (error instanceof SyntaxError) {
-    return apiResponse.badRequest('Invalid JSON payload.');
+    return apiResponse.badRequest(USER_MESSAGES.invalidJson);
   }
 
   if ((error as { code?: number } | null)?.code === 11000) {
-    return apiResponse.conflict('A record with these details already exists.');
+    return apiResponse.conflict(USER_MESSAGES.duplicate);
   }
 
   // Unexpected errors: return a generic message so raw internal error text is

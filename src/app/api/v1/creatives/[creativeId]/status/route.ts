@@ -14,6 +14,6 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 
     return creativeController.updateCreativeStatus(session.user, creativeId, payload);
   } catch (error) {
-    return handleControllerError(error, 'Updating creative status failed.');
+    return handleControllerError(error, 'We could not update the creative status. Try again.');
   }
 }

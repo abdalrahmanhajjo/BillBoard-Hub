@@ -26,7 +26,10 @@ export const userController = {
 
       return apiResponse.ok(user, 201);
     } catch (error) {
-      return handleControllerError(error, 'User creation failed.');
+      return handleControllerError(
+        error,
+        'We could not create this user. Review the details and try again.',
+      );
     }
   },
 
@@ -46,12 +49,12 @@ export const userController = {
       const user = await userService.updateById(userId, parsed.data, session.user);
 
       if (!user) {
-        throw new NotFoundError('User not found.');
+        throw new NotFoundError('We could not find this user. They may have been removed.');
       }
 
       return apiResponse.ok(user);
     } catch (error) {
-      return handleControllerError(error, 'User update failed.');
+      return handleControllerError(error, 'We could not save this user. Refresh and try again.');
     }
   },
 
@@ -65,12 +68,12 @@ export const userController = {
       const user = await userService.deleteById(userId, session.user);
 
       if (!user) {
-        throw new NotFoundError('User not found.');
+        throw new NotFoundError('We could not find this user. They may have been removed.');
       }
 
       return apiResponse.ok(user);
     } catch (error) {
-      return handleControllerError(error, 'User deletion failed.');
+      return handleControllerError(error, 'We could not delete this user. Refresh and try again.');
     }
   },
 
@@ -84,12 +87,12 @@ export const userController = {
       const user = await userService.getById(id, session.user);
 
       if (!user) {
-        throw new NotFoundError('User not found.');
+        throw new NotFoundError('We could not find this user. They may have been removed.');
       }
 
       return apiResponse.ok({ user });
     } catch (error) {
-      return handleControllerError(error, 'Getting user failed.');
+      return handleControllerError(error, 'We could not load this user. Refresh and try again.');
     }
   },
 };

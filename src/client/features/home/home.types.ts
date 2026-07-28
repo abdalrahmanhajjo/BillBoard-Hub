@@ -1,4 +1,3 @@
-import type { LucideIcon } from 'lucide-react';
 import type { PublicBillboard } from '@/shared/types/billboard';
 
 /* ---------- Dynamic (DB-derived) ---------- */
@@ -15,13 +14,32 @@ export type HomeStats = {
 
 export type HomeData = {
   billboards: PublicBillboard[];
-  cities: string[];
   marketOverview: MarketOverviewEntry[];
   stats: HomeStats;
+  content: HomepageContent;
 };
 
 /* ---------- Static content (data/homepage.ts) ---------- */
 /* Shaped so it can later be sourced from a CMS/DB without touching the UI. */
+
+export type HomeIconKey =
+  | 'badge-check'
+  | 'bar-chart'
+  | 'building'
+  | 'bus'
+  | 'calendar-check'
+  | 'file-text'
+  | 'life-buoy'
+  | 'map-pin'
+  | 'monitor-play'
+  | 'rocket'
+  | 'search'
+  | 'signpost'
+  | 'store'
+  | 'tag'
+  | 'target'
+  | 'users'
+  | 'zap';
 
 export type NavItem = {
   label: string;
@@ -34,9 +52,9 @@ export type NavGroup = {
   items: NavItem[];
 };
 
-export type HeroChip = {
+type HeroChip = {
   label: string;
-  icon: LucideIcon;
+  icon: HomeIconKey;
 };
 
 export type HeroContent = {
@@ -50,17 +68,23 @@ export type HeroContent = {
 
 export type BrandItem = {
   name: string;
+  /**
+   * Path to an existing, licensed brand asset under `public/brands/`. When
+   * omitted, the carousel renders its local generated wordmark without making
+   * an asset request.
+   */
+  logo?: string;
 };
 
 export type HowItWorksStep = {
   number: number;
-  icon: LucideIcon;
+  icon: HomeIconKey;
   title: string;
   description: string;
 };
 
 export type BillboardFormat = {
-  icon: LucideIcon;
+  icon: HomeIconKey;
   title: string;
   description: string;
   gradient: string;
@@ -70,9 +94,10 @@ export type BillboardFormat = {
 };
 
 export type FeatureItem = {
-  icon: LucideIcon;
+  icon: HomeIconKey;
   title: string;
   description: string;
+  outcome: string;
 };
 
 export type FaqItem = {
@@ -88,7 +113,7 @@ export type Review = {
 };
 
 export type StatItem = {
-  icon: LucideIcon;
+  icon: HomeIconKey;
   value: number;
   suffix: string;
   label: string;
@@ -113,4 +138,15 @@ export type ContactInfo = {
   location: string;
   phone: string;
   email: string;
+};
+
+export type HomepageContent = {
+  hero: HeroContent;
+  brands: BrandItem[];
+  howItWorks: HowItWorksStep[];
+  formats: BillboardFormat[];
+  stats: StatItem[];
+  features: FeatureItem[];
+  faqs: FaqItem[];
+  reviews: Review[];
 };

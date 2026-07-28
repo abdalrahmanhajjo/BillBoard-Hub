@@ -1,5 +1,5 @@
 import type { CreateAdCreativeSchemaInput } from '@/shared/contracts/ad-creative/ad-creative.schema';
-import { apiRequest } from '@/client/lib/response-utils';
+import { apiRequest } from '@/client/ui/lib/api-client';
 
 export const adCreativeClientService = {
   async getUploadAuthParams() {

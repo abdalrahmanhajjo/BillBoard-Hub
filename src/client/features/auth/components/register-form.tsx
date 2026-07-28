@@ -40,7 +40,7 @@ export function RegisterForm(props: React.ComponentProps<'div'>) {
     });
 
     form.reset();
-    router.push('/dashboard/advertiser');
+    router.push('/');
     router.refresh();
   };
 

@@ -30,7 +30,7 @@ export function AdminPlaylistsPage() {
     ]);
 
     if (!billboardsResult.ok || !creativesResult.ok || !playlistsResult.ok) {
-      setError('Unable to load playlist data.');
+      setError('We could not load playlists. Try again.');
       setStatus('error');
       return;
     }
@@ -49,7 +49,7 @@ export function AdminPlaylistsPage() {
         await loadAll();
       } catch {
         if (active) {
-          setError('Unable to load playlist data.');
+          setError('We could not load playlists. Try again.');
           setStatus('error');
         }
       }
@@ -69,13 +69,20 @@ export function AdminPlaylistsPage() {
   );
 
   const handleDelete = async (playlist: Playlist) => {
-    if (!window.confirm(`Delete playlist "${playlist.name}"?`)) return;
+    if (
+      !window.confirm(
+        `Delete playlist "${playlist.name}"? Review its schedules first. This cannot be undone.`,
+      )
+    )
+      return;
     setActionError(null);
     setPendingId(playlist.id);
     const result = await playlistClientService.remove(playlist.id);
     setPendingId(null);
     if (!result.ok) {
-      setActionError(result.error ?? 'Deleting the playlist failed.');
+      setActionError(
+        result.error ?? 'We could not delete this playlist. Refresh the page and try again.',
+      );
       return;
     }
     await loadAll();
@@ -108,7 +115,10 @@ export function AdminPlaylistsPage() {
         <div className="space-y-4">
           <h2 className="text-lg font-medium">Existing playlists</h2>
           {actionError ? (
-            <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p
+              role="alert"
+              className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+            >
               {actionError}
             </p>
           ) : null}
@@ -118,7 +128,10 @@ export function AdminPlaylistsPage() {
           ) : null}
 
           {status === 'error' ? (
-            <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p
+              role="alert"
+              className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+            >
               {error}
             </p>
           ) : null}

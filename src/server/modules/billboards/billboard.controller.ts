@@ -26,7 +26,10 @@ export const billboardController = {
       const billboard = await billboardService.create(parsed.data, actor);
       return apiResponse.ok(billboard, 201);
     } catch (error) {
-      return handleControllerError(error, 'Billboard creation failed.');
+      return handleControllerError(
+        error,
+        'We could not create this billboard. Review the details and try again.',
+      );
     }
   },
   async listBillboards(actor: User, rawQuery: unknown = {}) {
@@ -40,7 +43,7 @@ export const billboardController = {
       const billboards = await billboardService.list(actor, parsed.data);
       return apiResponse.ok({ billboards });
     } catch (error) {
-      return handleControllerError(error, 'Getting billboards failed.');
+      return handleControllerError(error, 'We could not load billboard inventory. Try again.');
     }
   },
 
@@ -50,7 +53,7 @@ export const billboardController = {
 
       return apiResponse.ok({ billboards });
     } catch (error) {
-      return handleControllerError(error, 'Getting billboards failed.');
+      return handleControllerError(error, 'We could not load billboard inventory. Try again.');
     }
   },
 
@@ -64,7 +67,7 @@ export const billboardController = {
 
       return apiResponse.ok({ billboard });
     } catch (error) {
-      return handleControllerError(error, 'Getting billboard failed.');
+      return handleControllerError(error, 'We could not load this billboard. Try again.');
     }
   },
 
@@ -76,7 +79,7 @@ export const billboardController = {
       const billboard = await billboardService.getById(actor, billboardId);
       return apiResponse.ok({ billboard });
     } catch (error) {
-      return handleControllerError(error, 'Getting billboard failed.');
+      return handleControllerError(error, 'We could not load this billboard. Try again.');
     }
   },
   async updateBillboard(actor: User, billboardId: string, payload: UpdateBillboardSchemaInput) {
@@ -93,7 +96,10 @@ export const billboardController = {
       const billboard = await billboardService.update(actor, billboardId, parsed.data);
       return apiResponse.ok(billboard);
     } catch (error) {
-      return handleControllerError(error, 'Billboard update failed.');
+      return handleControllerError(
+        error,
+        'We could not save the billboard changes. Review the details and try again.',
+      );
     }
   },
   async updateAvailability(
@@ -118,7 +124,10 @@ export const billboardController = {
       );
       return apiResponse.ok(billboard);
     } catch (error) {
-      return handleControllerError(error, 'Updating availability failed.');
+      return handleControllerError(
+        error,
+        'We could not update availability. Refresh and try again.',
+      );
     }
   },
 
@@ -131,7 +140,10 @@ export const billboardController = {
       await billboardService.delete(actor, billboardId);
       return apiResponse.ok({ deleted: true });
     } catch (error) {
-      return handleControllerError(error, 'Archiving billboard failed.');
+      return handleControllerError(
+        error,
+        'We could not archive this billboard. Refresh and try again.',
+      );
     }
   },
 };

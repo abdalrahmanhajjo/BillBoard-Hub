@@ -1,21 +1,22 @@
 import type { User } from '@/shared/types/user';
 import { assert } from '../policy-utils';
 import { PERMISSIONS } from '@/shared/constants/permissions/permissions';
+import { permissionDenied } from '@/shared/messages/user-messages';
 
 export const billboardPolicy = {
   assertCanCreate(actor: User): void {
-    assert(actor.role, PERMISSIONS.BILLBOARDS_CREATE, 'You cannot create billboards.');
+    assert(actor.role, PERMISSIONS.BILLBOARDS_CREATE, permissionDenied('add billboard inventory'));
   },
 
   assertCanRead(actor: User): void {
-    assert(actor.role, PERMISSIONS.BILLBOARDS_READ, 'You cannot view billboards.');
+    assert(actor.role, PERMISSIONS.BILLBOARDS_READ, permissionDenied('view billboard inventory'));
   },
 
   assertCanUpdate(actor: User): void {
-    assert(actor.role, PERMISSIONS.BILLBOARDS_UPDATE, 'You cannot update billboards.');
+    assert(actor.role, PERMISSIONS.BILLBOARDS_UPDATE, permissionDenied('edit billboard inventory'));
   },
 
   assertCanDelete(actor: User): void {
-    assert(actor.role, PERMISSIONS.BILLBOARDS_DELETE, 'You cannot archive billboards.');
+    assert(actor.role, PERMISSIONS.BILLBOARDS_DELETE, permissionDenied('archive billboards'));
   },
 };

@@ -1,15 +1,12 @@
 import type { NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { MongoDBAdapter } from '@auth/mongodb-adapter';
-import { mongoClientPromise } from '@/server/db/mongodb-client';
 import { loginSchema } from '@/shared/contracts/auth/login.schema';
 import { authService } from '@/server/modules/auth/auth.service';
 import { authCallbacks } from '@/server/modules/auth/callbacks';
+import { authRepository } from '@/server/modules/auth/auth.repository';
 
 export const authConfig: NextAuthConfig = {
-  adapter: MongoDBAdapter(mongoClientPromise, {
-    databaseName: process.env.MONGODB_DB_NAME ?? 'billboard_hub',
-  }),
+  adapter: authRepository.adapter,
   session: {
     strategy: 'jwt',
   },

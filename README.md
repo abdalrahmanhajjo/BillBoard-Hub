@@ -1,17 +1,30 @@
-# BillBoard Hub
+# Boardly — BillBoard Hub
 
-BillBoard Hub is a role-based SaaS dashboard for managing traditional and digital billboard operations.
+Boardly is a full-stack billboard marketplace and operations platform for Lebanon. It combines a
+public inventory catalog with role-based administration, advertiser reservations, creative
+management, digital-screen playlists, scheduling, playback rotation, and impression analytics.
 
-## Core Stack
+## What is implemented
 
-- Next.js App Router
-- TypeScript
-- Tailwind CSS
-- Auth.js (NextAuth v5 beta)
-- MongoDB + Mongoose
-- React Hook Form + Zod
+- Public marketing site and database-backed billboard catalog
+- Static and digital billboard inventory management
+- Advertiser reservation requests, pricing, conflict checks, moderation, and cancellation
+- Creative uploads and admin moderation
+- Digital-screen playlists and non-overlapping schedules
+- Public now-playing and impression-ingestion endpoints
+- Admin impression analytics and playback preview
+- Credentials authentication with admin and advertiser roles
 
-## Application Areas
+## Technology
+
+- Next.js 16 App Router and React 19
+- TypeScript and Zod
+- Tailwind CSS 4 and customized shadcn components
+- Auth.js 5 with JWT sessions
+- MongoDB, Mongoose, and the Auth.js MongoDB adapter
+- React Hook Form, Motion, and ImageKit
+
+## Routes
 
 - Guest
   - `/login`
@@ -21,134 +34,73 @@ BillBoard Hub is a role-based SaaS dashboard for managing traditional and digita
   - `/user/admin/*`
   - `/user/advertiser/*`
 
-## Architecture
+## Quick start
 
-### Frontend
-
-- `src/app`: routes, layouts, route handlers only
-- `src/client/features`: feature-owned UI and client logic
-
-Each feature owns:
-
-- components
-- hooks
-- pages
-- services
-- types
-- validations
-- utils
-
-### Backend
-
-Module-based MVC under `src/server/modules`:
-
-- `controller`
-- `service`
-- `repository`
-- `actions`
-- `types`
-
-Optional when needed:
-
-- `validator` (only for module-specific schema composition)
-
-Controllers should use shared response/error helpers from `src/server/http/*` to keep API behavior consistent.
-
-Route handlers and server actions must delegate to services. Business logic belongs in services.
-
-### Authorization
-
-- Permission constants: `src/shared/constants/permissions/*`
-- Policy layer: `src/shared/policies/*`
-- Request guard: `src/proxy.ts`
-
-`src/proxy.ts` runs in Edge runtime and performs coarse route/session checks only.
-Role enforcement is handled in server layouts and in the service/policy layer.
-
-This keeps middleware Edge-compatible while preserving strict server-side authorization.
-
-### Database
-
-- Mongoose connection helper: `src/server/db/mongoose.ts`
-- Mongo client for Auth.js adapter: `src/server/db/mongodb-client.ts`
-
-All timestamps should be stored in UTC.
-
-## Authentication Foundation
-
-Implemented foundations:
-
-- Auth.js v5 credentials provider
-- JWT-based sessions for credentials login
-- Role-aware session shaping
-- Inactive-user login rejection
-- Short-lived access token exposed through session (in-memory client usage)
-- Refresh token retained inside server-managed httpOnly session cookie payload
-- Protected dashboard routes
-- Basic auth server actions and API endpoints
-
-API-first auth endpoints for testing:
-
-- `POST /api/v1/auth/login`
-- `POST /api/v1/auth/register`
-- `GET /api/v1/auth/me`
-- `POST /api/v1/auth/refresh`
-- `POST /api/v1/auth/logout`
-
-All endpoints return JSON with `ok` and either `data` or `error`.
-
-Postman collection:
-
-- `postman/BillBoard-Hub-Auth.postman_collection.json`
-
-When testing with Postman, keep cookies enabled so session state is preserved between `login`, `me`, `refresh`, and `logout`.
-
-Key files:
-
-- `src/auth.ts` (facade)
-- `src/server/modules/auth/config.ts`
-- `src/server/modules/auth/callbacks.ts`
-- `src/server/modules/auth/tokens.ts`
-- `src/server/http/api-response.ts`
-- `src/server/http/controller-utils.ts`
-- `src/proxy.ts`
-- `src/server/modules/auth/*`
-- `src/server/modules/users/user.model.ts`
-
-## Local Setup
-
-1. Create `.env.local`:
-
-```env
-MONGODB_URI=<your-mongodb-connection-string>
-MONGODB_DB_NAME=billboard_hub
-AUTH_SECRET=<your-auth-secret>
-NEXTAUTH_URL=http://localhost:3000
-```
-
-2. Install dependencies:
+Prerequisites: Node.js 20+, Corepack, pnpm, and MongoDB.
 
 ```bash
+corepack enable
 pnpm install
-```
-
-3. Start development server:
-
-```bash
+cp .env.example .env.local
 pnpm dev
 ```
 
-## Quality Checks
+The application is available at [http://localhost:3000](http://localhost:3000).
+
+Required environment configuration is documented in
+[Configuration](docs/reference/configuration.md).
+
+## Validation
 
 ```bash
-pnpm exec tsc --noEmit
-pnpm lint
+pnpm quality
+pnpm audit --prod
+pnpm peers check
+pnpm build
 ```
 
-## Developer Workflow
+## Documentation
 
-For detailed contributor instructions and a step-by-step "start a new feature" guide, see:
+Start with the [documentation index](docs/README.md).
 
-- `CONTRIBUTING.md`
-- `AGENTS.md`
-- `CLAUDE.md`
+| Area                            | Document                                                                         |
+| ------------------------------- | -------------------------------------------------------------------------------- |
+| Project documentation           | [Project documentation](docs/PROJECT_DOCUMENTATION.md)                           |
+| Complete developer handover     | [Developer handover](docs/HANDOVER.md)                                           |
+| System design                   | [Architecture](docs/architecture/overview.md)                                    |
+| Domain behavior                 | [Modules](docs/architecture/modules.md)                                          |
+| Collections and relationships   | [Data model](docs/architecture/data-model.md)                                    |
+| HTTP endpoints                  | [API reference](docs/reference/api.md)                                           |
+| Environment variables           | [Configuration](docs/reference/configuration.md)                                 |
+| Authentication and permissions  | [Authentication and security](docs/security/authentication-and-authorization.md) |
+| Local workflow                  | [Development guide](docs/guides/development.md)                                  |
+| Quality assurance               | [Testing strategy](docs/guides/testing.md)                                       |
+| Production delivery             | [Deployment guide](docs/guides/deployment.md)                                    |
+| Incident response               | [Operations runbook](docs/operations/runbook.md)                                 |
+| Current gaps                    | [Known limitations](docs/known-limitations.md)                                   |
+| SEO research and implementation | [SEO documentation](docs/seo/README.md)                                          |
+| Code cleanliness and refactors  | [Code quality audit](docs/code-quality/README.md)                                |
+
+## Repository structure
+
+```text
+src/
+├── app/                  # Thin pages, layouts, and route handlers
+├── client/features/      # Feature-owned UI, hooks, services, and pages
+├── client/ui/            # Shared customized shadcn primitives
+├── server/db/            # Database connection helpers
+├── server/http/          # API envelopes and error normalization
+├── server/modules/       # Domain controllers, services, repositories, and models
+└── shared/               # Contracts, constants, policies, pricing, types, and utilities
+```
+
+## Contribution policy
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before modifying the system. App Router files stay thin,
+business logic belongs in services, database access belongs in repositories, and cross-layer
+validation belongs in shared Zod contracts.
+
+## License
+
+No public license is currently declared. Treat this repository as proprietary unless the project
+owner specifies otherwise.

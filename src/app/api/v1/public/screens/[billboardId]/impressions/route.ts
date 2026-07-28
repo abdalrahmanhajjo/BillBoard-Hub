@@ -13,6 +13,6 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     return impressionController.recordImpression(billboardId, payload);
   } catch (error) {
-    return handleControllerError(error, 'Recording impression failed.');
+    return handleControllerError(error, 'We could not record this impression. Try again.');
   }
 }

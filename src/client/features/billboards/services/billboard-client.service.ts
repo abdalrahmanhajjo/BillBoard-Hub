@@ -1,4 +1,3 @@
-import { apiRequest } from '@/client/lib/response-utils';
 import type {
   CreateBillboardSchemaInput,
   UpdateBillboardSchemaInput,
@@ -6,6 +5,7 @@ import type {
 import type { BillboardQuerySchemaInput } from '@/shared/contracts/billboard/billboard-query.schema';
 import type { UpsertDigitalSpecSchemaInput } from '@/shared/contracts/billboard/digital-spec.schema';
 import type { UpdateAvailabilitySchemaInput } from '@/shared/contracts/billboard/availability.schema';
+import { apiRequest } from '@/client/ui/lib/api-client';
 
 export const billboardClientService = {
   async create(payload: CreateBillboardSchemaInput) {
@@ -32,13 +32,13 @@ export const billboardClientService = {
     });
   },
   async get(billboardId: string) {
-    return apiRequest(`/api/v1/billboards/${billboardId}`, {
+    return apiRequest(`/api/v1/billboards/${encodeURIComponent(billboardId)}`, {
       method: 'GET',
       credentials: 'include',
     });
   },
   async update(billboardId: string, payload: UpdateBillboardSchemaInput) {
-    return apiRequest(`/api/v1/billboards/${billboardId}`, {
+    return apiRequest(`/api/v1/billboards/${encodeURIComponent(billboardId)}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -46,13 +46,13 @@ export const billboardClientService = {
     });
   },
   async getDigitalSpec(billboardId: string) {
-    return apiRequest(`/api/v1/billboards/${billboardId}/digital-spec`, {
+    return apiRequest(`/api/v1/billboards/${encodeURIComponent(billboardId)}/digital-spec`, {
       method: 'GET',
       credentials: 'include',
     });
   },
   async saveDigitalSpec(billboardId: string, payload: UpsertDigitalSpecSchemaInput) {
-    return apiRequest(`/api/v1/billboards/${billboardId}/digital-spec`, {
+    return apiRequest(`/api/v1/billboards/${encodeURIComponent(billboardId)}/digital-spec`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -60,7 +60,7 @@ export const billboardClientService = {
     });
   },
   async updateAvailability(billboardId: string, payload: UpdateAvailabilitySchemaInput) {
-    return apiRequest(`/api/v1/billboards/${billboardId}/availability`, {
+    return apiRequest(`/api/v1/billboards/${encodeURIComponent(billboardId)}/availability`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -69,7 +69,7 @@ export const billboardClientService = {
   },
 
   async delete(billboardId: string) {
-    return apiRequest(`/api/v1/billboards/${billboardId}`, {
+    return apiRequest(`/api/v1/billboards/${encodeURIComponent(billboardId)}`, {
       method: 'DELETE',
       credentials: 'include',
     });

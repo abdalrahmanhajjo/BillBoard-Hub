@@ -9,7 +9,7 @@ export type Impression = {
   createdAt?: string;
 };
 
-export type CreativeImpressionStat = {
+type CreativeImpressionStat = {
   creativeId: string;
   name: string;
   count: number;

@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, Menu, UserRound } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { CalendarDays, ChevronDown, LayoutDashboard, LogOut, Menu, UserRound } from 'lucide-react';
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'motion/react';
 import { cn } from '@/client/ui/lib/utils';
 import {
@@ -16,6 +17,22 @@ import { Container } from '@/client/features/home/components/container';
 import { BrandLogo } from '@/client/features/home/components/brand-logo';
 import { navLinks, exploreGroup, brandName } from '@/client/features/home/data/homepage';
 import { Button } from '@/client/ui/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/client/ui/components/ui/dropdown-menu';
+import { useLogout } from '@/client/features/auth/hooks/use-logout';
+
+type NavbarViewer = {
+  firstName: string;
+  lastName: string;
+  email: string;
+};
 
 function BrandMark() {
   return (
@@ -29,10 +46,23 @@ function BrandMark() {
   );
 }
 
-export function Navbar() {
+export function Navbar({ viewer }: { viewer?: NavbarViewer | null }) {
   const [scrolled, setScrolled] = useState(false);
   const [exploreOpen, setExploreOpen] = useState(false);
   const { scrollY } = useScroll();
+  const router = useRouter();
+  const logoutMutation = useLogout();
+  const displayName = [viewer?.firstName, viewer?.lastName].filter(Boolean).join(' ');
+  const initials =
+    `${viewer?.firstName?.[0] ?? ''}${viewer?.lastName?.[0] ?? ''}`.toUpperCase() || 'A';
+
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+      router.push('/');
+      router.refresh();
+    } catch {}
+  };
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
     setScrolled(latest > 8);
@@ -113,18 +143,79 @@ export function Navbar() {
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
-            <Link
-              href="/login"
-              className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
-            >
-              Login
-            </Link>
-            <Link
-              href="/register"
-              className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
-            >
-              Get Started
-            </Link>
+            {viewer ? (
+              <>
+                <Link
+                  href="/user/advertiser/bookings"
+                  className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
+                >
+                  My bookings
+                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-10 gap-2 rounded-xl border-zinc-200 bg-white px-2.5 pr-3 text-zinc-800 shadow-sm hover:bg-zinc-50"
+                      />
+                    }
+                  >
+                    <span className="flex size-6 items-center justify-center rounded-lg bg-blue-600 text-[0.65rem] font-bold text-white">
+                      {initials}
+                    </span>
+                    <span className="max-w-28 truncate">{viewer.firstName || 'Account'}</span>
+                    <ChevronDown className="size-3.5 text-zinc-400" aria-hidden />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-64 rounded-xl p-1.5">
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel className="px-2 py-2 font-normal">
+                        <span className="block truncate text-sm font-semibold text-zinc-950">
+                          {displayName || 'Advertiser account'}
+                        </span>
+                        <span className="mt-0.5 block truncate text-xs text-zinc-500">
+                          {viewer.email}
+                        </span>
+                      </DropdownMenuLabel>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem render={<Link href="/user/advertiser" />}>
+                        <LayoutDashboard aria-hidden />
+                        Advertiser workspace
+                      </DropdownMenuItem>
+                      <DropdownMenuItem render={<Link href="/user/advertiser/bookings" />}>
+                        <CalendarDays aria-hidden />
+                        My bookings
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      disabled={logoutMutation.isPending}
+                      onClick={() => handleLogout()}
+                    >
+                      <LogOut aria-hidden />
+                      {logoutMutation.isPending ? 'Signing out…' : 'Sign out'}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
 
           <Sheet>
@@ -164,29 +255,81 @@ export function Navbar() {
                 ))}
               </nav>
               <div className="mt-2 flex flex-col gap-2 border-t border-zinc-200 p-4">
-                <SheetClose
-                  nativeButton={false}
-                  render={
-                    <Link
-                      href="/login"
-                      className="flex min-h-12 items-center justify-center gap-2 rounded-lg border border-zinc-300 px-4 py-2.5 text-center text-sm font-semibold text-zinc-800"
-                    />
-                  }
-                >
-                  <UserRound className="size-4" aria-hidden />
-                  Login
-                </SheetClose>
-                <SheetClose
-                  nativeButton={false}
-                  render={
-                    <Link
-                      href="/register"
-                      className="flex min-h-12 items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-blue-700"
-                    />
-                  }
-                >
-                  Get Started
-                </SheetClose>
+                {viewer ? (
+                  <>
+                    <div className="mb-2 flex items-center gap-3 rounded-xl bg-blue-50 p-3">
+                      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-xs font-bold text-white">
+                        {initials}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-semibold text-zinc-950">
+                          {displayName || 'Advertiser account'}
+                        </span>
+                        <span className="block truncate text-xs text-zinc-500">{viewer.email}</span>
+                      </span>
+                    </div>
+                    <SheetClose
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href="/user/advertiser"
+                          className="flex min-h-12 items-center justify-center gap-2 rounded-lg border border-zinc-300 px-4 py-2.5 text-center text-sm font-semibold text-zinc-800"
+                        />
+                      }
+                    >
+                      <LayoutDashboard className="size-4" aria-hidden />
+                      Advertiser workspace
+                    </SheetClose>
+                    <SheetClose
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href="/user/advertiser/bookings"
+                          className="flex min-h-12 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                        />
+                      }
+                    >
+                      <CalendarDays className="size-4" aria-hidden />
+                      My bookings
+                    </SheetClose>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      disabled={logoutMutation.isPending}
+                      onClick={() => handleLogout()}
+                      className="min-h-12 gap-2 rounded-lg text-zinc-600"
+                    >
+                      <LogOut className="size-4" aria-hidden />
+                      {logoutMutation.isPending ? 'Signing out…' : 'Sign out'}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <SheetClose
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href="/login"
+                          className="flex min-h-12 items-center justify-center gap-2 rounded-lg border border-zinc-300 px-4 py-2.5 text-center text-sm font-semibold text-zinc-800"
+                        />
+                      }
+                    >
+                      <UserRound className="size-4" aria-hidden />
+                      Login
+                    </SheetClose>
+                    <SheetClose
+                      nativeButton={false}
+                      render={
+                        <Link
+                          href="/register"
+                          className="flex min-h-12 items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                        />
+                      }
+                    >
+                      Get Started
+                    </SheetClose>
+                  </>
+                )}
               </div>
             </SheetContent>
           </Sheet>

@@ -10,13 +10,13 @@ export type BillboardStatus = (typeof BILLBOARD_STATUSES)[keyof typeof BILLBOARD
 export type DimensionUnit = (typeof DIMENSION_UNITS)[keyof typeof DIMENSION_UNITS];
 export type ScreenStatus = (typeof SCREEN_STATUSES)[keyof typeof SCREEN_STATUSES];
 
-export type BillboardLocation = {
+type BillboardLocation = {
   address: string;
   city: string;
   country: string;
 };
 
-export type BillboardDimensions = {
+type BillboardDimensions = {
   width: number;
   height: number;
   unit: DimensionUnit;

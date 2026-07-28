@@ -1,7 +1,8 @@
 'use client';
 
-import { EllipsisVertical, LogOut, Bell, User as UserIcon } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/client/ui/components/ui/avatar';
+import Link from 'next/link';
+import { EllipsisVertical, House, LogOut, User as UserIcon } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/client/ui/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,6 +35,7 @@ export function NavUser({ user }: NavUserProps) {
   const displayName = user?.firstName ?? '';
   const displayEmail = user?.email ?? '';
   const fallbackName = `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase();
+  const accountHref = user.role === 'admin' ? '/user/admin/users' : '/user/advertiser/profile';
 
   const handleLogout = async () => {
     try {
@@ -57,7 +59,6 @@ export function NavUser({ user }: NavUserProps) {
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 <Avatar className="h-8 w-8 rounded-lg grayscale">
-                  <AvatarImage alt={displayName} />
                   <AvatarFallback className="rounded-lg">{fallbackName}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -79,8 +80,7 @@ export function NavUser({ user }: NavUserProps) {
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage alt={displayName} />
-                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                    <AvatarFallback className="rounded-lg">{fallbackName}</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-medium">{displayName}</span>
@@ -91,13 +91,13 @@ export function NavUser({ user }: NavUserProps) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem render={<Link href={accountHref} />}>
                 <UserIcon />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
+              <DropdownMenuItem render={<Link href="/" />}>
+                <House />
+                Website home
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

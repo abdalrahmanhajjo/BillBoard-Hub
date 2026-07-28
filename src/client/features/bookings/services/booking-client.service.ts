@@ -1,6 +1,6 @@
 import type { CreateBookingSchemaInput } from '@/shared/contracts/booking/booking.schema';
 import type { BookingStatus } from '@/shared/types/booking';
-import { apiRequest } from '@/client/lib/response-utils';
+import { apiRequest } from '@/client/ui/lib/api-client';
 
 type BookingListFilter = {
   billboardId?: string;

@@ -20,12 +20,12 @@ type BillboardDetails = {
 async function fetchBillboardDetails(billboardId: string): Promise<BillboardDetails> {
   const result = await billboardClientService.get(billboardId);
   if (!result.ok) {
-    throw new Error(result.error ?? 'Unable to load billboard.');
+    throw new Error(result.error ?? 'We could not load this billboard. Try again.');
   }
 
   const billboard = result.data?.billboard as Billboard | undefined;
   if (!billboard) {
-    throw new Error('Billboard not found.');
+    throw new Error('We could not find this billboard. It may have been removed.');
   }
 
   let spec: DigitalSpec | null = null;
@@ -60,7 +60,11 @@ export function BillboardDetailsPage({ billboardId }: BillboardDetailsPageProps)
       setError(null);
       setStatus('ready');
     } catch (loadFailure) {
-      setError(loadFailure instanceof Error ? loadFailure.message : 'Unable to load billboard.');
+      setError(
+        loadFailure instanceof Error
+          ? loadFailure.message
+          : 'We could not load this billboard. Try again.',
+      );
       setStatus('error');
     }
   }, [billboardId]);
@@ -76,7 +80,11 @@ export function BillboardDetailsPage({ billboardId }: BillboardDetailsPageProps)
       })
       .catch((loadFailure) => {
         if (!active) return;
-        setError(loadFailure instanceof Error ? loadFailure.message : 'Unable to load billboard.');
+        setError(
+          loadFailure instanceof Error
+            ? loadFailure.message
+            : 'We could not refresh this billboard. Try again.',
+        );
         setStatus('error');
       });
 
@@ -88,7 +96,7 @@ export function BillboardDetailsPage({ billboardId }: BillboardDetailsPageProps)
   return (
     <section className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-6 py-10">
       <Link
-        href="/dashboard/admin/billboards"
+        href="/user/admin/billboards"
         className="text-sm text-zinc-500 underline-offset-2 hover:underline"
       >
         ← Back to inventory
@@ -97,7 +105,10 @@ export function BillboardDetailsPage({ billboardId }: BillboardDetailsPageProps)
       {status === 'loading' ? <p className="text-sm text-zinc-600">Loading billboard…</p> : null}
 
       {status === 'error' ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p
+          role="alert"
+          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+        >
           {error}
         </p>
       ) : null}

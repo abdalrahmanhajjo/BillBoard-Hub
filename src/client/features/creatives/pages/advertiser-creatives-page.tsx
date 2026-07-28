@@ -18,7 +18,7 @@ export function AdvertiserCreativesPage() {
   const load = useCallback(async () => {
     const result = await creativeClientService.list();
     if (!result.ok) {
-      setError(result.error ?? 'Unable to load creatives.');
+      setError(result.error ?? 'We could not load your creatives. Try again.');
       setStatus('error');
       return;
     }
@@ -28,28 +28,10 @@ export function AdvertiserCreativesPage() {
   }, []);
 
   useEffect(() => {
-    let active = true;
-    creativeClientService
-      .list()
-      .then((result) => {
-        if (!active) return;
-        if (!result.ok) {
-          setError(result.error ?? 'Unable to load creatives.');
-          setStatus('error');
-          return;
-        }
-        setCreatives((result.data?.creatives as Creative[] | undefined) ?? []);
-        setStatus('ready');
-      })
-      .catch(() => {
-        if (!active) return;
-        setError('Unable to load creatives.');
-        setStatus('error');
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
+    void (async () => {
+      await load();
+    })();
+  }, [load]);
 
   const handleDelete = async (creative: Creative) => {
     if (!window.confirm(`Delete "${creative.name}"? This cannot be undone.`)) return;
@@ -58,7 +40,9 @@ export function AdvertiserCreativesPage() {
     const result = await creativeClientService.remove(creative.id);
     setPendingId(null);
     if (!result.ok) {
-      setActionError(result.error ?? 'Deleting the creative failed.');
+      setActionError(
+        result.error ?? 'We could not delete this creative. Refresh the page and try again.',
+      );
       return;
     }
     await load();
@@ -83,7 +67,10 @@ export function AdvertiserCreativesPage() {
         <div className="space-y-4">
           <h2 className="text-lg font-medium">Your creatives</h2>
           {actionError ? (
-            <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p
+              role="alert"
+              className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+            >
               {actionError}
             </p>
           ) : null}
@@ -93,7 +80,10 @@ export function AdvertiserCreativesPage() {
           ) : null}
 
           {status === 'error' ? (
-            <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p
+              role="alert"
+              className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+            >
               {error}
             </p>
           ) : null}

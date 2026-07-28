@@ -71,7 +71,10 @@ export function ScheduleForm({ digitalBillboards, playlists, onCreated }: Schedu
         endAt,
       });
       if (!result.ok) {
-        setError(result.error ?? 'Creating the schedule failed.');
+        setError(
+          result.error ??
+            'We could not create this schedule. Review the time window and try again.',
+        );
         return;
       }
       setPlaylistId('');
@@ -84,7 +87,10 @@ export function ScheduleForm({ digitalBillboards, playlists, onCreated }: Schedu
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p
+          role="alert"
+          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+        >
           {error}
         </p>
       ) : null}

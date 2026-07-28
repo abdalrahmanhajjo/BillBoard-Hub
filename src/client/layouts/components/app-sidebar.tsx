@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { NavMain } from './nav-main';
 import type { NavItem } from '@/client/types/nav-item';
@@ -35,8 +36,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="data-[slot=sidebar-menu-button]:p-1.5!">
-              <BrandLogo showWordmark />
+            <SidebarMenuButton
+              tooltip="Website home"
+              className="data-[slot=sidebar-menu-button]:p-1.5!"
+            >
+              <Link href="/" className="flex w-full items-center">
+                <BrandLogo showWordmark />
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

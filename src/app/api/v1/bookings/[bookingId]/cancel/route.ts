@@ -12,6 +12,9 @@ export async function POST(_request: Request, { params }: RouteContext) {
 
     return bookingController.cancelBooking(session.user, bookingId);
   } catch (error) {
-    return handleControllerError(error, 'Cancelling reservation failed.');
+    return handleControllerError(
+      error,
+      'We could not cancel this reservation. Refresh and try again.',
+    );
   }
 }

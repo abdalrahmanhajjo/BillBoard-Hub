@@ -1,5 +1,9 @@
 import { model, models, Schema, type InferSchemaType } from 'mongoose';
-import { CREATIVE_STATUSES, CREATIVE_TYPES } from '@/shared/constants/creative';
+import {
+  CREATIVE_STATUSES,
+  CREATIVE_TYPES,
+  MAX_CREATIVE_VIDEO_DURATION_SECONDS,
+} from '@/shared/constants/creative';
 import type { CreativeRecord } from './creative.types';
 
 const creativeSchema = new Schema<CreativeRecord>(
@@ -27,7 +31,12 @@ const creativeSchema = new Schema<CreativeRecord>(
     },
     durationSeconds: {
       type: Number,
-      min: 1,
+      min: Number.EPSILON,
+      validate: {
+        validator: (value: number | undefined) =>
+          value === undefined || value < MAX_CREATIVE_VIDEO_DURATION_SECONDS,
+        message: `Video must be shorter than ${MAX_CREATIVE_VIDEO_DURATION_SECONDS} seconds.`,
+      },
     },
     status: {
       type: String,

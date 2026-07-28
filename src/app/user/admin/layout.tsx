@@ -1,6 +1,7 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import { USER_ROLES } from '@/shared/constants/user-roles';
+import { ROLE_LANDING_ROUTES } from '@/shared/constants/routes';
 export default async function AdminDashboardLayout({
   children,
 }: Readonly<{
@@ -13,7 +14,7 @@ export default async function AdminDashboardLayout({
   }
 
   if (session.user.role === USER_ROLES.ADVERTISER) {
-    redirect('/dashboard/advertiser');
+    redirect(ROLE_LANDING_ROUTES.advertiser);
   }
 
   if (session.user.role !== USER_ROLES.ADMIN) {

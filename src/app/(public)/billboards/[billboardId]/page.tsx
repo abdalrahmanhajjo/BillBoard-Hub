@@ -2,11 +2,14 @@ import { cache } from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BILLBOARD_TYPES } from '@/shared/constants/billboard';
-import { NotFoundError } from '@/shared/http/http-error';
 import { billboardService } from '@/server/modules/billboards/billboard.service';
 import { digitalSpecService } from '@/server/modules/billboards/digital-spec.service';
+import { isNotFoundError } from '@/server/http/is-not-found-error';
 import type { PublicBillboard, PublicDigitalSpec } from '@/shared/types/billboard';
 import { BillboardDetailsPage } from '@/client/features/public-catalog/pages/billboard-details-page';
+import { JsonLd } from '@/client/ui/components/seo/json-ld';
+import { createPageMetadata } from '@/shared/seo/metadata';
+import { billboardProductSchema, breadcrumbSchema } from '@/shared/seo/schema';
 
 type RouteParams = {
   params: Promise<{ billboardId: string }>;
@@ -14,10 +17,6 @@ type RouteParams = {
 
 // Inventory changes over time, so render per-request rather than statically.
 export const dynamic = 'force-dynamic';
-
-function isNotFound(error: unknown): boolean {
-  return error instanceof NotFoundError || (error as { name?: string })?.name === 'CastError';
-}
 
 // Deduped per request so generateMetadata and the page share one DB read.
 const loadPublicBillboard = cache((billboardId: string) =>
@@ -28,7 +27,7 @@ async function loadBillboard(billboardId: string): Promise<PublicBillboard> {
   try {
     return await loadPublicBillboard(billboardId);
   } catch (error) {
-    if (isNotFound(error)) {
+    if (isNotFoundError(error)) {
       notFound();
     }
     throw error;
@@ -41,12 +40,22 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
   try {
     const billboard = await loadPublicBillboard(billboardId);
 
-    return {
-      title: billboard.name,
+    const format = billboard.type === BILLBOARD_TYPES.DIGITAL ? 'Digital' : 'Static';
+
+    return createPageMetadata({
+      title: `${billboard.name} Billboard in ${billboard.location.city}`,
       description:
         billboard.description ??
-        `${billboard.name} in ${billboard.location.city}, ${billboard.location.country}.`,
-    };
+        `View this ${format.toLowerCase()} billboard in ${billboard.location.city}, Lebanon. Check dimensions, monthly traffic, pricing and campaign availability.`,
+      path: `/billboards/${billboard.id}`,
+      keywords: [
+        `billboard advertising ${billboard.location.city}`,
+        `${format.toLowerCase()} billboard Lebanon`,
+        `billboard rental ${billboard.location.city}`,
+      ],
+      image: billboard.images[0],
+      imageAlt: `${billboard.name} ${format.toLowerCase()} billboard in ${billboard.location.city}, Lebanon`,
+    });
   } catch {
     return { title: 'Billboard' };
   }
@@ -82,6 +91,22 @@ export default async function BillboardDetailsRoute({ params }: RouteParams) {
   }
 
   return (
-    <BillboardDetailsPage billboard={billboard} spec={spec} relatedBillboards={relatedBillboards} />
+    <>
+      <JsonLd
+        data={[
+          breadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: 'Billboards', path: '/billboards' },
+            { name: billboard.name, path: `/billboards/${billboard.id}` },
+          ]),
+          billboardProductSchema(billboard),
+        ]}
+      />
+      <BillboardDetailsPage
+        billboard={billboard}
+        spec={spec}
+        relatedBillboards={relatedBillboards}
+      />
+    </>
   );
 }

@@ -8,6 +8,7 @@ import { impressionPolicy } from './modules/impression-policy';
 import { playlistPolicy } from './modules/playlist-policy';
 import { schedulePolicy } from './modules/schedule-policy';
 import { userPolicy } from './modules/user-policy';
+import { paymentPolicy } from './modules/payment-policy';
 
 export const authorizationPolicy = {
   user: userPolicy,
@@ -20,4 +21,5 @@ export const authorizationPolicy = {
   booking: bookingPolicy,
   campaign: campaignPolicy,
   adCreative: adCreativePolicy,
+  payment: paymentPolicy,
 };

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { auth } from '@/auth';
 import { billboardService } from '@/server/modules/billboards/billboard.service';
-import { NotFoundError } from '@/shared/http/http-error';
+import { isNotFoundError } from '@/server/http/is-not-found-error';
 import type { PublicBillboard } from '@/shared/types/billboard';
 import { ReservationCheckoutPage } from '@/client/features/bookings/pages/reservation-checkout-page';
 
@@ -17,11 +17,12 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Reserve billboard',
   description: 'Submit a reservation request for a billboard advertising campaign.',
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
 };
-
-function isNotFound(error: unknown): boolean {
-  return error instanceof NotFoundError || (error as { name?: string })?.name === 'CastError';
-}
 
 export default async function ReservationRoute({ params, searchParams }: RouteParams) {
   const { billboardId } = await params;
@@ -31,7 +32,7 @@ export default async function ReservationRoute({ params, searchParams }: RoutePa
   try {
     billboard = await billboardService.getPublicById(billboardId);
   } catch (error) {
-    if (isNotFound(error)) {
+    if (isNotFoundError(error)) {
       notFound();
     }
     throw error;

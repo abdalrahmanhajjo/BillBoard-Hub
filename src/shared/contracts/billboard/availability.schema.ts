@@ -6,4 +6,3 @@ export const updateAvailabilitySchema = z.object({
 });
 
 export type UpdateAvailabilitySchemaInput = z.input<typeof updateAvailabilitySchema>;
-export type UpdateAvailabilitySchemaOutput = z.output<typeof updateAvailabilitySchema>;

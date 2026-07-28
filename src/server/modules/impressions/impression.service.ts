@@ -23,7 +23,7 @@ export const impressionService = {
   async record(billboardId: string, input: RecordImpressionSchemaOutput): Promise<Impression> {
     const billboard = await billboardRepository.findById(billboardId);
     if (!billboard) {
-      throw new NotFoundError('Billboard not found.');
+      throw new NotFoundError('We could not find this billboard. It may have been removed.');
     }
     if (billboard.type !== BILLBOARD_TYPES.DIGITAL) {
       throw new BadRequestError('Impressions can only be recorded for digital billboards.');
@@ -31,7 +31,7 @@ export const impressionService = {
 
     const playlist = await playlistRepository.findById(input.playlistId);
     if (!playlist) {
-      throw new NotFoundError('Playlist not found.');
+      throw new NotFoundError('We could not find this playlist. It may have been removed.');
     }
     if (playlist.billboardId !== billboardId) {
       throw new BadRequestError('The playlist does not belong to this screen.');
@@ -42,7 +42,7 @@ export const impressionService = {
 
     const creative = await creativeRepository.findById(input.creativeId);
     if (!creative) {
-      throw new NotFoundError('Creative not found.');
+      throw new NotFoundError('We could not find this creative. It may have been removed.');
     }
 
     const occurredAt = input.occurredAt ? new Date(input.occurredAt) : new Date();

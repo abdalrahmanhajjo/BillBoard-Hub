@@ -45,7 +45,7 @@ export const billboardService = {
   async getPublicById(billboardId: string): Promise<PublicBillboard> {
     const billboard = await billboardRepository.findById(billboardId);
     if (!billboard) {
-      throw new NotFoundError('Billboard not found.');
+      throw new NotFoundError('We could not find this billboard. It may have been removed.');
     }
     return toPublicBillboard(toBillboard(billboard));
   },
@@ -54,7 +54,7 @@ export const billboardService = {
     authorizationPolicy.billboard.assertCanRead(actor);
     const billboard = await billboardRepository.findById(billboardId);
     if (!billboard) {
-      throw new NotFoundError('Billboard not found.');
+      throw new NotFoundError('We could not find this billboard. It may have been removed.');
     }
     return toBillboard(billboard);
   },
@@ -67,7 +67,7 @@ export const billboardService = {
     authorizationPolicy.billboard.assertCanUpdate(actor);
     const updated = await billboardRepository.updateById(billboardId, input);
     if (!updated) {
-      throw new NotFoundError('Billboard not found.');
+      throw new NotFoundError('We could not find this billboard. It may have been removed.');
     }
     return toBillboard(updated);
   },
@@ -80,7 +80,7 @@ export const billboardService = {
     authorizationPolicy.billboard.assertCanUpdate(actor);
     const updated = await billboardRepository.updateStatus(billboardId, status);
     if (!updated) {
-      throw new NotFoundError('Billboard not found.');
+      throw new NotFoundError('We could not find this billboard. It may have been removed.');
     }
     return toBillboard(updated);
   },
@@ -89,7 +89,7 @@ export const billboardService = {
     authorizationPolicy.billboard.assertCanDelete(actor);
     const deleted = await billboardRepository.deleteById(billboardId);
     if (!deleted) {
-      throw new NotFoundError('Billboard not found.');
+      throw new NotFoundError('We could not find this billboard. It may have been removed.');
     }
     await digitalSpecRepository.deleteByBillboardId(billboardId);
   },

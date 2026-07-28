@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Geist, Geist_Mono } from 'next/font/google';
+import { AnalyticsScripts } from '@/client/features/analytics/components/analytics-scripts';
+import { SITE, absoluteUrl } from '@/shared/seo/site';
 import './globals.css';
 import { cn } from '@/client/ui/lib/utils';
 import QueryProvider from '@/client/providers/query-provider';
@@ -18,11 +20,46 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE.url),
   title: {
-    default: 'Boardly',
+    default: 'Billboard Advertising in Lebanon | Boardly',
     template: '%s | Boardly',
   },
-  description: 'Discover and manage premium billboard advertising inventory across Lebanon.',
+  description: SITE.description,
+  applicationName: SITE.name,
+  category: 'business',
+  creator: SITE.name,
+  publisher: SITE.name,
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: 'website',
+    locale: SITE.locale,
+    url: SITE.url,
+    siteName: SITE.name,
+    title: 'Billboard Advertising in Lebanon | Boardly',
+    description: SITE.description,
+    images: [
+      {
+        url: absoluteUrl(SITE.defaultSocialImage),
+        width: 1200,
+        height: 630,
+        alt: 'Premium billboard advertising location on the Lebanese coast',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Billboard Advertising in Lebanon | Boardly',
+    description: SITE.description,
+    images: [absoluteUrl(SITE.defaultSocialImage)],
+  },
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : undefined,
 };
 
 export default function RootLayout({
@@ -54,6 +91,7 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </QueryProvider>
+        <AnalyticsScripts />
       </body>
     </html>
   );

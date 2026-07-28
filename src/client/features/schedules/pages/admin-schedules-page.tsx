@@ -33,7 +33,7 @@ export function AdminSchedulesPage() {
     ]);
 
     if (!billboardsResult.ok || !playlistsResult.ok || !schedulesResult.ok) {
-      setError('Unable to load schedule data.');
+      setError('We could not load schedules. Try again.');
       setStatus('error');
       return;
     }
@@ -52,7 +52,7 @@ export function AdminSchedulesPage() {
         await loadAll();
       } catch {
         if (active) {
-          setError('Unable to load schedule data.');
+          setError('We could not load schedules. Try again.');
           setStatus('error');
         }
       }
@@ -86,20 +86,29 @@ export function AdminSchedulesPage() {
     });
     setCancellingId(null);
     if (!result.ok) {
-      setActionError(result.error ?? 'Cancelling the schedule failed.');
+      setActionError(
+        result.error ?? 'We could not cancel this schedule. Refresh the page and try again.',
+      );
       return;
     }
     await loadAll();
   };
 
   const handleDelete = async (schedule: Schedule) => {
-    if (!window.confirm('Delete this schedule permanently?')) return;
+    if (
+      !window.confirm(
+        'Delete this schedule permanently? The playlist will no longer run during this time window.',
+      )
+    )
+      return;
     setActionError(null);
     setDeletingId(schedule.id);
     const result = await scheduleClientService.remove(schedule.id);
     setDeletingId(null);
     if (!result.ok) {
-      setActionError(result.error ?? 'Deleting the schedule failed.');
+      setActionError(
+        result.error ?? 'We could not delete this schedule. Refresh the page and try again.',
+      );
       return;
     }
     await loadAll();
@@ -132,7 +141,10 @@ export function AdminSchedulesPage() {
         <div className="space-y-4">
           <h2 className="text-lg font-medium">Booked schedules</h2>
           {actionError ? (
-            <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p
+              role="alert"
+              className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+            >
               {actionError}
             </p>
           ) : null}
@@ -142,7 +154,10 @@ export function AdminSchedulesPage() {
           ) : null}
 
           {status === 'error' ? (
-            <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p
+              role="alert"
+              className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+            >
               {error}
             </p>
           ) : null}

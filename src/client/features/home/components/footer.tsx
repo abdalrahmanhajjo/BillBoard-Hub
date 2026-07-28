@@ -91,13 +91,13 @@ export function Footer() {
             © {currentYear} {brandName}. All rights reserved.
           </p>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
-            <Link href="/#" className="transition-colors hover:text-zinc-900">
+            <Link href="/terms" className="transition-colors hover:text-zinc-900">
               Terms of Service
             </Link>
-            <Link href="/#" className="transition-colors hover:text-zinc-900">
+            <Link href="/privacy" className="transition-colors hover:text-zinc-900">
               Privacy Policy
             </Link>
-            <Link href="/#" className="transition-colors hover:text-zinc-900">
+            <Link href="/cookies" className="transition-colors hover:text-zinc-900">
               Cookie Policy
             </Link>
           </div>

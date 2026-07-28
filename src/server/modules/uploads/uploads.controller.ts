@@ -15,12 +15,17 @@ export const uploadsController = {
         can(actor.role, PERMISSIONS.CREATIVES_CREATE);
 
       if (!allowed) {
-        return apiResponse.forbidden('You are not allowed to upload media.');
+        return apiResponse.forbidden(
+          'Your account cannot upload media. Contact an administrator if you need access.',
+        );
       }
 
       return apiResponse.ok(imagekitUploadService.getAuthParams());
     } catch (error) {
-      return handleControllerError(error, 'Could not authorize the upload.');
+      return handleControllerError(
+        error,
+        'We could not start the upload. Refresh the page and try again.',
+      );
     }
   },
 };

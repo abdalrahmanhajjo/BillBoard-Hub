@@ -1,8 +1,8 @@
 import { Container } from '@/client/features/home/components/container';
 import { BrandCarousel } from '@/client/features/home/components/brand-carousel';
-import { brands } from '@/client/features/home/data/homepage';
+import type { BrandItem } from '@/client/features/home/home.types';
 
-export function Brands() {
+export function Brands({ brands }: { brands: BrandItem[] }) {
   return (
     <section className="border-b border-zinc-100 bg-white">
       <Container className="py-10 sm:py-14 lg:py-16">

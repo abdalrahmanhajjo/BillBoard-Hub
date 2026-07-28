@@ -85,7 +85,7 @@ export function useBillboardSearch() {
       .then((result) => {
         if (!active) return;
         if (!result.ok) {
-          setError(result.error ?? 'Unable to load billboards.');
+          setError(result.error ?? 'We could not load billboard inventory. Try again.');
           setStatus('error');
           return;
         }
@@ -95,7 +95,9 @@ export function useBillboardSearch() {
       })
       .catch((err) => {
         if (!active) return;
-        setError(err instanceof Error ? err.message : 'Unable to load billboards.');
+        setError(
+          err instanceof Error ? err.message : 'We could not load billboard inventory. Try again.',
+        );
         setStatus('error');
       });
 

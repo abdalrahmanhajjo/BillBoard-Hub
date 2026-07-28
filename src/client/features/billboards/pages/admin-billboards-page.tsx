@@ -29,7 +29,9 @@ type DrawerMode = 'create' | 'edit' | 'digital' | null;
 
 async function fetchBillboards(): Promise<Billboard[]> {
   const result = await billboardClientService.list();
-  if (!result.ok) throw new Error(result.error ?? 'Unable to load billboards.');
+  if (!result.ok) {
+    throw new Error(result.error ?? 'We could not load billboard inventory. Try again.');
+  }
   return (result.data?.billboards as Billboard[] | undefined) ?? [];
 }
 
@@ -112,7 +114,11 @@ export function AdminBillboardsPage() {
       setLoadError(null);
       setStatus('ready');
     } catch (error) {
-      setLoadError(error instanceof Error ? error.message : 'Unable to load billboards.');
+      setLoadError(
+        error instanceof Error
+          ? error.message
+          : 'We could not load billboard inventory. Try again.',
+      );
       setStatus('error');
     }
   }, []);
@@ -129,7 +135,11 @@ export function AdminBillboardsPage() {
       })
       .catch((error) => {
         if (!active) return;
-        setLoadError(error instanceof Error ? error.message : 'Unable to load billboards.');
+        setLoadError(
+          error instanceof Error
+            ? error.message
+            : 'We could not refresh billboard inventory. Try again.',
+        );
         setStatus('error');
       });
 
@@ -181,18 +191,26 @@ export function AdminBillboardsPage() {
     setCityFilter('');
   }, []);
 
-  const counts = useMemo(
-    () => ({
+  const counts = useMemo(() => {
+    const next = {
       all: billboards.length,
-      available: billboards.filter((item) => item.status === BILLBOARD_STATUSES.AVAILABLE).length,
-      reserved: billboards.filter((item) => item.status === BILLBOARD_STATUSES.RESERVED).length,
-      occupied: billboards.filter((item) => item.status === BILLBOARD_STATUSES.OCCUPIED).length,
-      maintenance: billboards.filter((item) => item.status === BILLBOARD_STATUSES.MAINTENANCE)
-        .length,
-      digital: billboards.filter((item) => item.type === BILLBOARD_TYPES.DIGITAL).length,
-    }),
-    [billboards],
-  );
+      available: 0,
+      reserved: 0,
+      occupied: 0,
+      maintenance: 0,
+      digital: 0,
+    };
+
+    for (const billboard of billboards) {
+      if (billboard.status === BILLBOARD_STATUSES.AVAILABLE) next.available += 1;
+      if (billboard.status === BILLBOARD_STATUSES.RESERVED) next.reserved += 1;
+      if (billboard.status === BILLBOARD_STATUSES.OCCUPIED) next.occupied += 1;
+      if (billboard.status === BILLBOARD_STATUSES.MAINTENANCE) next.maintenance += 1;
+      if (billboard.type === BILLBOARD_TYPES.DIGITAL) next.digital += 1;
+    }
+
+    return next;
+  }, [billboards]);
 
   const handleStatusChange = useCallback(
     async (billboardId: string, nextStatus: BillboardStatus) => {
@@ -203,7 +221,9 @@ export function AdminBillboardsPage() {
       });
       setPendingStatusId(null);
       if (!result.ok) {
-        setActionError(result.error ?? 'Updating availability failed.');
+        setActionError(
+          result.error ?? 'We could not update availability. Refresh the inventory and try again.',
+        );
         return;
       }
       await loadBillboards();
@@ -222,7 +242,9 @@ export function AdminBillboardsPage() {
     setActionError(null);
     const result = await billboardClientService.delete(billboard.id);
     if (!result.ok) {
-      setActionError(result.error ?? 'Archiving billboard failed.');
+      setActionError(
+        result.error ?? 'We could not archive this billboard. Refresh the inventory and try again.',
+      );
       return;
     }
     await loadBillboards();
@@ -380,7 +402,10 @@ export function AdminBillboardsPage() {
             </button>
           </div>
           {actionError ? (
-            <p className="mb-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+            <p
+              role="alert"
+              className="mb-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700"
+            >
               {actionError}
             </p>
           ) : null}

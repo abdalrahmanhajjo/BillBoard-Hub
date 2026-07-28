@@ -173,6 +173,46 @@
   }
 }
 
+/* Hero: a fine grid that drifts upward for a sense of depth/travel, plus a slow
+   conic sheen that rotates behind the headline. Both are ambient (light, blue,
+   low-opacity) and pause entirely under reduced-motion. */
+@keyframes hero-grid-drift {
+  to {
+    background-position:
+      0 -46px,
+      0 -46px;
+  }
+}
+
+@keyframes hero-sheen-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(to right, rgba(37, 99, 235, 0.09) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(37, 99, 235, 0.09) 1px, transparent 1px);
+  background-size:
+    46px 46px,
+    46px 46px;
+  -webkit-mask-image: radial-gradient(115% 90% at 50% 8%, #000 0%, transparent 68%);
+  mask-image: radial-gradient(115% 90% at 50% 8%, #000 0%, transparent 68%);
+  animation: hero-grid-drift 3.4s linear infinite;
+}
+
+.hero-sheen {
+  animation: hero-sheen-spin 26s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-grid,
+  .hero-sheen {
+    animation: none;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

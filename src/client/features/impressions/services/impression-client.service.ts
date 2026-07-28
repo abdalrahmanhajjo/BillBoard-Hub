@@ -1,5 +1,5 @@
 import type { RecordImpressionSchemaInput } from '@/shared/contracts/impression/impression.schema';
-import { apiRequest } from '@/client/lib/response-utils';
+import { apiRequest } from '@/client/ui/lib/api-client';
 
 type AnalyticsFilter = {
   billboardId?: string;

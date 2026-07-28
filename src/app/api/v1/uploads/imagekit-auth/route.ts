@@ -7,6 +7,9 @@ export async function GET() {
 
     return uploadsController.getImageKitAuth(session.user);
   } catch (error) {
-    return handleControllerError(error, 'Could not authorize the upload.');
+    return handleControllerError(
+      error,
+      'We could not start the upload. Refresh the page and try again.',
+    );
   }
 }

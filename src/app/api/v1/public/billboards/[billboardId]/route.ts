@@ -11,6 +11,6 @@ export async function GET(_request: Request, { params }: RouteContext) {
 
     return billboardController.getPublicBillboard(billboardId);
   } catch (error) {
-    return handleControllerError(error, 'Getting billboard failed.');
+    return handleControllerError(error, 'We could not load this billboard. Try again.');
   }
 }

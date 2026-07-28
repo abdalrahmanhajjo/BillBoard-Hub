@@ -52,7 +52,10 @@ export function BillboardInventoryTable({
 
   if (error) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-8 text-center text-sm text-red-700">
+      <div
+        role="alert"
+        className="rounded-lg border border-red-200 bg-red-50 px-4 py-8 text-center text-sm text-red-700"
+      >
         {error}
       </div>
     );
@@ -120,7 +123,7 @@ export function BillboardInventoryTable({
                     </div>
                     <div className="min-w-0">
                       <Link
-                        href={`/dashboard/admin/billboards/${billboard.id}`}
+                        href={`/user/admin/billboards/${billboard.id}`}
                         className="block max-w-28 truncate font-semibold text-slate-900 hover:text-blue-600"
                       >
                         {billboard.code}

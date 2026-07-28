@@ -59,4 +59,9 @@ export const PERMISSIONS = {
   AD_CREATIVES_READ_ANY: 'ad_creatives.read:any',
   AD_CREATIVES_READ_SELF: 'ad_creatives.read:self',
   AD_CREATIVES_DELETE_SELF: 'ad_creatives.delete:self',
+  // Payment Permissions
+  PAYMENTS_CREATE: 'payments.create',
+  PAYMENTS_READ: 'payments.read',
+  PAYMENTS_RECONCILE: 'payments.reconcile',
+  PAYMENTS_REFUND: 'payments.refund',
 } as const;

@@ -7,10 +7,15 @@ const ADMIN_ROUTES = {
 } as const;
 
 const ADVERTISER_ROUTES = {
+  HOME: '/',
   DASHBOARD: '/user/advertiser',
   CAMPAIGNS: '/user/advertiser/campaigns',
   BOOKINGS: '/user/advertiser/bookings',
-  INVOICES: '/user/advertiser/invoices',
 } as const;
 
-export { ADMIN_ROUTES, ADVERTISER_ROUTES };
+const ROLE_LANDING_ROUTES = {
+  admin: ADMIN_ROUTES.DASHBOARD,
+  advertiser: '/',
+} as const;
+
+export { ADMIN_ROUTES, ADVERTISER_ROUTES, ROLE_LANDING_ROUTES };

@@ -31,7 +31,7 @@ async function loadCreativesById(creativeIds: string[]): Promise<Map<string, Cre
 async function buildSummaryForSchedule(schedule: Schedule): Promise<RotationSummary> {
   const playlistDoc = await playlistRepository.findById(schedule.playlistId);
   if (!playlistDoc) {
-    throw new NotFoundError('The scheduled playlist was not found.');
+    throw new NotFoundError('We could not find the scheduled playlist. It may have been removed.');
   }
   const playlist = toPlaylist(playlistDoc);
   const creativesById = await loadCreativesById(playlist.creativeIds);
@@ -47,7 +47,7 @@ export const rotationService = {
   async getNowPlaying(billboardId: string, at: Date = new Date()): Promise<NowPlaying> {
     const billboard = await billboardRepository.findById(billboardId);
     if (!billboard) {
-      throw new NotFoundError('Billboard not found.');
+      throw new NotFoundError('We could not find this billboard. It may have been removed.');
     }
     if (billboard.type !== BILLBOARD_TYPES.DIGITAL) {
       throw new BadRequestError('Only digital billboards have a rotation.');
@@ -68,7 +68,7 @@ export const rotationService = {
     authorizationPolicy.schedule.assertCanRead(actor);
     const scheduleDoc = await scheduleRepository.findById(scheduleId);
     if (!scheduleDoc) {
-      throw new NotFoundError('Schedule not found.');
+      throw new NotFoundError('We could not find this schedule. It may have been removed.');
     }
     return buildSummaryForSchedule(toSchedule(scheduleDoc));
   },

@@ -2,13 +2,18 @@
 
 import { useRef, useState, useTransition, type FormEvent } from 'react';
 import { Film, ImageIcon, Upload } from 'lucide-react';
-import { CREATIVE_TYPES } from '@/shared/constants/creative';
+import { CREATIVE_TYPES, MAX_CREATIVE_VIDEO_DURATION_SECONDS } from '@/shared/constants/creative';
 import type { CreativeType } from '@/shared/types/creative';
 import { uploadCreativeAsset } from '@/client/features/creatives/services/creative-upload.service';
 import { creativeClientService } from '@/client/features/creatives/services/creative-client.service';
+import {
+  isVideoDurationAllowed,
+  readVideoDurationSeconds,
+} from '@/client/features/creatives/utils/video-metadata';
 
 const ACCEPTED_IMAGE = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-const ACCEPTED_VIDEO = ['video/mp4', 'video/webm'];
+const ACCEPTED_VIDEO = ['video/mp4', 'video/webm', 'video/quicktime'];
+const ACCEPTED_VIDEO_EXTENSIONS = ['.mp4', '.webm', '.mov'];
 const MAX_SIZE_MB = 50;
 
 const inputClassName = 'w-full rounded-md border border-zinc-300 px-3 py-2 text-sm';
@@ -17,7 +22,7 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
   const [name, setName] = useState('');
   const [assetUrl, setAssetUrl] = useState('');
   const [type, setType] = useState<CreativeType | null>(null);
-  const [duration, setDuration] = useState('');
+  const [duration, setDuration] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -32,9 +37,11 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
     setError(null);
 
     const image = ACCEPTED_IMAGE.includes(file.type);
-    const video = ACCEPTED_VIDEO.includes(file.type);
+    const video =
+      ACCEPTED_VIDEO.includes(file.type) ||
+      ACCEPTED_VIDEO_EXTENSIONS.some((extension) => file.name.toLowerCase().endsWith(extension));
     if (!image && !video) {
-      setError('Upload a JPG, PNG, WebP, GIF, MP4, or WebM file.');
+      setError('Upload a JPG, PNG, WebP, GIF, MP4, WebM, or MOV file.');
       return;
     }
     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
@@ -45,12 +52,25 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
     setUploading(true);
     setProgress(0);
     try {
+      const videoDuration = video ? await readVideoDurationSeconds(file) : null;
+      if (videoDuration !== null && !isVideoDurationAllowed(videoDuration)) {
+        setError(
+          `Video must be shorter than ${MAX_CREATIVE_VIDEO_DURATION_SECONDS} seconds. This file is ${videoDuration.toFixed(1)} seconds.`,
+        );
+        return;
+      }
+
       const url = await uploadCreativeAsset(file, setProgress);
       setAssetUrl(url);
       setType(video ? CREATIVE_TYPES.VIDEO : CREATIVE_TYPES.IMAGE);
+      setDuration(videoDuration);
       if (!name.trim()) setName(file.name.replace(/\.[^.]+$/, ''));
     } catch (uploadError) {
-      setError(uploadError instanceof Error ? uploadError.message : 'Upload failed.');
+      setError(
+        uploadError instanceof Error
+          ? uploadError.message
+          : 'We could not upload this creative. Check the file and try again.',
+      );
     } finally {
       setUploading(false);
       setProgress(0);
@@ -72,16 +92,18 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
         name,
         type,
         assetUrl,
-        durationSeconds: isVideo ? Number(duration) || undefined : undefined,
+        durationSeconds: isVideo ? (duration ?? undefined) : undefined,
       });
       if (!result.ok) {
-        setError(result.error ?? 'Creating the creative failed.');
+        setError(
+          result.error ?? 'We could not add this creative. Review the details and try again.',
+        );
         return;
       }
       setName('');
       setAssetUrl('');
       setType(null);
-      setDuration('');
+      setDuration(null);
       onCreated?.();
     });
   };
@@ -89,7 +111,10 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p
+          role="alert"
+          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+        >
           {error}
         </p>
       ) : null}
@@ -105,7 +130,7 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
         <input
           ref={inputRef}
           type="file"
-          accept={[...ACCEPTED_IMAGE, ...ACCEPTED_VIDEO].join(',')}
+          accept={[...ACCEPTED_IMAGE, ...ACCEPTED_VIDEO, ...ACCEPTED_VIDEO_EXTENSIONS].join(',')}
           hidden
           disabled={busy}
           onChange={(event) => void handleFile(event.target.files?.[0])}
@@ -125,7 +150,7 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
             )}
             <p className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600">
               {isVideo ? <Film className="size-3.5" /> : <ImageIcon className="size-3.5" />}
-              Uploaded — {isVideo ? 'video' : 'image'}
+              Uploaded — {isVideo && duration ? `video · ${duration.toFixed(1)}s` : 'image'}
             </p>
           </div>
         ) : (
@@ -143,7 +168,10 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
               or drag &amp; drop
             </p>
             <p className="mt-1 text-xs text-zinc-400">
-              Image or video (JPG, PNG, WebP, GIF, MP4, WebM) · up to {MAX_SIZE_MB}MB
+              Image or video (JPG, PNG, WebP, GIF, MP4, WebM, MOV) · up to {MAX_SIZE_MB}MB
+            </p>
+            <p className="mt-1 text-xs font-medium text-blue-600">
+              Videos must be shorter than {MAX_CREATIVE_VIDEO_DURATION_SECONDS} seconds.
             </p>
           </>
         )}
@@ -155,6 +183,7 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
           onClick={() => {
             setAssetUrl('');
             setType(null);
+            setDuration(null);
           }}
           className="text-xs text-zinc-500 hover:text-zinc-800"
         >
@@ -174,24 +203,6 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
           placeholder="Spring campaign — hero"
         />
       </div>
-
-      {isVideo ? (
-        <div className="space-y-1">
-          <label htmlFor="creative-duration" className="text-sm font-medium">
-            Duration (seconds)
-          </label>
-          <input
-            id="creative-duration"
-            type="number"
-            min="1"
-            step="1"
-            value={duration}
-            onChange={(event) => setDuration(event.target.value)}
-            className={inputClassName}
-            placeholder="15"
-          />
-        </div>
-      ) : null}
 
       <button
         type="submit"

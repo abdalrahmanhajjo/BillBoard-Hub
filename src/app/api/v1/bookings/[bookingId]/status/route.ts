@@ -14,7 +14,10 @@ async function handleUpdate(request: Request, { params }: RouteContext) {
 
     return bookingController.updateBookingStatus(session.user, bookingId, payload);
   } catch (error) {
-    return handleControllerError(error, 'Updating reservation failed.');
+    return handleControllerError(
+      error,
+      'We could not update this reservation. Refresh and try again.',
+    );
   }
 }
 

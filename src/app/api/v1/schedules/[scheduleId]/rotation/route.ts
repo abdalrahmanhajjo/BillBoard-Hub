@@ -12,6 +12,6 @@ export async function GET(_request: Request, { params }: RouteContext) {
 
     return rotationController.getScheduleRotation(session.user, scheduleId);
   } catch (error) {
-    return handleControllerError(error, 'Getting rotation failed.');
+    return handleControllerError(error, 'We could not load this rotation. Try again.');
   }
 }

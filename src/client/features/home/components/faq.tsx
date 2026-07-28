@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { ArrowUpRight, Check, ChevronDown, Headphones } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { Container } from '@/client/features/home/components/container';
-import { faqs } from '@/client/features/home/data/homepage';
 import { Button } from '@/client/ui/components/ui/button';
+import type { FaqItem } from '@/client/features/home/home.types';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const faqTopics = ['Booking', 'Availability', 'Inventory', 'Billing', 'Planning'];
 
-export function Faq() {
+export function Faq({ faqs }: { faqs: FaqItem[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const reduceMotion = useReducedMotion();
   const activeFaq = faqs[activeIndex];
@@ -94,7 +94,7 @@ export function Faq() {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-[10px] font-semibold tracking-[0.14em] text-zinc-400 uppercase">
-                      {faqTopics[index]}
+                      {faqTopics[index] ?? 'General'}
                     </span>
                     <span
                       className={`mt-1.5 block text-base leading-6 font-semibold text-wrap transition-colors ${
@@ -192,7 +192,7 @@ export function Faq() {
                         active ? 'text-blue-600' : 'text-zinc-400'
                       }`}
                     >
-                      {faqTopics[index]}
+                      {faqTopics[index] ?? 'General'}
                     </span>
                     <span
                       className={`mt-1.5 block max-w-lg text-[1.05rem] leading-6 font-semibold text-wrap transition-colors ${

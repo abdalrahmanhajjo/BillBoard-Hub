@@ -16,7 +16,7 @@ import type { User } from '@/shared/types/user';
 async function assertDigitalBillboard(billboardId: string): Promise<void> {
   const billboard = await billboardRepository.findById(billboardId);
   if (!billboard) {
-    throw new NotFoundError('Billboard not found.');
+    throw new NotFoundError('We could not find this billboard. It may have been removed.');
   }
   if (billboard.type !== BILLBOARD_TYPES.DIGITAL) {
     throw new BadRequestError('Schedules can only be created for digital billboards.');
@@ -26,7 +26,7 @@ async function assertDigitalBillboard(billboardId: string): Promise<void> {
 async function assertPlaylistForBillboard(playlistId: string, billboardId: string): Promise<void> {
   const playlist = await playlistRepository.findById(playlistId);
   if (!playlist) {
-    throw new NotFoundError('Playlist not found.');
+    throw new NotFoundError('We could not find this playlist. It may have been removed.');
   }
   if (playlist.billboardId !== billboardId) {
     throw new BadRequestError('The selected playlist belongs to a different screen.');
@@ -74,7 +74,7 @@ export const scheduleService = {
     authorizationPolicy.schedule.assertCanRead(actor);
     const schedule = await scheduleRepository.findById(scheduleId);
     if (!schedule) {
-      throw new NotFoundError('Schedule not found.');
+      throw new NotFoundError('We could not find this schedule. It may have been removed.');
     }
     return toSchedule(schedule);
   },
@@ -88,7 +88,7 @@ export const scheduleService = {
 
     const existing = await scheduleRepository.findById(scheduleId);
     if (!existing) {
-      throw new NotFoundError('Schedule not found.');
+      throw new NotFoundError('We could not find this schedule. It may have been removed.');
     }
 
     const nextStartAt = input.startAt ? new Date(input.startAt) : new Date(existing.startAt);
@@ -108,7 +108,7 @@ export const scheduleService = {
 
     const updated = await scheduleRepository.updateById(scheduleId, input);
     if (!updated) {
-      throw new NotFoundError('Schedule not found.');
+      throw new NotFoundError('We could not find this schedule. It may have been removed.');
     }
     return toSchedule(updated);
   },
@@ -117,7 +117,7 @@ export const scheduleService = {
     authorizationPolicy.schedule.assertCanDelete(actor);
     const deleted = await scheduleRepository.deleteById(scheduleId);
     if (!deleted) {
-      throw new NotFoundError('Schedule not found.');
+      throw new NotFoundError('We could not find this schedule. It may have been removed.');
     }
   },
 };

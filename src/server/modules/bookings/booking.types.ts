@@ -2,6 +2,7 @@ import type { BookingPricing } from '@/shared/pricing/booking-pricing';
 import type {
   BookingBilling,
   BookingCompany,
+  BookingCreativeType,
   BookingCurrency,
   BookingInvoice,
   BookingStatus,
@@ -21,9 +22,14 @@ export type BookingRecord = {
   startDate: Date;
   endDate: Date;
   creativeUrl?: string;
+  creativeType?: BookingCreativeType;
+  creativeDurationSeconds?: number;
   billing: BookingBilling;
   company: BookingCompany;
   paymentMethod: PaymentMethod;
+  stripeCustomerId?: string;
+  stripeSetupIntentId?: string;
+  stripePaymentMethodId?: string;
   paymentStatus: PaymentStatus;
   invoice: BookingInvoice;
   pricing: BookingPricing & { currency: BookingCurrency };

@@ -1,4 +1,4 @@
-import { apiRequest } from '@/client/lib/response-utils';
+import { apiRequest } from '@/client/ui/lib/api-client';
 
 export const rotationClientService = {
   /** Device contract endpoint — what is playing on a screen right now. */

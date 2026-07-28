@@ -23,7 +23,10 @@ export const bookingController = {
       const booking = await bookingService.create(parsed.data, actor);
       return apiResponse.ok(booking, 201);
     } catch (error) {
-      return handleControllerError(error, 'Reservation failed.');
+      return handleControllerError(
+        error,
+        'We could not submit the reservation. Review the details and try again.',
+      );
     }
   },
 
@@ -32,7 +35,7 @@ export const bookingController = {
       const bookings = await bookingService.list(actor, filter);
       return apiResponse.ok({ bookings });
     } catch (error) {
-      return handleControllerError(error, 'Getting reservations failed.');
+      return handleControllerError(error, 'We could not load reservations. Try again.');
     }
   },
 
@@ -45,7 +48,7 @@ export const bookingController = {
       const booking = await bookingService.getById(actor, bookingId);
       return apiResponse.ok({ booking });
     } catch (error) {
-      return handleControllerError(error, 'Getting reservation failed.');
+      return handleControllerError(error, 'We could not load this reservation. Try again.');
     }
   },
 
@@ -69,7 +72,10 @@ export const bookingController = {
       const booking = await bookingService.updateStatus(actor, bookingId, parsed.data.status);
       return apiResponse.ok(booking);
     } catch (error) {
-      return handleControllerError(error, 'Updating reservation failed.');
+      return handleControllerError(
+        error,
+        'We could not update this reservation. Refresh and try again.',
+      );
     }
   },
 
@@ -82,7 +88,10 @@ export const bookingController = {
       const booking = await bookingService.cancel(actor, bookingId);
       return apiResponse.ok(booking);
     } catch (error) {
-      return handleControllerError(error, 'Cancelling reservation failed.');
+      return handleControllerError(
+        error,
+        'We could not cancel this reservation. Refresh and try again.',
+      );
     }
   },
 };

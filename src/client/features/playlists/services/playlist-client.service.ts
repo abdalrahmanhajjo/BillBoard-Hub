@@ -1,8 +1,8 @@
-import { apiRequest } from '@/client/lib/response-utils';
 import type {
   CreatePlaylistSchemaInput,
   UpdatePlaylistSchemaInput,
 } from '@/shared/contracts/playlist/playlist.schema';
+import { apiRequest } from '@/client/ui/lib/api-client';
 
 export const playlistClientService = {
   async create(payload: CreatePlaylistSchemaInput) {
@@ -23,7 +23,7 @@ export const playlistClientService = {
   },
 
   async update(playlistId: string, payload: UpdatePlaylistSchemaInput) {
-    return apiRequest(`/api/v1/playlists/${playlistId}`, {
+    return apiRequest(`/api/v1/playlists/${encodeURIComponent(playlistId)}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -32,7 +32,7 @@ export const playlistClientService = {
   },
 
   async remove(playlistId: string) {
-    return apiRequest(`/api/v1/playlists/${playlistId}`, {
+    return apiRequest(`/api/v1/playlists/${encodeURIComponent(playlistId)}`, {
       method: 'DELETE',
       credentials: 'include',
     });

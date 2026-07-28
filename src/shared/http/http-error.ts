@@ -1,3 +1,5 @@
+import { USER_MESSAGES } from '@/shared/messages/user-messages';
+
 export class HttpError extends Error {
   status: number;
 
@@ -9,35 +11,37 @@ export class HttpError extends Error {
 }
 
 export class BadRequestError extends HttpError {
-  constructor(message = 'Bad request.') {
+  constructor(message: string = 'Check the submitted details and try again.') {
     super(400, message);
     this.name = 'BadRequestError';
   }
 }
 
 export class UnauthorizedError extends HttpError {
-  constructor(message = 'Not authenticated.') {
+  constructor(message: string = USER_MESSAGES.sessionRequired) {
     super(401, message);
     this.name = 'UnauthorizedError';
   }
 }
 
 export class ForbiddenError extends HttpError {
-  constructor(message = 'Forbidden.') {
+  constructor(message: string = 'Your account does not have permission for this action.') {
     super(403, message);
     this.name = 'ForbiddenError';
   }
 }
 
 export class NotFoundError extends HttpError {
-  constructor(message = 'Resource not found.') {
+  constructor(message: string = USER_MESSAGES.notFound) {
     super(404, message);
     this.name = 'NotFoundError';
   }
 }
 
 export class ConflictError extends HttpError {
-  constructor(message = 'Conflict.') {
+  constructor(
+    message: string = 'This change conflicts with existing data. Refresh and try again.',
+  ) {
     super(409, message);
     this.name = 'ConflictError';
   }

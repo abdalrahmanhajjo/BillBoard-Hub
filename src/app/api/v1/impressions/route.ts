@@ -13,6 +13,6 @@ export async function GET(request: Request) {
 
     return impressionController.getAnalytics(session.user, filter);
   } catch (error) {
-    return handleControllerError(error, 'Getting impression analytics failed.');
+    return handleControllerError(error, 'We could not load impression analytics. Try again.');
   }
 }

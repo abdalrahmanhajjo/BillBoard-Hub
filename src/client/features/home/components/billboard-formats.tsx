@@ -13,13 +13,14 @@ import {
   useTransform,
 } from 'motion/react';
 import { Container } from '@/client/features/home/components/container';
-import { billboardFormats } from '@/client/features/home/data/homepage';
 import { Button } from '@/client/ui/components/ui/button';
+import { HomeIcon } from '@/client/features/home/components/home-icon';
+import type { BillboardFormat } from '@/client/features/home/home.types';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const AUTOPLAY_MS = 6000;
 
-export function BillboardFormats() {
+export function BillboardFormats({ formats }: { formats: BillboardFormat[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -34,8 +35,7 @@ export function BillboardFormats() {
   const imageRotateX = useTransform(smoothY, [-0.5, 0.5], reduceMotion ? [0, 0] : [1.5, -1.5]);
   const imageRotateY = useTransform(smoothX, [-0.5, 0.5], reduceMotion ? [0, 0] : [-1.5, 1.5]);
 
-  const activeFormat = billboardFormats[activeIndex];
-  const ActiveIcon = activeFormat.icon;
+  const activeFormat = formats[activeIndex];
   // Pause the reel while the mouse is over the section so it never switches
   // away while the visitor is exploring a format.
   const playing = isPlaying && !reduceMotion && !hovering;
@@ -45,10 +45,10 @@ export function BillboardFormats() {
     if (!playing) return;
     const id = setTimeout(() => {
       setDirection(1);
-      setActiveIndex((index) => (index + 1) % billboardFormats.length);
+      setActiveIndex((index) => (index + 1) % formats.length);
     }, AUTOPLAY_MS);
     return () => clearTimeout(id);
-  }, [activeIndex, playing]);
+  }, [activeIndex, formats.length, playing]);
 
   const select = (index: number) => {
     setDirection(index >= activeIndex ? 1 : -1);
@@ -195,7 +195,7 @@ export function BillboardFormats() {
                 </button>
                 <span className="text-xs font-medium text-white/70">
                   {String(activeIndex + 1).padStart(2, '0')} /{' '}
-                  {String(billboardFormats.length).padStart(2, '0')}
+                  {String(formats.length).padStart(2, '0')}
                 </span>
               </div>
             </div>
@@ -214,7 +214,7 @@ export function BillboardFormats() {
                       transition={{ duration: 0.32, ease }}
                       className="absolute inset-0 flex items-center justify-center"
                     >
-                      <ActiveIcon className="size-5" aria-hidden />
+                      <HomeIcon name={activeFormat.icon} className="size-5" aria-hidden />
                     </motion.span>
                   </AnimatePresence>
                 </span>
@@ -274,8 +274,7 @@ export function BillboardFormats() {
             }}
             className="grid snap-x snap-mandatory [scrollbar-width:none] auto-cols-[84%] grid-flow-col gap-2 overflow-x-auto overscroll-x-contain rounded-[24px] pb-1 lg:flex lg:snap-none lg:flex-col lg:gap-0 lg:overflow-hidden lg:rounded-[28px] lg:border lg:border-zinc-200 lg:pb-0 lg:dark:border-zinc-800 [&::-webkit-scrollbar]:hidden"
           >
-            {billboardFormats.map((format, index) => {
-              const Icon = format.icon;
+            {formats.map((format, index) => {
               const active = index === activeIndex;
 
               return (
@@ -311,7 +310,7 @@ export function BillboardFormats() {
                         : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300'
                     }`}
                   >
-                    <Icon className="size-5" aria-hidden />
+                    <HomeIcon name={format.icon} className="size-5" aria-hidden />
                   </motion.span>
                   <span className="min-w-0 flex-1">
                     <span

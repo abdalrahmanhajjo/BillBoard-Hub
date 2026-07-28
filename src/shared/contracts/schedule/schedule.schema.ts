@@ -4,12 +4,12 @@ import { SCHEDULE_STATUSES } from '@/shared/constants/schedule';
 const isoDateTime = z
   .string()
   .trim()
-  .refine((value) => !Number.isNaN(Date.parse(value)), 'A valid date and time is required.');
+  .refine((value) => !Number.isNaN(Date.parse(value)), 'Choose a valid date and time.');
 
 export const createScheduleSchema = z
   .object({
-    billboardId: z.string().trim().min(1, 'A digital billboard is required.'),
-    playlistId: z.string().trim().min(1, 'A playlist is required.'),
+    billboardId: z.string().trim().min(1, 'Choose a digital billboard to schedule.'),
+    playlistId: z.string().trim().min(1, 'Choose a playlist to schedule.'),
     startAt: isoDateTime,
     endAt: isoDateTime,
     status: z.enum(SCHEDULE_STATUSES).default(SCHEDULE_STATUSES.SCHEDULED),
@@ -21,13 +21,13 @@ export const createScheduleSchema = z
 
 export const updateScheduleSchema = z
   .object({
-    playlistId: z.string().trim().min(1, 'A playlist is required.').optional(),
+    playlistId: z.string().trim().min(1, 'Choose a playlist to schedule.').optional(),
     startAt: isoDateTime.optional(),
     endAt: isoDateTime.optional(),
     status: z.enum(SCHEDULE_STATUSES).optional(),
   })
   .refine((data) => Object.values(data).some((value) => value !== undefined), {
-    message: 'At least one field must be provided.',
+    message: 'Change at least one schedule field before saving.',
   })
   .refine(
     (data) =>

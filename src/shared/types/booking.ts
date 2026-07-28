@@ -1,4 +1,5 @@
 import {
+  BOOKING_CREATIVE_TYPES,
   BOOKING_CURRENCIES,
   BOOKING_STATUSES,
   CAMPAIGN_OBJECTIVES,
@@ -12,6 +13,8 @@ export type PaymentMethod = (typeof PAYMENT_METHODS)[keyof typeof PAYMENT_METHOD
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[keyof typeof PAYMENT_STATUSES];
 export type CampaignObjective = (typeof CAMPAIGN_OBJECTIVES)[keyof typeof CAMPAIGN_OBJECTIVES];
 export type BookingCurrency = (typeof BOOKING_CURRENCIES)[number];
+export type BookingCreativeType =
+  (typeof BOOKING_CREATIVE_TYPES)[keyof typeof BOOKING_CREATIVE_TYPES];
 
 export type BookingBilling = {
   contactName: string;
@@ -47,6 +50,8 @@ export type Booking = {
   startDate: string;
   endDate: string;
   creativeUrl?: string;
+  creativeType?: BookingCreativeType;
+  creativeDurationSeconds?: number;
   billing: BookingBilling;
   company: BookingCompany;
   paymentMethod: PaymentMethod;

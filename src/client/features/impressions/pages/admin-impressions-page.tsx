@@ -95,8 +95,11 @@ export function AdminImpressionsPage() {
 
       {status === 'loading' ? <p className="text-sm text-zinc-600">Loading analytics…</p> : null}
       {status === 'error' ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          Unable to load impression analytics.
+        <p
+          role="alert"
+          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+        >
+          We could not load impression analytics. Try again or change the selected screen.
         </p>
       ) : null}
 

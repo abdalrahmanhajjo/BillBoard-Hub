@@ -10,17 +10,18 @@ import type {
 } from '@/shared/contracts/creative/creative.schema';
 import type { Creative, CreativeStatus } from '@/shared/types/creative';
 import type { User } from '@/shared/types/user';
+import { permissionDenied } from '@/shared/messages/user-messages';
 
 /** Loads a creative and enforces that the actor owns it (or can moderate). */
 async function loadAccessible(actor: User, creativeId: string): Promise<CreativeDocument> {
   const creative = await creativeRepository.findById(creativeId);
   if (!creative) {
-    throw new NotFoundError('Creative not found.');
+    throw new NotFoundError('We could not find this creative. It may have been removed.');
   }
 
   const isOwner = creative.advertiserId === actor.id;
   if (!isOwner && !authorizationPolicy.creative.canModerate(actor.role)) {
-    throw new ForbiddenError('You cannot access this creative.');
+    throw new ForbiddenError(permissionDenied('view this creative'));
   }
 
   return creative;
@@ -65,7 +66,7 @@ export const creativeService = {
 
     const updated = await creativeRepository.updateById(creativeId, input);
     if (!updated) {
-      throw new NotFoundError('Creative not found.');
+      throw new NotFoundError('We could not find this creative. It may have been removed.');
     }
 
     return toCreative(updated);
@@ -76,7 +77,7 @@ export const creativeService = {
 
     const updated = await creativeRepository.updateStatus(creativeId, status);
     if (!updated) {
-      throw new NotFoundError('Creative not found.');
+      throw new NotFoundError('We could not find this creative. It may have been removed.');
     }
 
     return toCreative(updated);
@@ -88,7 +89,7 @@ export const creativeService = {
 
     const deleted = await creativeRepository.deleteById(creativeId);
     if (!deleted) {
-      throw new NotFoundError('Creative not found.');
+      throw new NotFoundError('We could not find this creative. It may have been removed.');
     }
   },
 };

@@ -107,7 +107,7 @@ export function AdminPlaybackPage() {
     if (!scheduleId) return;
     const result = await rotationClientService.getScheduleRotation(scheduleId);
     if (!result.ok) {
-      setPreviewError(result.error ?? 'Unable to load the rotation.');
+      setPreviewError(result.error ?? 'We could not load this rotation. Try another schedule.');
       return;
     }
     setPreviewRotation((result.data?.rotation as RotationSummary | undefined) ?? null);
@@ -127,8 +127,11 @@ export function AdminPlaybackPage() {
 
       {status === 'loading' ? <p className="text-sm text-zinc-600">Loading…</p> : null}
       {status === 'error' ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          Unable to load playback data.
+        <p
+          role="alert"
+          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+        >
+          We could not load playback data. Try again or choose another digital billboard.
         </p>
       ) : null}
 
@@ -206,7 +209,10 @@ export function AdminPlaybackPage() {
                 <p className="text-xs text-zinc-500">No schedules for this screen yet.</p>
               ) : null}
               {previewError ? (
-                <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                <p
+                  role="alert"
+                  className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+                >
                   {previewError}
                 </p>
               ) : null}

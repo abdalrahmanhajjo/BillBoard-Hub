@@ -15,7 +15,7 @@ export function RegisterFeaturePage() {
       />
 
       <div className="animate-in fade-in slide-in-from-right-4 flex h-full w-full duration-700">
-        <div className="relative overflow-hidden flex h-full w-full flex-col rounded-3xl rounded-s-none rounded-l-none bg-white/95 p-6 shadow-xl backdrop-blur-sm sm:p-8">
+        <div className="relative flex h-full w-full flex-col overflow-hidden rounded-3xl rounded-s-none rounded-l-none bg-white/95 p-6 shadow-xl backdrop-blur-sm sm:p-8">
           <header className="mb-6 space-y-2">
             <p className="text-xs font-semibold tracking-[0.14em] text-blue-600 uppercase">
               Advertiser Onboarding
@@ -39,18 +39,18 @@ export function RegisterFeaturePage() {
             </Link>
           </p>
 
-             <BorderBeam
-                      duration={6}
-                      size={400}
-                      className="from-transparent via-green-500 to-transparent"
-                    />
-                    <BorderBeam
-                      duration={6}
-                      delay={3}
-                      size={400}
-                      borderWidth={2}
-                      className="from-transparent via-blue-500 to-transparent"
-                    />
+          <BorderBeam
+            duration={6}
+            size={400}
+            className="from-transparent via-green-500 to-transparent"
+          />
+          <BorderBeam
+            duration={6}
+            delay={3}
+            size={400}
+            borderWidth={2}
+            className="from-transparent via-blue-500 to-transparent"
+          />
         </div>
       </div>
     </section>

@@ -1,6 +1,6 @@
 import type { NavItem } from '@/client/types/nav-item';
 import { ADMIN_ROUTES, ADVERTISER_ROUTES } from '@/shared/constants/routes';
-import { Home, ListFilterIcon, User } from 'lucide-react';
+import { Home, House, LayoutDashboard, ListFilterIcon, User } from 'lucide-react';
 
 export const ADMIN_NAV_LINKS: NavItem[] = [
   {
@@ -32,9 +32,14 @@ export const ADMIN_NAV_LINKS: NavItem[] = [
 
 export const ADVERTISER_NAV_LINKS: NavItem[] = [
   {
+    title: 'Website home',
+    to: ADVERTISER_ROUTES.HOME,
+    icon: House,
+  },
+  {
     title: 'Dashboard',
     to: ADVERTISER_ROUTES.DASHBOARD,
-    icon: Home,
+    icon: LayoutDashboard,
   },
   {
     title: 'Campaigns',
@@ -45,10 +50,5 @@ export const ADVERTISER_NAV_LINKS: NavItem[] = [
     title: 'Bookings',
     to: ADVERTISER_ROUTES.BOOKINGS,
     icon: ListFilterIcon,
-  },
-  {
-    title: 'Invoices',
-    to: ADVERTISER_ROUTES.INVOICES,
-    icon: User,
   },
 ] as const;

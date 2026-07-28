@@ -19,7 +19,9 @@ export const userService = {
 
     const existing = await userRepository.findByEmail(input.email);
     if (existing) {
-      throw new ConflictError('Email is already in use.');
+      throw new ConflictError(
+        'An account already uses this email. Sign in or use a different email address.',
+      );
     }
 
     const passwordHash = await bcrypt.hash(input.password, SALT_ROUNDS);

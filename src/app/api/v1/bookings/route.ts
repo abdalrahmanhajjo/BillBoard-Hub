@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 
     return bookingController.listBookings(session.user, filter);
   } catch (error) {
-    return handleControllerError(error, 'Getting reservations failed.');
+    return handleControllerError(error, 'We could not load reservations. Try again.');
   }
 }
 
@@ -26,6 +26,9 @@ export async function POST(request: Request) {
 
     return bookingController.createBooking(payload, session.user);
   } catch (error) {
-    return handleControllerError(error, 'Reservation failed.');
+    return handleControllerError(
+      error,
+      'We could not submit the reservation. Review the details and try again.',
+    );
   }
 }

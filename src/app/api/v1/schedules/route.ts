@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 
     return scheduleController.listSchedules(session.user, billboardId);
   } catch (error) {
-    return handleControllerError(error, 'Getting schedules failed.');
+    return handleControllerError(error, 'We could not load schedules. Try again.');
   }
 }
 
@@ -21,6 +21,9 @@ export async function POST(request: Request) {
 
     return scheduleController.createSchedule(payload, session.user);
   } catch (error) {
-    return handleControllerError(error, 'Schedule creation failed.');
+    return handleControllerError(
+      error,
+      'We could not create this schedule. Review the time window and try again.',
+    );
   }
 }

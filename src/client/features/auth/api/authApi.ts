@@ -1,8 +1,8 @@
 import type { LoginSchemaInput } from '@/shared/contracts/auth/login.schema';
 import { RegisterSchemaInput } from '@/shared/contracts/auth/register.schema';
-import { apiRequest } from '@/client/lib/response-utils';
+import { apiRequest } from '@/client/ui/lib/api-client';
 
-const BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL || ''}/auth`;
+const BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/v1/auth`;
 
 /**
  * Auth requests are the mutation functions for react-query, which must reject

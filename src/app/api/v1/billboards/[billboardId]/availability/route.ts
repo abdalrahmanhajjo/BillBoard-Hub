@@ -14,6 +14,6 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 
     return billboardController.updateAvailability(session.user, billboardId, payload);
   } catch (error) {
-    return handleControllerError(error, 'Updating availability failed.');
+    return handleControllerError(error, 'We could not update availability. Refresh and try again.');
   }
 }

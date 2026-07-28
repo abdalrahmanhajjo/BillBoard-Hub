@@ -11,19 +11,22 @@ import { Contact } from '@/client/features/home/components/contact';
 import { Cta } from '@/client/features/home/components/cta';
 import type { HomeData } from '@/client/features/home/home.types';
 import { HomeAtmosphere } from '@/client/features/home/components/home-atmosphere';
+import { JsonLd } from '@/client/ui/components/seo/json-ld';
+import { faqSchema } from '@/shared/seo/schema';
 
-export function HomePage({ billboards, marketOverview, stats }: HomeData) {
+export function HomePage({ billboards, marketOverview, stats, content }: HomeData) {
   return (
     <HomeAtmosphere>
-      <Hero marketOverview={marketOverview} stats={stats} />
-      <Brands />
-      <HowItWorks />
-      <BillboardFormats />
+      <JsonLd data={faqSchema(content.faqs)} />
+      <Hero marketOverview={marketOverview} stats={stats} content={content.hero} />
+      <Brands brands={content.brands} />
+      <HowItWorks steps={content.howItWorks} />
+      <BillboardFormats formats={content.formats} />
       <InventoryShowcase billboards={billboards} />
-      <Stats stats={stats} />
-      <Features />
-      <Reviews />
-      <Faq />
+      <Stats stats={stats} items={content.stats} />
+      <Features features={content.features} />
+      <Reviews reviews={content.reviews} />
+      <Faq faqs={content.faqs} />
       <Contact />
       <Cta />
     </HomeAtmosphere>

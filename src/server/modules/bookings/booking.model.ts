@@ -1,10 +1,12 @@
 import { model, models, Schema } from 'mongoose';
 import {
+  BOOKING_CREATIVE_TYPES,
   BOOKING_CURRENCIES,
   BOOKING_STATUSES,
   PAYMENT_METHODS,
   PAYMENT_STATUSES,
 } from '@/shared/constants/booking';
+import { MAX_CREATIVE_VIDEO_DURATION_SECONDS } from '@/shared/constants/creative';
 import type { BookingRecord } from '@/server/modules/bookings/booking.types';
 
 const bookingSchema = new Schema(
@@ -19,6 +21,16 @@ const bookingSchema = new Schema(
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     creativeUrl: { type: String },
+    creativeType: { type: String, enum: Object.values(BOOKING_CREATIVE_TYPES) },
+    creativeDurationSeconds: {
+      type: Number,
+      min: Number.EPSILON,
+      validate: {
+        validator: (value: number | undefined) =>
+          value === undefined || value < MAX_CREATIVE_VIDEO_DURATION_SECONDS,
+        message: `Video must be shorter than ${MAX_CREATIVE_VIDEO_DURATION_SECONDS} seconds.`,
+      },
+    },
     billing: {
       contactName: { type: String, required: true },
       email: { type: String, required: true },
@@ -32,6 +44,9 @@ const bookingSchema = new Schema(
       country: { type: String, required: true },
     },
     paymentMethod: { type: String, enum: Object.values(PAYMENT_METHODS), required: true },
+    stripeCustomerId: { type: String },
+    stripeSetupIntentId: { type: String },
+    stripePaymentMethodId: { type: String },
     paymentStatus: {
       type: String,
       enum: Object.values(PAYMENT_STATUSES),

@@ -25,7 +25,7 @@ export const impressionController = {
       const impression = await impressionService.record(billboardId, parsed.data);
       return apiResponse.ok(impression, 201);
     } catch (error) {
-      return handleControllerError(error, 'Recording impression failed.');
+      return handleControllerError(error, 'We could not record this impression. Try again.');
     }
   },
 
@@ -34,7 +34,7 @@ export const impressionController = {
       const analytics = await impressionService.getAnalytics(actor, filter);
       return apiResponse.ok(analytics);
     } catch (error) {
-      return handleControllerError(error, 'Getting impression analytics failed.');
+      return handleControllerError(error, 'We could not load impression analytics. Try again.');
     }
   },
 };

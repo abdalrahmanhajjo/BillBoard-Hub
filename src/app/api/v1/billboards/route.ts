@@ -8,7 +8,10 @@ export async function POST(request: Request) {
     const payload = (await request.json()) as CreateBillboardSchemaInput;
     return billboardController.createBillboard(payload, session.user);
   } catch (error) {
-    return handleControllerError(error, 'Billboard creation failed.');
+    return handleControllerError(
+      error,
+      'We could not create this billboard. Review the details and try again.',
+    );
   }
 }
 
@@ -21,6 +24,6 @@ export async function GET(request: Request) {
     );
     return billboardController.listBillboards(session.user, rawQuery);
   } catch (error) {
-    return handleControllerError(error, 'Getting billboards failed.');
+    return handleControllerError(error, 'We could not load billboard inventory. Try again.');
   }
 }

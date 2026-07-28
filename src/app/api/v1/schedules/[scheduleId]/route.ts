@@ -13,7 +13,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
 
     return scheduleController.getSchedule(session.user, scheduleId);
   } catch (error) {
-    return handleControllerError(error, 'Getting schedule failed.');
+    return handleControllerError(error, 'We could not load this schedule. Try again.');
   }
 }
 
@@ -25,7 +25,7 @@ async function handleUpdate(request: Request, { params }: RouteContext) {
 
     return scheduleController.updateSchedule(session.user, scheduleId, payload);
   } catch (error) {
-    return handleControllerError(error, 'Schedule update failed.');
+    return handleControllerError(error, 'We could not save this schedule. Try again.');
   }
 }
 
@@ -38,6 +38,9 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
     return scheduleController.deleteSchedule(session.user, scheduleId);
   } catch (error) {
-    return handleControllerError(error, 'Deleting schedule failed.');
+    return handleControllerError(
+      error,
+      'We could not delete this schedule. Refresh and try again.',
+    );
   }
 }

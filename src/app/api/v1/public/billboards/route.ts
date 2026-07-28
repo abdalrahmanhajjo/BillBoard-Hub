@@ -5,6 +5,6 @@ export async function GET() {
   try {
     return billboardController.listPublicBillboards();
   } catch (error) {
-    return handleControllerError(error, 'Getting billboards failed.');
+    return handleControllerError(error, 'We could not load billboards right now. Try again.');
   }
 }

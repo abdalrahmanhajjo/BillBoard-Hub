@@ -3,15 +3,20 @@ import { USER_ROLES } from '@/shared/constants/user-roles';
 import { assert } from '../policy-utils';
 import { ForbiddenError, UnauthorizedError } from '@/shared/http/http-error';
 import { PERMISSIONS } from '@/shared/constants/permissions/permissions';
+import { permissionDenied } from '@/shared/messages/user-messages';
 
 export const userPolicy = {
   assertCanAssignRole(actor: User | undefined, targetRole: UserRole): void {
     if (targetRole === USER_ROLES.ADMIN) {
       if (!actor?.role) {
-        throw new UnauthorizedError('Only admins can create admin users.');
+        throw new UnauthorizedError('Sign in as an administrator to create an admin account.');
       }
 
-      assert(actor.role, PERMISSIONS.USERS_CREATE_ADMIN, 'Only admins can create admin users.');
+      assert(
+        actor.role,
+        PERMISSIONS.USERS_CREATE_ADMIN,
+        permissionDenied('create administrator accounts'),
+      );
       return;
     }
 
@@ -19,7 +24,7 @@ export const userPolicy = {
       assert(
         actor.role,
         PERMISSIONS.USERS_CREATE_ADVERTISER,
-        'Role is not allowed to create advertiser users.',
+        permissionDenied('create advertiser accounts'),
       );
     }
   },
@@ -35,7 +40,7 @@ export const userPolicy = {
       return;
     }
 
-    throw new ForbiddenError('You cannot access this user.');
+    throw new ForbiddenError(permissionDenied('view this user account'));
   },
 
   assertCanDeleteUser(actor: User, targetUserId: string): void {
@@ -49,7 +54,7 @@ export const userPolicy = {
       return;
     }
 
-    throw new ForbiddenError('You cannot delete this user.');
+    throw new ForbiddenError(permissionDenied('delete this user account'));
   },
 
   assertCanUpdateUser(actor: User, targetUserId: string): void {
@@ -67,6 +72,6 @@ export const userPolicy = {
       return;
     }
 
-    throw new ForbiddenError('You cannot update this user.');
+    throw new ForbiddenError(permissionDenied('edit this user account'));
   },
 };

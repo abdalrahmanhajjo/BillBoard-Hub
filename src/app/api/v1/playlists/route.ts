@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 
     return playlistController.listPlaylists(session.user, billboardId);
   } catch (error) {
-    return handleControllerError(error, 'Getting playlists failed.');
+    return handleControllerError(error, 'We could not load playlists. Try again.');
   }
 }
 
@@ -21,6 +21,9 @@ export async function POST(request: Request) {
 
     return playlistController.createPlaylist(payload, session.user);
   } catch (error) {
-    return handleControllerError(error, 'Playlist creation failed.');
+    return handleControllerError(
+      error,
+      'We could not create this playlist. Review the selections and try again.',
+    );
   }
 }
