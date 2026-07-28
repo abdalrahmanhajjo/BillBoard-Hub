@@ -11,6 +11,7 @@ import type {
   BookingStatus,
   CampaignObjective,
   PaymentMethod,
+  PaymentStatus,
 } from '@/shared/types/booking';
 
 const MS_PER_DAY = 86_400_000;
@@ -89,6 +90,8 @@ export function toBooking(doc: BookingDocument): Booking {
       country: doc.company.country,
     },
     paymentMethod: doc.paymentMethod as PaymentMethod,
+    // Older reservations predate payment tracking; show them as awaiting reconciliation.
+    paymentStatus: (doc.paymentStatus ?? 'pending') as PaymentStatus,
     invoice: {
       currency: doc.invoice.currency as BookingCurrency,
       email: doc.invoice.email,

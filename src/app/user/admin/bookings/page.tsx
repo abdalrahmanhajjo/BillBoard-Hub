@@ -1,10 +1,5 @@
-import { ModulePlaceholderPage } from '@/client/features/dashboard/components/module-placeholder-page';
+import { AdminBookingsPage } from '@/client/features/bookings/pages/admin-bookings-page';
 
-export default function AdminBookingsPage() {
-  return (
-    <ModulePlaceholderPage
-      title="Admin Bookings"
-      description="Approve, reject, and monitor booking requests and utilization."
-    />
-  );
+export default function Page() {
+  return <AdminBookingsPage />;
 }

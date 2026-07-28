@@ -13,6 +13,13 @@ export const PAYMENT_METHODS = {
   CASH: 'cash',
 } as const;
 
+export const PAYMENT_STATUSES = {
+  PENDING: 'pending',
+  PAID: 'paid',
+  PARTIALLY_PAID: 'partially_paid',
+  UNPAID: 'unpaid',
+} as const;
+
 export const CAMPAIGN_OBJECTIVES = {
   AWARENESS: 'awareness',
   PRODUCT_LAUNCH: 'product_launch',

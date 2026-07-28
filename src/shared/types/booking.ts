@@ -3,11 +3,13 @@ import {
   BOOKING_STATUSES,
   CAMPAIGN_OBJECTIVES,
   PAYMENT_METHODS,
+  PAYMENT_STATUSES,
 } from '@/shared/constants/booking';
 import type { BookingPricing } from '@/shared/pricing/booking-pricing';
 
 export type BookingStatus = (typeof BOOKING_STATUSES)[keyof typeof BOOKING_STATUSES];
 export type PaymentMethod = (typeof PAYMENT_METHODS)[keyof typeof PAYMENT_METHODS];
+export type PaymentStatus = (typeof PAYMENT_STATUSES)[keyof typeof PAYMENT_STATUSES];
 export type CampaignObjective = (typeof CAMPAIGN_OBJECTIVES)[keyof typeof CAMPAIGN_OBJECTIVES];
 export type BookingCurrency = (typeof BOOKING_CURRENCIES)[number];
 
@@ -48,6 +50,7 @@ export type Booking = {
   billing: BookingBilling;
   company: BookingCompany;
   paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
   invoice: BookingInvoice;
   pricing: BookingPricing & { currency: BookingCurrency };
   status: BookingStatus;
