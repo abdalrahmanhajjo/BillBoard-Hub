@@ -45,4 +45,18 @@ export const PERMISSIONS = {
   BOOKINGS_CREATE: 'bookings.create',
   BOOKINGS_READ: 'bookings.read',
   BOOKINGS_MODERATE: 'bookings.moderate',
+
+  // Campaign Permissions
+  CAMPAIGNS_CREATE: 'campaigns.create',
+  CAMPAIGNS_READ_ANY: 'campaigns.read:any',
+  CAMPAIGNS_READ_SELF: 'campaigns.read:self',
+  CAMPAIGNS_UPDATE_SELF: 'campaigns.update:self',
+  CAMPAIGNS_ASSIGN_BILLBOARDS: 'campaigns.assign_billboards',
+
+  // Ad Creative Permissions (campaign ad creatives — distinct from the
+  // digital-screen CREATIVES_* module above)
+  AD_CREATIVES_CREATE: 'ad_creatives.create',
+  AD_CREATIVES_READ_ANY: 'ad_creatives.read:any',
+  AD_CREATIVES_READ_SELF: 'ad_creatives.read:self',
+  AD_CREATIVES_DELETE_SELF: 'ad_creatives.delete:self',
 } as const;

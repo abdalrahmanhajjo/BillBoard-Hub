@@ -11,15 +11,9 @@ import type {
   UpdateUserInfoSchemaInput,
 } from '@/shared/contracts/user/user.schema';
 import { createUserSchema, updateUserInfoSchema } from '@/shared/contracts/user/user.schema';
-import {
-  CreateUserResponse,
-  UpdateUserResponse,
-  DeleteUserResponse,
-  GetUserResponse,
-} from '@/shared/types/user';
 
 export const userController = {
-  async createUser(payload: CreateUserSchemaInput): Promise<CreateUserResponse> {
+  async createUser(payload: CreateUserSchemaInput) {
     const parsed = createUserSchema.safeParse(payload);
 
     if (!parsed.success) {
@@ -36,10 +30,7 @@ export const userController = {
     }
   },
 
-  async updateUserInfo(
-    userId: string,
-    payload: UpdateUserInfoSchemaInput,
-  ): Promise<UpdateUserResponse> {
+  async updateUserInfo(userId: string, payload: UpdateUserInfoSchemaInput) {
     if (!userId) {
       return apiResponse.badRequest('User id is required.');
     }
@@ -64,7 +55,7 @@ export const userController = {
     }
   },
 
-  async deleteUser(userId: string): Promise<DeleteUserResponse> {
+  async deleteUser(userId: string) {
     if (!userId) {
       return apiResponse.badRequest('User id is required.');
     }
@@ -83,7 +74,7 @@ export const userController = {
     }
   },
 
-  async getUser(id: string): Promise<GetUserResponse> {
+  async getUser(id: string) {
     if (!id) {
       return apiResponse.badRequest('User id is required.');
     }

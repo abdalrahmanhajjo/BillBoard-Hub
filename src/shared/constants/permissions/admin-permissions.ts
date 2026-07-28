@@ -42,4 +42,8 @@ export const ADMIN_PERMISSIONS: Permission[] = [
   // Booking Permissions (admins review and moderate reservations)
   PERMISSIONS.BOOKINGS_READ,
   PERMISSIONS.BOOKINGS_MODERATE,
+
+  // Campaign & ad-creative Permissions (admins read all)
+  PERMISSIONS.CAMPAIGNS_READ_ANY,
+  PERMISSIONS.AD_CREATIVES_READ_ANY,
 ];

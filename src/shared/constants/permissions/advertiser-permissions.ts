@@ -22,4 +22,15 @@ export const ADVERTISER_PERMISSIONS: Permission[] = [
   // Booking Permissions (advertisers reserve billboards and track their requests)
   PERMISSIONS.BOOKINGS_CREATE,
   PERMISSIONS.BOOKINGS_READ,
+
+  // Campaign Permissions (advertisers manage their own campaigns)
+  PERMISSIONS.CAMPAIGNS_CREATE,
+  PERMISSIONS.CAMPAIGNS_READ_SELF,
+  PERMISSIONS.CAMPAIGNS_UPDATE_SELF,
+  PERMISSIONS.CAMPAIGNS_ASSIGN_BILLBOARDS,
+
+  // Ad Creative Permissions (advertisers manage their own campaign creatives)
+  PERMISSIONS.AD_CREATIVES_CREATE,
+  PERMISSIONS.AD_CREATIVES_READ_SELF,
+  PERMISSIONS.AD_CREATIVES_DELETE_SELF,
 ];
