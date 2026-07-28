@@ -53,4 +53,11 @@ export const PERMISSIONS = {
   BOOKINGS_CREATE: 'bookings.create',
   BOOKINGS_READ: 'bookings.read',
   BOOKINGS_MODERATE: 'bookings.moderate',
+
+  // Campaign Permissions
+  CAMPAIGNS_CREATE: 'campaigns.create',
+  CAMPAIGNS_READ_ANY: 'campaigns.read:any',
+  CAMPAIGNS_READ_SELF: 'campaigns.read:self',
+  CAMPAIGNS_UPDATE_SELF: 'campaigns.update:self',
+  CAMPAIGNS_ASSIGN_BILLBOARDS: 'campaigns.assign_billboards',
 } as const;

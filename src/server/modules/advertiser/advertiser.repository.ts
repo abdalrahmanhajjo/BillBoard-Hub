@@ -20,6 +20,10 @@ export const advertiserRepository = {
     await connectToDatabase();
     return AdvertiserModel.findById(advertiserId).lean<AdvertiserDocument>().exec();
   },
+  async findByUserId(userId: string): Promise<AdvertiserDocument | null> {
+    await connectToDatabase();
+    return AdvertiserModel.findOne({ userId }).lean<AdvertiserDocument>().exec();
+  },
   async deleteById(advertiserId: string): Promise<AdvertiserDocument | null> {
     await connectToDatabase();
     return AdvertiserModel.findByIdAndDelete(advertiserId).lean<AdvertiserDocument>().exec();

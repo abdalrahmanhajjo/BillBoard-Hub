@@ -45,6 +45,15 @@ export const advertiserService = {
     return toAdvertiser(advertiser);
   },
 
+  async getAdvertiserByUser(actor: User): Promise<Advertiser> {
+    const advertiser = await advertiserRepository.findByUserId(actor.id);
+    if (!advertiser) {
+      throw new NotFoundError('Advertiser not found.');
+    }
+    authorizationPolicy.advertiserProfile.assertCanRead(actor, advertiser.userId.toString());
+    return toAdvertiser(advertiser);
+  },
+
   async list(actor: User): Promise<Advertiser[]> {
     authorizationPolicy.advertiserProfile.assertCanRead(actor);
     const advertisers = await advertiserRepository.findMany();
