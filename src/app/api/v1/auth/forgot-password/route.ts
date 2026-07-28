@@ -5,7 +5,7 @@ import { USER_MESSAGES } from '@/shared/messages/user-messages';
 
 export async function POST(request: Request) {
   const clientKey = requestClientKey(request);
-  const limit = checkRateLimit(`auth-forgot-password:${clientKey}`, 5, 15 * 60_000);
+  const limit = await checkRateLimit(`auth-forgot-password:${clientKey}`, 5, 15 * 60_000);
 
   if (!limit.allowed) {
     return apiResponse.error('Too many reset requests. Try again in a few minutes.', 429, {
