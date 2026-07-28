@@ -1,155 +1,181 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/client/ui/components/ui/button';
-import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/client/ui/components/ui/field';
-import { Input } from '@/client/ui/components/ui/input';
-import { useForm } from 'react-hook-form';
-import { useRegister } from '../hooks/use-register';
-import { type RegisterSchemaInput, registerSchema } from '@/shared/contracts/auth/register.schema';
-import { Alert } from '@/client/ui/components/ui/alert';
-import { useLogin } from '../hooks/use-login';
-import { ArrowRight, Lock, Mail, UserRound } from 'lucide-react';
+import { Controller, useForm, useWatch } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ArrowRight, Mail, UserRound } from 'lucide-react';
+import { registerSchema, type RegisterSchemaInput } from '@/shared/contracts/auth/register.schema';
+import { Checkbox } from '@/client/ui/components/ui/checkbox';
+import { AuthAlert } from '@/client/features/auth/components/auth-alert';
+import { AuthPasswordField } from '@/client/features/auth/components/auth-password-field';
+import { AuthSubmitButton } from '@/client/features/auth/components/auth-submit-button';
+import { AuthTextField } from '@/client/features/auth/components/auth-text-field';
+import { PasswordStrengthMeter } from '@/client/features/auth/components/password-strength-meter';
+import { useLogin } from '@/client/features/auth/hooks/use-login';
+import { useRegister } from '@/client/features/auth/hooks/use-register';
 
-export function RegisterForm(props: React.ComponentProps<'div'>) {
+export function RegisterForm() {
   const router = useRouter();
   const registerAccount = useRegister();
   const loginMutation = useLogin();
 
   const form = useForm<RegisterSchemaInput>({
     resolver: zodResolver(registerSchema),
+    mode: 'onTouched',
+    reValidateMode: 'onChange',
     defaultValues: {
       firstName: '',
       lastName: '',
       email: '',
       password: '',
       confirmPassword: '',
+      acceptTerms: false,
     },
   });
 
-  const submitError = registerAccount.error?.message;
-  const loginError = loginMutation.error?.message;
+  const { errors } = form.formState;
+  const isPending = registerAccount.isPending || loginMutation.isPending;
+  const passwordValue = useWatch({ control: form.control, name: 'password' }) ?? '';
+  const submitError = registerAccount.error?.message ?? loginMutation.error?.message;
 
   const onSubmit = async (values: RegisterSchemaInput) => {
-    await registerAccount.mutateAsync(values);
+    try {
+      await registerAccount.mutateAsync(values);
+      // Sign in straight away so a new advertiser lands in the workspace rather
+      // than on the sign-in screen they just filled a form to skip.
+      await loginMutation.mutateAsync({ email: values.email, password: values.password });
 
-    await loginMutation.mutateAsync({
-      email: values.email,
-      password: values.password,
-    });
-
-    form.reset();
-    router.push('/');
-    router.refresh();
+      form.reset();
+      router.push('/');
+      router.refresh();
+    } catch {
+      // Surfaced through submitError below.
+    }
   };
 
   return (
-    <div {...props}>
-      <form className="p-0" onSubmit={form.handleSubmit(onSubmit)}>
-        {submitError ? (
-          <Alert className="mb-4 border-red-200 bg-red-50 text-red-700">{submitError}</Alert>
-        ) : null}
-        {loginError ? (
-          <Alert className="mb-4 border-red-200 bg-red-50 text-red-700">{loginError}</Alert>
-        ) : null}
-        <FieldGroup>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field>
-              <FieldLabel htmlFor="first-name">First Name</FieldLabel>
-              <div className="relative">
-                <UserRound className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-                <Input
-                  id="first-name"
-                  className="h-11 pl-10"
-                  placeholder="John"
-                  disabled={registerAccount.isPending || loginMutation.isPending}
-                  {...form.register('firstName')}
-                />
-              </div>
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="last-name">Last Name</FieldLabel>
-              <div className="relative">
-                <UserRound className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-                <Input
-                  id="last-name"
-                  className="h-11 pl-10"
-                  placeholder="Smith"
-                  disabled={registerAccount.isPending || loginMutation.isPending}
-                  {...form.register('lastName')}
-                />
-              </div>
-            </Field>
-          </div>
-          <Field>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
-            <div className="relative">
-              <Mail className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-              <Input
-                id="email"
-                type="email"
-                className="h-11 pl-10"
-                placeholder="john@example.com"
-                disabled={registerAccount.isPending || loginMutation.isPending}
-                {...form.register('email')}
+    <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+      {submitError ? (
+        <AuthAlert title="We could not create your account">{submitError}</AuthAlert>
+      ) : null}
+
+      <div className="grid gap-5 sm:grid-cols-2">
+        <AuthTextField
+          id="register-first-name"
+          label="First name"
+          icon={UserRound}
+          placeholder="Jamie"
+          autoComplete="given-name"
+          autoFocus
+          disabled={isPending}
+          error={errors.firstName?.message}
+          {...form.register('firstName')}
+        />
+        <AuthTextField
+          id="register-last-name"
+          label="Last name"
+          icon={UserRound}
+          placeholder="Rivera"
+          autoComplete="family-name"
+          disabled={isPending}
+          error={errors.lastName?.message}
+          {...form.register('lastName')}
+        />
+      </div>
+
+      <AuthTextField
+        id="register-email"
+        label="Work email"
+        type="email"
+        inputMode="email"
+        icon={Mail}
+        placeholder="jamie@company.com"
+        autoComplete="email"
+        disabled={isPending}
+        error={errors.email?.message}
+        hint="We send booking approvals and campaign updates here."
+        {...form.register('email')}
+      />
+
+      <div className="space-y-2">
+        <AuthPasswordField
+          id="register-password"
+          label="Password"
+          placeholder="Create a strong password"
+          autoComplete="new-password"
+          disabled={isPending}
+          error={errors.password?.message}
+          {...form.register('password')}
+        />
+        <PasswordStrengthMeter value={passwordValue} />
+      </div>
+
+      <AuthPasswordField
+        id="register-confirm-password"
+        label="Confirm password"
+        placeholder="Re-enter your password"
+        autoComplete="new-password"
+        disabled={isPending}
+        error={errors.confirmPassword?.message}
+        {...form.register('confirmPassword')}
+      />
+
+      <div className="space-y-1.5">
+        <div className="flex items-start gap-2.5">
+          <Controller
+            control={form.control}
+            name="acceptTerms"
+            render={({ field }) => (
+              <Checkbox
+                id="register-accept-terms"
+                checked={field.value}
+                onCheckedChange={(checked) => field.onChange(checked === true)}
+                onBlur={field.onBlur}
+                disabled={isPending}
+                aria-invalid={errors.acceptTerms ? true : undefined}
+                aria-describedby={errors.acceptTerms ? 'register-accept-terms-error' : undefined}
+                className="mt-0.5"
               />
-            </div>
-          </Field>
-          <Field>
-            <Field className="grid grid-cols-2 gap-4">
-              <Field>
-                <FieldLabel htmlFor="user-password">Password</FieldLabel>
-                <div className="relative">
-                  <Lock className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-                  <Input
-                    id="user-password"
-                    type="password"
-                    className="h-11 pl-10"
-                    disabled={registerAccount.isPending || loginMutation.isPending}
-                    {...form.register('password')}
-                  />
-                </div>
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
-                <div className="relative">
-                  <Lock className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    className="h-11 pl-10"
-                    disabled={registerAccount.isPending || loginMutation.isPending}
-                    {...form.register('confirmPassword')}
-                  />
-                </div>
-              </Field>
-            </Field>
-            {form.formState.errors.confirmPassword ? (
-              <FieldDescription className="text-red-500">
-                {form.formState.errors.confirmPassword.message}
-              </FieldDescription>
-            ) : null}
-          </Field>
-          <Field>
-            <Button
-              type="submit"
-              disabled={registerAccount.isPending || loginMutation.isPending}
-              className="h-11 w-full gap-2 rounded-xl bg-blue-600 text-white transition-colors hover:bg-blue-700"
+            )}
+          />
+          <label
+            htmlFor="register-accept-terms"
+            className="text-muted-foreground text-sm leading-relaxed"
+          >
+            I agree to the{' '}
+            <Link
+              href="/terms"
+              className="text-foreground font-medium underline underline-offset-4"
             >
-              {registerAccount.isPending || loginMutation.isPending
-                ? 'Creating account...'
-                : 'Create Account'}
-              {!registerAccount.isPending && !loginMutation.isPending ? (
-                <ArrowRight className="h-4 w-4" />
-              ) : null}
-            </Button>
-            {registerAccount.isPending || loginMutation.isPending ? (
-              <FieldDescription>Creating your account and signing you in...</FieldDescription>
-            ) : null}
-          </Field>
-        </FieldGroup>
-      </form>
-    </div>
+              Terms of Service
+            </Link>{' '}
+            and{' '}
+            <Link
+              href="/privacy"
+              className="text-foreground font-medium underline underline-offset-4"
+            >
+              Privacy Policy
+            </Link>
+            .
+          </label>
+        </div>
+
+        {errors.acceptTerms ? (
+          <p
+            id="register-accept-terms-error"
+            role="alert"
+            className="text-destructive text-xs leading-relaxed font-medium"
+          >
+            {errors.acceptTerms.message}
+          </p>
+        ) : null}
+      </div>
+
+      <AuthSubmitButton pending={isPending} pendingLabel="Creating your account...">
+        Create advertiser account
+        <ArrowRight className="size-4" aria-hidden />
+      </AuthSubmitButton>
+    </form>
   );
 }

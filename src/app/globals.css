@@ -213,6 +213,28 @@
   }
 }
 
+/* Auth stage: a slow push-in on the billboard photograph beside the sign-in
+   forms, so the panel breathes without pulling attention off the form. */
+@keyframes auth-photo-drift {
+  from {
+    transform: scale(1.04);
+  }
+  to {
+    transform: scale(1.14);
+  }
+}
+
+.auth-photo-drift {
+  animation: auth-photo-drift 24s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-photo-drift {
+    animation: none;
+    transform: scale(1.04);
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

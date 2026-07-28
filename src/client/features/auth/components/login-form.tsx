@@ -1,29 +1,34 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ArrowRight, Mail } from 'lucide-react';
 import { loginSchema, type LoginSchemaInput } from '@/shared/contracts/auth/login.schema';
-import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/client/ui/components/ui/field';
-import { Button } from '@/client/ui/components/ui/button';
-import { Input } from '@/client/ui/components/ui/input';
-import { cn } from '@/client/ui/lib/utils';
-import { useLogin } from '../hooks/use-login';
-import { Alert } from '@/client/ui/components/ui/alert';
-import Link from 'next/link';
-import { ArrowRight, Lock, Mail } from 'lucide-react';
+import { AuthAlert } from '@/client/features/auth/components/auth-alert';
+import { AuthPasswordField } from '@/client/features/auth/components/auth-password-field';
+import { AuthSubmitButton } from '@/client/features/auth/components/auth-submit-button';
+import { AuthTextField } from '@/client/features/auth/components/auth-text-field';
+import { useLogin } from '@/client/features/auth/hooks/use-login';
 
-export default function LoginForm({ className, ...props }: React.ComponentProps<'form'>) {
+export function LoginForm() {
   const router = useRouter();
   const loginMutation = useLogin();
 
   const form = useForm<LoginSchemaInput>({
     resolver: zodResolver(loginSchema),
+    // Validate once a field has been left, then keep it live while it is being
+    // corrected — no red text before the user has finished typing.
+    mode: 'onTouched',
+    reValidateMode: 'onChange',
     defaultValues: {
       email: '',
       password: '',
     },
   });
+
+  const { errors } = form.formState;
 
   const onSubmit = async (values: LoginSchemaInput) => {
     try {
@@ -31,82 +36,53 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
       router.push('/');
       router.refresh();
     } catch {
-      // The failure is surfaced to the user via loginMutation.error below;
-      // this catch only prevents an unhandled promise rejection.
+      // Surfaced through loginMutation.error below; this catch only prevents an
+      // unhandled promise rejection.
     }
   };
 
   return (
-    <form
-      className={cn('flex flex-col gap-5', className)}
-      onSubmit={form.handleSubmit(onSubmit)}
-      {...props}
-    >
-      <FieldGroup>
-        {loginMutation.error ? (
-          <Alert className="border-red-200 bg-red-50 text-red-700">
-            {loginMutation.error.message}
-          </Alert>
-        ) : null}
-        <Field>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
-          <div className="relative">
-            <Mail className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-            <Input
-              id="email"
-              type="email"
-              placeholder="name@company.com"
-              disabled={loginMutation.isPending}
-              className="h-11 pl-10"
-              {...form.register('email')}
-            />
-          </div>
-          {form.formState.errors.email ? (
-            <FieldDescription className="text-red-500">
-              {form.formState.errors.email.message}
-            </FieldDescription>
-          ) : null}
-        </Field>
-        <Field>
-          <div className="flex items-center justify-between">
-            <FieldLabel htmlFor="password">Password</FieldLabel>
-            <Link
-              href="/forgot-password"
-              className="text-xs font-medium text-blue-700 transition-colors hover:text-blue-600"
-            >
-              Forgot password?
-            </Link>
-          </div>
-          <div className="relative">
-            <Lock className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-            <Input
-              id="password"
-              type="password"
-              disabled={loginMutation.isPending}
-              className="h-11 pl-10"
-              {...form.register('password')}
-            />
-          </div>
-          {form.formState.errors.password ? (
-            <FieldDescription className="text-red-500">
-              {form.formState.errors.password.message}
-            </FieldDescription>
-          ) : null}
-        </Field>
-        <Field>
-          <Button
-            type="submit"
-            disabled={loginMutation.isPending}
-            className="h-11 w-full gap-2 rounded-xl bg-blue-600 text-white transition-colors hover:bg-blue-700"
+    <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+      {loginMutation.error ? (
+        <AuthAlert title="We could not sign you in">{loginMutation.error.message}</AuthAlert>
+      ) : null}
+
+      <AuthTextField
+        id="login-email"
+        label="Email"
+        type="email"
+        inputMode="email"
+        icon={Mail}
+        placeholder="name@company.com"
+        autoComplete="email"
+        autoFocus
+        disabled={loginMutation.isPending}
+        error={errors.email?.message}
+        {...form.register('email')}
+      />
+
+      <AuthPasswordField
+        id="login-password"
+        label="Password"
+        placeholder="Enter your password"
+        autoComplete="current-password"
+        disabled={loginMutation.isPending}
+        error={errors.password?.message}
+        labelAction={
+          <Link
+            href="/forgot-password"
+            className="text-primary focus-visible:ring-ring/50 rounded text-xs font-medium hover:underline focus-visible:ring-3 focus-visible:outline-none"
           >
-            {loginMutation.isPending ? 'Logging in...' : 'Login'}
-            {!loginMutation.isPending ? <ArrowRight className="h-4 w-4" /> : null}
-          </Button>
-          <FieldDescription className="mt-1 text-xs text-zinc-500">
-            Advertisers continue to the marketplace after signing in.
-          </FieldDescription>
-        </Field>
-      </FieldGroup>
+            Forgot password?
+          </Link>
+        }
+        {...form.register('password')}
+      />
+
+      <AuthSubmitButton pending={loginMutation.isPending} pendingLabel="Signing in...">
+        Sign in
+        <ArrowRight className="size-4" aria-hidden />
+      </AuthSubmitButton>
     </form>
   );
 }
