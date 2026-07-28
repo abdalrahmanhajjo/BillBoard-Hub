@@ -1,18 +1,11 @@
 import type { RecordImpressionSchemaInput } from '@/shared/contracts/impression/impression.schema';
+import { parseResponse } from '@/client/lib/response-utils';
 
 type AnalyticsFilter = {
   billboardId?: string;
   creativeId?: string;
   playlistId?: string;
 };
-
-async function parseResponse(response: Response) {
-  const payload = await response.json();
-  if (!response.ok) {
-    return { ok: false, error: payload?.error ?? 'Request failed.', data: payload?.data };
-  }
-  return { ok: payload?.ok ?? true, error: payload?.error, data: payload?.data };
-}
 
 export const impressionClientService = {
   /** Device contract: record that a creative played on a screen. */

@@ -30,7 +30,10 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
       await loginMutation.mutateAsync(values);
       router.push('/user');
       router.refresh();
-    } catch {}
+    } catch {
+      // The failure is surfaced to the user via loginMutation.error below;
+      // this catch only prevents an unhandled promise rejection.
+    }
   };
 
   return (

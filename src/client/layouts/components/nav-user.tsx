@@ -40,7 +40,10 @@ export function NavUser({ user }: NavUserProps) {
       await logoutMutation.mutateAsync();
       router.push('/login');
       router.refresh();
-    } catch {}
+    } catch {
+      // Logout errors are non-blocking; this catch only prevents an unhandled
+      // promise rejection. See report note on surfacing logout failures.
+    }
   };
 
   return (

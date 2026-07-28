@@ -1,15 +1,8 @@
+import { parseResponse } from '@/client/lib/response-utils';
 import type {
   CreateScheduleSchemaInput,
   UpdateScheduleSchemaInput,
 } from '@/shared/contracts/schedule/schedule.schema';
-
-async function parseResponse(response: Response) {
-  const payload = await response.json();
-  if (!response.ok) {
-    return { ok: false, error: payload?.error ?? 'Request failed.', data: payload?.data };
-  }
-  return { ok: payload?.ok ?? true, error: payload?.error, data: payload?.data };
-}
 
 export const scheduleClientService = {
   async create(payload: CreateScheduleSchemaInput) {
