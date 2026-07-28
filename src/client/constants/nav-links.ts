@@ -23,6 +23,11 @@ export const ADMIN_NAV_LINKS: NavItem[] = [
     to: ADMIN_ROUTES.ADVERTISERS,
     icon: User,
   },
+  {
+    title: 'Billboards',
+    to: ADMIN_ROUTES.BILLBOARDS,
+    icon: User,
+  },
 ] as const;
 
 export const ADVERTISER_NAV_LINKS: NavItem[] = [
