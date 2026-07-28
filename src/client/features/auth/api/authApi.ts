@@ -1,41 +1,28 @@
-import { LoginResponse, LogoutResponse, RegisterResponse } from '@/shared/types/auth';
 import type { LoginSchemaInput } from '@/shared/contracts/auth/login.schema';
 import { RegisterSchemaInput } from '@/shared/contracts/auth/register.schema';
-import { getResponse } from '@/client/lib/response-utils';
+import { apiRequest } from '@/client/lib/response-utils';
 
 const BASE_URL = `${process.env.NEXT_PUBLIC_BASE_URL || ''}/auth`;
 
-export const login = async (input: LoginSchemaInput): Promise<LoginResponse> => {
-  const response = await fetch(`${BASE_URL}/login`, {
+/**
+ * Auth requests are the mutation functions for react-query, which must reject
+ * on failure — so this rethrows the server's (already user-facing) error
+ * message on `!ok` instead of returning a result object.
+ */
+async function authPost(path: string, body?: unknown) {
+  const result = await apiRequest(`${BASE_URL}${path}`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(input),
+    headers: { 'Content-Type': 'application/json' },
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
+  if (!result.ok) {
+    throw new Error(result.error ?? 'Request failed.');
+  }
+  return result.data;
+}
 
-  return getResponse<LoginResponse>(response);
-};
+export const login = (input: LoginSchemaInput) => authPost('/login', input);
 
-export const register = async (input: RegisterSchemaInput): Promise<RegisterResponse> => {
-  const response = await fetch(`${BASE_URL}/register`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(input),
-  });
+export const register = (input: RegisterSchemaInput) => authPost('/register', input);
 
-  return getResponse<RegisterResponse>(response);
-};
-
-export const logout = async (): Promise<LogoutResponse> => {
-  const response = await fetch(`${BASE_URL}/logout`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  return getResponse<LogoutResponse>(response);
-};
+export const logout = () => authPost('/logout');
