@@ -9,6 +9,14 @@ export const PERMISSIONS = {
   USERS_DELETE_ANY: 'users.delete:any',
   USERS_DELETE_SELF: 'users.delete:self',
 
+  CREATE_ADVERTISER_PROFILE_SELF: 'advertiser.profile.create.self',
+  UPDATE_ADVERTISER_PROFILE_SELF: 'advertiser.profile.update.self',
+  UPDATE_ADVERTISER_PROFILE_ANY: 'advertiser.profile.update.any',
+  READ_ADVERTISER_PROFILE_SELF: 'advertiser.profile.read.self',
+  DELETE_ADVERTISER_PROFILE_SELF: 'advertiser.profile.delete.self',
+  DELETE_ADVERTISER_PROFILE_ANY: 'advertiser.profile.delete.any',
+  READ_ADVERTISER_PROFILE_ANY: 'advertiser.profile.read.any',
+
   // Dashboard Permissions
   DASHBOARD_ACCESS_ADMIN: 'dashboard.access:admin',
   DASHBOARD_ACCESS_ADVERTISER: 'dashboard.access:advertiser',
