@@ -44,7 +44,9 @@ describe('campaignPolicy', () => {
   });
 
   it('lets an admin access any campaign', () => {
-    expect(() => campaignPolicy.assertCanAccess(admin, makeCampaign(otherAdvertiser.id))).not.toThrow();
+    expect(() =>
+      campaignPolicy.assertCanAccess(admin, makeCampaign(otherAdvertiser.id)),
+    ).not.toThrow();
   });
 
   it('blocks updating or assigning billboards to a campaign the advertiser does not own', () => {
