@@ -8,6 +8,7 @@ import type {
 } from '@/shared/contracts/user/user.schema';
 import type { User } from '@/shared/types/user';
 import { authorizationPolicy } from '@/shared/policies';
+import { ConflictError } from '@/shared/http/http-error';
 
 const SALT_ROUNDS = Number(process.env.SALT_ROUNDS);
 
@@ -18,7 +19,7 @@ export const userService = {
 
     const existing = await userRepository.findByEmail(input.email);
     if (existing) {
-      throw new Error('Email is already in use.');
+      throw new ConflictError('Email is already in use.');
     }
 
     const passwordHash = await bcrypt.hash(input.password, SALT_ROUNDS);

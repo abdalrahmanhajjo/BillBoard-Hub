@@ -15,7 +15,13 @@ export const getResponse = async <T = unknown>(response: Response): Promise<T> =
 export async function parseResponse(response: Response) {
   const payload = await response.json();
   if (!response.ok) {
-    return { ok: false, error: payload?.error ?? 'Request failed.', data: payload?.data };
+    // The server error envelope carries user-facing text in `message`
+    // (see `apiResponse.error`); `error` is kept as a fallback.
+    return {
+      ok: false,
+      error: payload?.message ?? payload?.error ?? 'Request failed.',
+      data: payload?.data,
+    };
   }
   return { ok: payload?.ok ?? true, error: payload?.error, data: payload?.data };
 }

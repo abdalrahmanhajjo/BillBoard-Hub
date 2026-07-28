@@ -47,9 +47,8 @@ export function handleControllerError(error: unknown, message: string) {
     return apiResponse.conflict('A record with these details already exists.');
   }
 
-  if (error instanceof Error) {
-    return apiResponse.error(error.message, 400);
-  }
-
+  // Unexpected errors: return a generic message so raw internal error text is
+  // never exposed to clients. Intentional, user-facing errors are handled by
+  // the HttpError/validation branches above.
   return apiResponse.internal(message);
 }
