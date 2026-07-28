@@ -1,24 +1,23 @@
 import type { ReactNode } from 'react';
 
+import { SidebarProvider, SidebarInset } from '@/client/ui/components/ui/sidebar';
+import { AppSidebar } from '@/client/features/dashboard/components/app-sidebar';
+import { DashboardTopbar } from '@/client/features/dashboard/components/dashboard-topbar';
+import type { DashboardUser } from '@/client/features/dashboard/types/dashboard-user';
+
 type DashboardShellProps = {
-  title: string;
-  subtitle: string;
-  actions?: ReactNode;
-  children?: ReactNode;
+  user: DashboardUser;
+  children: ReactNode;
 };
 
-export function DashboardShell({ title, subtitle, actions, children }: DashboardShellProps) {
+export function DashboardShell({ user, children }: DashboardShellProps) {
   return (
-    <section className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 px-6 py-10">
-      <header className="flex flex-col justify-between gap-4 border-b border-zinc-200 pb-6 md:flex-row md:items-end">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
-          <p className="text-sm text-zinc-600">{subtitle}</p>
-        </div>
-        {actions ? <div>{actions}</div> : null}
-      </header>
-
-      <div className="grid gap-4 md:grid-cols-2">{children}</div>
-    </section>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <DashboardTopbar user={user} />
+        <div className="flex-1 p-4 lg:p-6">{children}</div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

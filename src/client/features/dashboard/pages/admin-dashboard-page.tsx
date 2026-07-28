@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { DashboardShell } from '@/client/features/dashboard/components/dashboard-shell';
-
+import type { User } from '@/shared/types/user';
 function Card({ title, description, href }: { title: string; description: string; href: string }) {
   return (
     <Link
@@ -13,12 +13,9 @@ function Card({ title, description, href }: { title: string; description: string
   );
 }
 
-export function AdminDashboardFeaturePage() {
+export function AdminDashboardFeaturePage({ user }: { user: User }) {
   return (
-    <DashboardShell
-      title="Admin Dashboard"
-      subtitle="Manage platform operations, users, inventory, and performance."
-    >
+    <DashboardShell user={user}>
       <Card
         title="Users"
         description="Manage platform users and access."
