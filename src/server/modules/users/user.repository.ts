@@ -32,6 +32,11 @@ export const userRepository = {
     return UserModel.findById(userId).lean<UserDocument>().exec();
   },
 
+  async findByIdWithPassword(userId: string): Promise<UserDocument | null> {
+    await connectToDatabase();
+    return UserModel.findById(userId).select('+passwordHash').lean<UserDocument>().exec();
+  },
+
   async updateById(userId: string, updateData: Partial<UserRecord>): Promise<UserDocument | null> {
     await connectToDatabase();
     return UserModel.findByIdAndUpdate(userId, updateData, { new: true })
