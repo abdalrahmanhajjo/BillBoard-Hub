@@ -3,8 +3,10 @@ import { handleControllerError, validationMessage } from '@/server/http/controll
 import { campaignService } from '@/server/modules/campaigns/campaign.service';
 import {
   createCampaignSchema,
+  moderateCampaignStatusSchema,
   updateCampaignSchema,
   type CreateCampaignSchemaInput,
+  type ModerateCampaignStatusSchemaInput,
   type UpdateCampaignSchemaInput,
 } from '@/shared/contracts/campaign/campaign.schema';
 import {
@@ -65,6 +67,26 @@ export const campaignController = {
       return apiResponse.ok(campaign);
     } catch (error) {
       return handleControllerError(error, 'Campaign update failed.');
+    }
+  },
+
+  async moderateCampaignStatus(
+    actor: User,
+    campaignId: string,
+    payload: ModerateCampaignStatusSchemaInput,
+  ) {
+    if (!campaignId) {
+      return apiResponse.badRequest('Campaign id is required.');
+    }
+    const parsed = moderateCampaignStatusSchema.safeParse(payload);
+    if (!parsed.success) {
+      return apiResponse.badRequest(validationMessage(parsed.error.issues, 'Invalid status.'));
+    }
+    try {
+      const campaign = await campaignService.moderateStatus(actor, campaignId, parsed.data.status);
+      return apiResponse.ok(campaign);
+    } catch (error) {
+      return handleControllerError(error, 'Campaign status update failed.');
     }
   },
 

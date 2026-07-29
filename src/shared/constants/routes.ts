@@ -1,9 +1,16 @@
 const ADMIN_ROUTES = {
   DASHBOARD: '/user/admin/dashboard',
+  REPORTS: '/user/admin/reports',
+  BILLBOARDS: '/user/admin/billboards',
+  PLAYLISTS: '/user/admin/playlists',
+  SCHEDULES: '/user/admin/schedules',
+  PLAYBACK: '/user/admin/playback',
   CAMPAIGNS: '/user/admin/campaigns',
   BOOKINGS: '/user/admin/bookings',
+  IMPRESSIONS: '/user/admin/impressions',
   ADVERTISERS: '/user/admin/advertisers',
-  BILLBOARDS: '/user/admin/billboards',
+  USERS: '/user/admin/users',
+  SETTINGS: '/user/admin/settings',
 } as const;
 
 const ADVERTISER_ROUTES = {

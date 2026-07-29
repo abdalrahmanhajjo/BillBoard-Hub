@@ -58,6 +58,19 @@ describe('campaignPolicy', () => {
       campaignPolicy.assertCanAssignBillboards(owner, makeCampaign(otherAdvertiser.id)),
     ).toThrow(ForbiddenError);
   });
+
+  it('grants status moderation to admins only', () => {
+    expect(() => campaignPolicy.assertCanModerate(admin)).not.toThrow();
+    expect(() => campaignPolicy.assertCanModerate(owner)).toThrow(ForbiddenError);
+  });
+
+  it('does not let moderation stand in for editing a campaign the admin does not own', () => {
+    // An admin may move the lifecycle forward, but content stays with the owner:
+    // `assertCanUpdate` is ownership-bound and must still reject them.
+    expect(() => campaignPolicy.assertCanUpdate(admin, makeCampaign(owner.id))).toThrow(
+      ForbiddenError,
+    );
+  });
 });
 
 describe('adCreativePolicy', () => {

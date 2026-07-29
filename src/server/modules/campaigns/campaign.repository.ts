@@ -1,6 +1,10 @@
 import { connectToDatabase } from '@/server/db/mongoose';
 import { CampaignModel, type CampaignDocument } from '@/server/modules/campaigns/campaign.model';
-import type { CampaignRecord } from '@/server/modules/campaigns/campaign.types';
+import type {
+  CampaignOwnerActivityRow,
+  CampaignRecord,
+} from '@/server/modules/campaigns/campaign.types';
+import { CAMPAIGN_STATUSES } from '@/shared/constants/campaign';
 import type { CampaignStatus } from '@/shared/types/campaign';
 
 export const campaignRepository = {
@@ -37,5 +41,23 @@ export const campaignRepository = {
     return CampaignModel.find({ _id: { $in: campaignIds } })
       .lean<CampaignDocument[]>()
       .exec();
+  },
+
+  /** Campaign counts per owner, for the admin advertiser directory. */
+  async aggregateOwnerActivity(): Promise<CampaignOwnerActivityRow[]> {
+    await connectToDatabase();
+
+    return CampaignModel.aggregate<CampaignOwnerActivityRow>([
+      {
+        $group: {
+          _id: '$createdBy',
+          total: { $sum: 1 },
+          active: {
+            $sum: { $cond: [{ $eq: ['$status', CAMPAIGN_STATUSES.ACTIVE] }, 1, 0] },
+          },
+          lastCampaignAt: { $max: '$createdAt' },
+        },
+      },
+    ]).exec();
   },
 };

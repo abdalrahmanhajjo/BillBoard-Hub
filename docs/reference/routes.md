@@ -30,35 +30,40 @@
 
 ## Admin dashboard
 
-| Route                                       | Purpose                     |
-| ------------------------------------------- | --------------------------- |
-| `/dashboard/admin`                          | Admin overview              |
-| `/dashboard/admin/billboards`               | Inventory management        |
-| `/dashboard/admin/billboards/create`        | Create inventory            |
-| `/dashboard/admin/billboards/{billboardId}` | Billboard detail management |
-| `/dashboard/admin/bookings`                 | Reservation moderation      |
-| `/dashboard/admin/impressions`              | Impression analytics        |
-| `/dashboard/admin/playlists`                | Playlist builder            |
-| `/dashboard/admin/schedules`                | Screen scheduling           |
-| `/dashboard/admin/playback`                 | Rotation preview            |
-| `/dashboard/admin/users`                    | User area                   |
-| `/dashboard/admin/advertisers`              | Advertiser area             |
-| `/dashboard/admin/reports`                  | Reports area                |
+| Route                                  | Purpose                                    |
+| -------------------------------------- | ------------------------------------------ |
+| `/user/admin/dashboard`                | Admin overview                             |
+| `/user/admin/reports`                  | Reports area                               |
+| `/user/admin/billboards`               | Inventory management                       |
+| `/user/admin/billboards/create`        | Create inventory                           |
+| `/user/admin/billboards/{billboardId}` | Billboard detail management                |
+| `/user/admin/playlists`                | Playlist builder                           |
+| `/user/admin/schedules`                | Screen scheduling                          |
+| `/user/admin/playback`                 | Rotation preview                           |
+| `/user/admin/campaigns`                | Campaign moderation                        |
+| `/user/admin/bookings`                 | Reservation moderation                     |
+| `/user/admin/impressions`              | Impression analytics                       |
+| `/user/admin/advertisers`              | Advertiser directory with account activity |
+| `/user/admin/users`                    | User area                                  |
+| `/user/admin/settings`                 | Admin account and platform settings        |
 
 ## Advertiser dashboard
 
-| Route                              | Purpose                 |
-| ---------------------------------- | ----------------------- |
-| `/dashboard/advertiser`            | Advertiser overview     |
-| `/dashboard/advertiser/billboards` | Authenticated inventory |
-| `/dashboard/advertiser/bookings`   | Owned reservations      |
-| `/dashboard/advertiser/creatives`  | Creative management     |
-| `/dashboard/advertiser/campaigns`  | Campaign area           |
-| `/dashboard/advertiser/profile`    | Profile area            |
-| `/dashboard/advertiser/settings`   | Settings area           |
+| Route                         | Purpose                 |
+| ----------------------------- | ----------------------- |
+| `/user/advertiser`            | Advertiser overview     |
+| `/user/advertiser/reports`    | Delivery reports        |
+| `/user/advertiser/billboards` | Authenticated inventory |
+| `/user/advertiser/bookings`   | Owned reservations      |
+| `/user/advertiser/creatives`  | Creative management     |
+| `/user/advertiser/campaigns`  | Campaign area           |
+| `/user/advertiser/invoices`   | Billing records         |
+| `/user/advertiser/profile`    | Profile area            |
+| `/user/advertiser/settings`   | Settings area           |
 
-`/dashboard` redirects to the correct role-specific dashboard. `/unauthorized` is the role-denial
-destination.
+Both areas render the same `WorkspaceShell` sidebar frame — `AdminShell` and `AdvertiserShell` only
+supply the nav groups and the area label. `/user` redirects to the correct role-specific dashboard.
+`/unauthorized` is the role-denial destination.
 
 ## Route protection
 

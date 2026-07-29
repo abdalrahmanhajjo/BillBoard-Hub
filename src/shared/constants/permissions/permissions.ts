@@ -9,6 +9,12 @@ export const PERMISSIONS = {
   USERS_DELETE_ANY: 'users.delete:any',
   USERS_DELETE_SELF: 'users.delete:self',
 
+  // Advertiser profile Permissions (the company behind an account)
+  ADVERTISERS_CREATE_SELF: 'advertisers.create:self',
+  ADVERTISERS_READ_SELF: 'advertisers.read:self',
+  ADVERTISERS_READ_ANY: 'advertisers.read:any',
+  ADVERTISERS_UPDATE_SELF: 'advertisers.update:self',
+
   // Dashboard Permissions
   DASHBOARD_ACCESS_ADMIN: 'dashboard.access:admin',
   DASHBOARD_ACCESS_ADVERTISER: 'dashboard.access:advertiser',
@@ -52,6 +58,8 @@ export const PERMISSIONS = {
   CAMPAIGNS_READ_ANY: 'campaigns.read:any',
   CAMPAIGNS_READ_SELF: 'campaigns.read:self',
   CAMPAIGNS_UPDATE_SELF: 'campaigns.update:self',
+  /** Status-only administration of someone else's campaign. */
+  CAMPAIGNS_MODERATE: 'campaigns.moderate',
   CAMPAIGNS_ASSIGN_BILLBOARDS: 'campaigns.assign_billboards',
 
   // Ad Creative Permissions (campaign ad creatives — distinct from the

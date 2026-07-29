@@ -1,10 +1,5 @@
-import { ModulePlaceholderPage } from '@/client/features/dashboard/components/module-placeholder-page';
+import { AdminUsersFeaturePage } from '@/client/features/users/pages/admin-users-page';
 
 export default function AdminUsersPage() {
-  return (
-    <ModulePlaceholderPage
-      title="Admin Users"
-      description="Manage user accounts, roles, and activation state."
-    />
-  );
+  return <AdminUsersFeaturePage />;
 }

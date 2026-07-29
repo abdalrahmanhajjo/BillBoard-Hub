@@ -1,10 +1,5 @@
-import { ModulePlaceholderPage } from '@/client/features/dashboard/components/module-placeholder-page';
+import { AdminCampaignsFeaturePage } from '@/client/features/campaigns/pages/admin-campaigns-page';
 
 export default function CampaignsPage() {
-  return (
-    <ModulePlaceholderPage
-      title="Admin Campaigns"
-      description="Manage and monitor advertising campaigns."
-    />
-  );
+  return <AdminCampaignsFeaturePage />;
 }

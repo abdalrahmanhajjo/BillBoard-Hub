@@ -34,6 +34,9 @@ Response envelope:
 | ImageKit upload auth                 |             — |                   Read |                            Read |
 | Card payments                        |             — |           Own approved |                     Read/refund |
 | Offline payment reconciliation       |             — |                      — |                          Manage |
+| Campaigns                            |             — |             Manage own |       Read all, moderate status |
+| User accounts                        |             — |         Read/edit self |   List all, set role/activation |
+| Advertiser profiles                  |             — |             Manage own |                        Read all |
 
 ## Auth
 
@@ -241,6 +244,34 @@ Card Checkout is available only after reservation approval. All amounts are load
 server-side booking record; client totals are ignored. See [Payments](../guides/payments.md) for
 webhook events, status transitions, and local testing.
 
+## Campaigns
+
+| Method  | Path                                 | Authorization            | Description              |
+| ------- | ------------------------------------ | ------------------------ | ------------------------ |
+| `GET`   | `/campaigns`                         | Advertiser own/admin all | List campaigns           |
+| `POST`  | `/campaigns`                         | Advertiser               | Create a campaign        |
+| `GET`   | `/campaigns/{campaignId}`            | Owner/admin              | Get one                  |
+| `PUT`   | `/campaigns/{campaignId}`            | Owner                    | Update campaign content  |
+| `PATCH` | `/campaigns/{campaignId}/status`     | Admin                    | Moderate status only     |
+| `GET`   | `/campaigns/{campaignId}/billboards` | Owner/admin              | List assigned billboards |
+| `POST`  | `/campaigns/{campaignId}/billboards` | Owner                    | Assign billboards        |
+
+`GET /campaigns` returns only the caller's own campaigns for an advertiser, and every campaign for
+an admin — the admin campaign directory needs no separate endpoint.
+
+Ownership and moderation are split deliberately:
+
+- `PUT /campaigns/{campaignId}` requires `campaigns.update:self` **and** ownership. An admin is
+  rejected here, because a campaign's name, dates, and description belong to the advertiser.
+- `PATCH /campaigns/{campaignId}/status` requires `campaigns.moderate` (admin only) and accepts
+  nothing but a status, so moderation can never smuggle a content edit alongside it.
+
+```json
+{ "status": "active" }
+```
+
+Statuses: `draft`, `active`, `completed`.
+
 ## Creatives
 
 | Method   | Path                             | Authorization            | Description             |
@@ -336,15 +367,112 @@ token, signature, expiry, and public key. It returns `503` when ImageKit is not 
 
 ## User endpoints
 
-| Method   | Path                        | Description   |
-| -------- | --------------------------- | ------------- |
-| `POST`   | `/user`                     | Create a user |
-| `GET`    | `/user/profile?id={userId}` | Read user     |
-| `PUT`    | `/user/profile`             | Update user   |
-| `DELETE` | `/user/profile`             | Delete user   |
+| Method   | Path                        | Description                     |
+| -------- | --------------------------- | ------------------------------- |
+| `GET`    | `/user`                     | Admin user directory            |
+| `POST`   | `/user`                     | Create a user                   |
+| `PATCH`  | `/user/{userId}/access`     | Change a user's role/activation |
+| `GET`    | `/user/advertisers`         | Admin advertiser directory      |
+| `GET`    | `/user/profile?id={userId}` | Read user                       |
+| `PUT`    | `/user/profile`             | Update user                     |
+| `DELETE` | `/user/profile`             | Delete user                     |
 
 The route files delegate session enforcement to `userController`; the controller calls
 `requireSession()` and the user service applies role and ownership policies.
+
+### User directory
+
+`GET /user` requires `users.read:any`, so only admins can call it. Every account is returned, with
+the advertiser's company name attached where a profile exists:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "directory": {
+      "users": [
+        {
+          "id": "64f100000000000000000001",
+          "firstName": "Dana",
+          "lastName": "Haddad",
+          "email": "dana@brand.com",
+          "role": "advertiser",
+          "isActive": true,
+          "joinedAt": "2026-03-04T09:12:00.000Z",
+          "updatedAt": "2026-07-21T11:04:00.000Z",
+          "companyName": "Brand Co"
+        }
+      ],
+      "summary": { "total": 13, "admins": 1, "advertisers": 12, "active": 12, "inactive": 1 }
+    }
+  }
+}
+```
+
+### Changing access
+
+`PATCH /user/{userId}/access` requires `users.update:any` (admin only) and accepts either field or
+both:
+
+```json
+{ "role": "advertiser", "isActive": false }
+```
+
+Two guards run in `userService` beyond the permission check, because the permission alone would let
+an administrator lock everyone out:
+
+| Rule                                                        | Response          |
+| ----------------------------------------------------------- | ----------------- |
+| An admin may not change their own role or activation state  | `400` Bad Request |
+| The last **active** admin may not be demoted or deactivated | `409` Conflict    |
+| Target account no longer exists                             | `404` Not Found   |
+
+Deactivation is not deletion: the account keeps its campaigns, reservations, and invoices, and
+`findByEmailWithPassword` already refuses to sign in an inactive user.
+
+### Advertiser directory
+
+`GET /user/advertisers` requires `users.read:any`, so only admins can call it. It returns every
+advertiser account joined to its campaign and reservation activity:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "directory": {
+      "advertisers": [
+        {
+          "id": "64f100000000000000000001",
+          "firstName": "Dana",
+          "lastName": "Haddad",
+          "email": "dana@brand.com",
+          "isActive": true,
+          "joinedAt": "2026-03-04T09:12:00.000Z",
+          "companyName": "Brand Co",
+          "country": "Lebanon",
+          "phone": "+961 3 000 000",
+          "campaigns": { "total": 4, "active": 1 },
+          "bookings": { "total": 9, "pending": 2, "active": 3 },
+          "spend": [{ "currency": "USD", "amount": 18400 }],
+          "outstanding": [{ "currency": "USD", "amount": 2100 }],
+          "lastActivityAt": "2026-07-21T11:04:00.000Z"
+        }
+      ],
+      "summary": {
+        "total": 12,
+        "active": 11,
+        "inactive": 1,
+        "engaged": 8,
+        "spend": [{ "currency": "USD", "amount": 96250 }]
+      }
+    }
+  }
+}
+```
+
+Company, country, and phone come from each advertiser's most recent reservation. `spend` counts
+approved and completed reservations only, and every money field is grouped by invoice currency
+rather than summed across currencies. The response is capped at `USER_LIST_LIMIT` accounts.
 
 ## Error examples
 

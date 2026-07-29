@@ -1,4 +1,5 @@
 import { adCreativePolicy } from './modules/ad-creative-policy';
+import { advertiserPolicy } from './modules/advertiser-policy';
 import { billboardPolicy } from './modules/billboard-policy';
 import { bookingPolicy } from './modules/booking-policy';
 import { campaignPolicy } from './modules/campaign-policy';
@@ -12,6 +13,7 @@ import { paymentPolicy } from './modules/payment-policy';
 
 export const authorizationPolicy = {
   user: userPolicy,
+  advertiser: advertiserPolicy,
   dashboard: dashboardPolicy,
   billboard: billboardPolicy,
   creative: creativePolicy,

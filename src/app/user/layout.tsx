@@ -4,8 +4,9 @@ import { redirect } from 'next/navigation';
 
 /**
  * Session and the signed-in gate only. The sidebar chrome belongs to each role's
- * own layout — admin keeps `AuthLayout`, advertiser uses `AdvertiserShell` —
- * because mounting one here would nest a second SidebarProvider inside it.
+ * own layout — `AdminShell` and `AdvertiserShell`, both wrapping the same
+ * `WorkspaceShell` — because mounting one here would nest a second
+ * SidebarProvider inside it.
  */
 export default async function DashboardLayout({
   children,

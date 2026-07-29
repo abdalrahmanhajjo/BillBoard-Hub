@@ -38,6 +38,17 @@ export const updateCampaignSchema = z
     path: ['endDate'],
   });
 
+/**
+ * The status-only change an admin makes from the campaign directory. Separate
+ * from `updateCampaignSchema` so moderation can never carry a name or date edit
+ * alongside it.
+ */
+export const moderateCampaignStatusSchema = z.object({
+  status: z.enum(CAMPAIGN_STATUSES),
+});
+
+export type ModerateCampaignStatusSchemaInput = z.input<typeof moderateCampaignStatusSchema>;
+
 export type CreateCampaignSchemaInput = z.input<typeof createCampaignSchema>;
 export type CreateCampaignSchemaOutput = z.output<typeof createCampaignSchema>;
 export type UpdateCampaignSchemaInput = z.input<typeof updateCampaignSchema>;

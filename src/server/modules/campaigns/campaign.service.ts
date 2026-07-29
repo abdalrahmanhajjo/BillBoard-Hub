@@ -10,7 +10,7 @@ import type {
   UpdateCampaignSchemaOutput,
 } from '@/shared/contracts/campaign/campaign.schema';
 import type { AssignBillboardsSchemaOutput } from '@/shared/contracts/campaign/campaign-billboard.schema';
-import type { Campaign } from '@/shared/types/campaign';
+import type { Campaign, CampaignStatus } from '@/shared/types/campaign';
 import type { Billboard } from '@/shared/types/billboard';
 import type { User } from '@/shared/types/user';
 
@@ -56,6 +56,22 @@ export const campaignService = {
     if (!updated) {
       throw new NotFoundError('Campaign not found.');
     }
+    return toCampaign(updated);
+  },
+
+  /**
+   * Moves a campaign through its lifecycle on an admin's authority rather than
+   * the owner's. Only the status changes — the campaign's name, dates, and
+   * description belong to the advertiser and are never touched here.
+   */
+  async moderateStatus(actor: User, campaignId: string, status: CampaignStatus): Promise<Campaign> {
+    authorizationPolicy.campaign.assertCanModerate(actor);
+
+    const updated = await campaignRepository.updateStatus(campaignId, status);
+    if (!updated) {
+      throw new NotFoundError('Campaign not found.');
+    }
+
     return toCampaign(updated);
   },
 

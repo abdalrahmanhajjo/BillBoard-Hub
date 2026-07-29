@@ -41,3 +41,18 @@ export type BookingFilter = {
   billboardId?: string;
   status?: BookingStatus;
 };
+
+/** One row per advertiser out of `bookingRepository.aggregateAdvertiserActivity`. */
+export type AdvertiserBookingActivityRow = {
+  /** The advertiser id the reservations belong to. */
+  _id: string;
+  total: number;
+  pending: number;
+  active: number;
+  lastBookingAt: Date | null;
+  companyName: string | null;
+  country: string | null;
+  phone: string | null;
+  spend: Array<{ currency: string; amount: number }>;
+  outstanding: Array<{ currency: string; amount: number }>;
+};

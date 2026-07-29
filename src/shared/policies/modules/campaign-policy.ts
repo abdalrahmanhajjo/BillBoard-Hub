@@ -25,6 +25,15 @@ export const campaignPolicy = {
       throw new ForbiddenError('You cannot update a campaign you do not own.');
     }
   },
+  /**
+   * Status administration of any campaign, including ones the actor does not
+   * own. Deliberately separate from `assertCanUpdate`: that gate is ownership-
+   * bound and covers a campaign's content, while this one covers only its
+   * lifecycle state.
+   */
+  assertCanModerate(actor: User): void {
+    assert(actor.role, PERMISSIONS.CAMPAIGNS_MODERATE, 'You cannot moderate campaigns.');
+  },
   assertCanAssignBillboards(actor: User, campaign: Campaign): void {
     assert(
       actor.role,

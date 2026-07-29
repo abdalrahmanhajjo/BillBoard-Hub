@@ -9,23 +9,17 @@ import {
   TrendingUp,
   UserRound,
 } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
 import { ADVERTISER_ROUTES } from '@/shared/constants/routes';
+import {
+  isNavItemActive,
+  type WorkspaceNavGroup,
+  type WorkspaceNavItem,
+} from '@/client/features/dashboard/components/workspace-nav';
 
-export type AdvertiserNavItem = {
-  label: string;
-  href: string;
-  icon: LucideIcon;
-  /** The dashboard root matches only exactly; every other entry matches its subtree. */
-  exact?: boolean;
-};
+export type AdvertiserNavItem = WorkspaceNavItem;
+export type AdvertiserNavGroup = WorkspaceNavGroup;
 
-export type AdvertiserNavGroup = {
-  label: string;
-  items: AdvertiserNavItem[];
-};
-
-export const ADVERTISER_NAV: AdvertiserNavGroup[] = [
+export const ADVERTISER_NAV: WorkspaceNavGroup[] = [
   {
     label: 'Overview',
     items: [
@@ -62,9 +56,4 @@ export const ADVERTISER_NAV: AdvertiserNavGroup[] = [
   },
 ];
 
-export function isNavItemActive(item: AdvertiserNavItem, pathname: string): boolean {
-  if (item.exact) {
-    return pathname === item.href;
-  }
-  return pathname === item.href || pathname.startsWith(`${item.href}/`);
-}
+export { isNavItemActive };

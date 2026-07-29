@@ -49,6 +49,8 @@ const userSchema = new Schema<UserRecord>(
 
 export type UserDocument = InferSchemaType<typeof userSchema> & {
   _id: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export const UserModel = models.User || model('User', userSchema);

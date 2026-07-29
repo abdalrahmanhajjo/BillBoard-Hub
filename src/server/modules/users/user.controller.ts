@@ -11,6 +11,8 @@ import type {
   UpdateUserInfoSchemaInput,
 } from '@/shared/contracts/user/user.schema';
 import { createUserSchema, updateUserInfoSchema } from '@/shared/contracts/user/user.schema';
+import type { UpdateUserAccessSchemaInput } from '@/shared/contracts/user/user-access.schema';
+import { updateUserAccessSchema } from '@/shared/contracts/user/user-access.schema';
 
 export const userController = {
   async createUser(payload: CreateUserSchemaInput) {
@@ -74,6 +76,62 @@ export const userController = {
       return apiResponse.ok(user);
     } catch (error) {
       return handleControllerError(error, 'We could not delete this user. Refresh and try again.');
+    }
+  },
+
+  async listUsers() {
+    try {
+      const session = await requireSession();
+      const directory = await userService.listUserDirectory(session.user);
+
+      return apiResponse.ok({ directory });
+    } catch (error) {
+      return handleControllerError(
+        error,
+        'We could not load the user list. Refresh and try again.',
+      );
+    }
+  },
+
+  async updateUserAccess(userId: string, payload: UpdateUserAccessSchemaInput) {
+    if (!userId) {
+      return apiResponse.badRequest('User id is required.');
+    }
+
+    const parsed = updateUserAccessSchema.safeParse(payload);
+
+    if (!parsed.success) {
+      return apiResponse.badRequest(validationMessage(parsed.error.issues, 'Invalid access data.'));
+    }
+
+    try {
+      const session = await requireSession();
+      const user = await userService.updateAccessById(userId, parsed.data, session.user);
+
+      if (!user) {
+        throw new NotFoundError('We could not find this user. They may have been removed.');
+      }
+
+      return apiResponse.ok(user);
+    } catch (error) {
+      return handleControllerError(
+        error,
+        'We could not update this account. Refresh and try again.',
+      );
+    }
+  },
+
+  async listAdvertisers() {
+    try {
+      const session = await requireSession();
+      const directory = await userService.listAdvertiserDirectory(session.user);
+
+      return apiResponse.ok({ directory });
+    } catch (error) {
+      return handleControllerError(
+        error,
+        'We could not load the advertiser list. Refresh and try again.',
+      );
     }
   },
 

@@ -2,7 +2,8 @@ import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import { USER_ROLES } from '@/shared/constants/user-roles';
 import { ROLE_LANDING_ROUTES } from '@/shared/constants/routes';
-import AuthLayout from '@/client/layouts/auth-layout';
+import { AdminShell } from '@/client/features/dashboard/components/admin-shell';
+
 export default async function AdminDashboardLayout({
   children,
 }: Readonly<{
@@ -22,7 +23,8 @@ export default async function AdminDashboardLayout({
     redirect('/unauthorized');
   }
 
-  // The shared AppSidebar shell now lives here rather than in /user/layout.tsx,
-  // so the advertiser area can mount its own sidebar without nesting two.
-  return <AuthLayout>{children}</AuthLayout>;
+  // The sidebar shell lives here rather than in /user/layout.tsx, so the
+  // advertiser area can mount its own without nesting two providers. Both areas
+  // render the same `WorkspaceShell` underneath.
+  return <AdminShell>{children}</AdminShell>;
 }

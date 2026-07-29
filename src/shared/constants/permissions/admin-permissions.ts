@@ -8,7 +8,14 @@ export const ADMIN_PERMISSIONS: Permission[] = [
   PERMISSIONS.USERS_CREATE_ADMIN,
   PERMISSIONS.USERS_CREATE_ADVERTISER,
   PERMISSIONS.USERS_UPDATE_SELF,
+  // Role and activation administration. Guarded in the service beyond the
+  // permission itself: an admin cannot change their own access, and the last
+  // active admin cannot be demoted or deactivated.
+  PERMISSIONS.USERS_UPDATE_ANY,
   PERMISSIONS.USERS_DELETE_ANY,
+
+  // Advertiser profile Permissions (admins read every company profile)
+  PERMISSIONS.ADVERTISERS_READ_ANY,
 
   // Dashboard Permissions
   PERMISSIONS.DASHBOARD_ACCESS_ADMIN,
@@ -46,6 +53,9 @@ export const ADMIN_PERMISSIONS: Permission[] = [
 
   // Campaign & ad-creative Permissions (admins read all)
   PERMISSIONS.CAMPAIGNS_READ_ANY,
+  // Status only. Admins never edit an advertiser's campaign content — name,
+  // dates, and description stay with the owner.
+  PERMISSIONS.CAMPAIGNS_MODERATE,
   PERMISSIONS.AD_CREATIVES_READ_ANY,
   // Payment Permissions
   PERMISSIONS.PAYMENTS_READ,

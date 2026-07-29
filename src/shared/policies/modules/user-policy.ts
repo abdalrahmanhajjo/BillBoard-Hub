@@ -29,6 +29,14 @@ export const userPolicy = {
     }
   },
 
+  /**
+   * Listing accounts is a strictly broader read than reading one: there is no
+   * self-scoped variant of it, so only `users.read:any` grants it.
+   */
+  assertCanListUsers(actor: User): void {
+    assert(actor.role, PERMISSIONS.USERS_READ_ANY, permissionDenied('list user accounts'));
+  },
+
   assertCanReadUser(actor: User, targetUserId: string): void {
     if (actor.role === USER_ROLES.ADMIN) {
       assert(actor.role, PERMISSIONS.USERS_READ_ANY);

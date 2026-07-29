@@ -1,9 +1,11 @@
 import { apiRequest } from '@/client/ui/lib/api-client';
 import type {
   CreateCampaignSchemaInput,
+  ModerateCampaignStatusSchemaInput,
   UpdateCampaignSchemaInput,
 } from '@/shared/contracts/campaign/campaign.schema';
 import type { AssignBillboardsSchemaInput } from '@/shared/contracts/campaign/campaign-billboard.schema';
+import type { Campaign } from '@/shared/types/campaign';
 
 export const campaignClientService = {
   async create(payload: CreateCampaignSchemaInput) {
@@ -29,6 +31,15 @@ export const campaignClientService = {
   async update(campaignId: string, payload: UpdateCampaignSchemaInput) {
     return apiRequest(`/api/v1/campaigns/${campaignId}`, {
       method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload),
+    });
+  },
+  /** Admin-only status change; leaves the campaign's content untouched. */
+  async moderateStatus(campaignId: string, payload: ModerateCampaignStatusSchemaInput) {
+    return apiRequest<Campaign>(`/api/v1/campaigns/${campaignId}/status`, {
+      method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify(payload),

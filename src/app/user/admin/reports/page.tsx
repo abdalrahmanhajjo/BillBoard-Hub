@@ -1,10 +1,5 @@
-import { ModulePlaceholderPage } from '@/client/features/dashboard/components/module-placeholder-page';
+import { AdminReportsFeaturePage } from '@/client/features/analytics/pages/admin-reports-page';
 
 export default function AdminReportsPage() {
-  return (
-    <ModulePlaceholderPage
-      title="Admin Reports"
-      description="Analyze occupancy, revenue, booking volume, and advertiser trends."
-    />
-  );
+  return <AdminReportsFeaturePage />;
 }
