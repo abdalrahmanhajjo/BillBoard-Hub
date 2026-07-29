@@ -1,11 +1,11 @@
 import type {
-  CreateCreativeSchemaInput,
-  UpdateCreativeStatusSchemaInput,
-} from '@/shared/contracts/creative/creative.schema';
+  CreateAdCreativeSchemaInput,
+  UpdateAdCreativeSchemaInput,
+} from '@/shared/contracts/ad-creative/ad-creative.schema';
 import { apiRequest } from '@/client/ui/lib/api-client';
 
 export const creativeClientService = {
-  async create(payload: CreateCreativeSchemaInput) {
+  async create(payload: CreateAdCreativeSchemaInput) {
     return apiRequest('/api/v1/creatives', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -28,8 +28,8 @@ export const creativeClientService = {
     });
   },
 
-  async updateStatus(creativeId: string, payload: UpdateCreativeStatusSchemaInput) {
-    return apiRequest(`/api/v1/creatives/${encodeURIComponent(creativeId)}/status`, {
+  async update(creativeId: string, payload: UpdateAdCreativeSchemaInput) {
+    return apiRequest(`/api/v1/creatives/${encodeURIComponent(creativeId)}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

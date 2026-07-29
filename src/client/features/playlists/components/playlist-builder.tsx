@@ -4,7 +4,7 @@ import { useMemo, useState, useTransition, type FormEvent } from 'react';
 import { ArrowDown, ArrowUp, Plus, X } from 'lucide-react';
 import { PLAYLIST_STATUSES } from '@/shared/constants/playlist';
 import type { Billboard } from '@/shared/types/billboard';
-import type { Creative } from '@/shared/types/creative';
+import type { AdCreative as Creative } from '@/shared/types/ad-creative';
 import type { PlaylistStatus } from '@/shared/types/playlist';
 import { playlistClientService } from '@/client/features/playlists/services/playlist-client.service';
 import { CreativeThumb } from '@/client/features/playlists/components/creative-thumb';

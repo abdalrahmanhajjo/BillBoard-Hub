@@ -1,4 +1,4 @@
-import { MAX_CREATIVE_VIDEO_DURATION_SECONDS } from '@/shared/constants/creative';
+import { MAX_CREATIVE_VIDEO_DURATION_SECONDS } from '@/shared/constants/ad-creative';
 
 /** Reads the real duration from a browser-selected video before it is uploaded. */
 export function readVideoDurationSeconds(file: File): Promise<number> {

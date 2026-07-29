@@ -5,7 +5,7 @@ import {
 import { toImpression } from '@/server/modules/impressions/impression.utils';
 import { billboardRepository } from '@/server/modules/billboards/billboard.repository';
 import { playlistRepository } from '@/server/modules/playlists/playlist.repository';
-import { creativeRepository } from '@/server/modules/creatives/creative.repository';
+import { adCreativeRepository as creativeRepository } from '@/server/modules/ad-creatives/ad-creative.repository';
 import { authorizationPolicy } from '@/shared/policies';
 import { BadRequestError, NotFoundError } from '@/shared/http/http-error';
 import { BILLBOARD_TYPES } from '@/shared/constants/billboard';
@@ -67,7 +67,7 @@ export const impressionService = {
 
     const creativeIds = byCreativeRaw.map((row) => row.creativeId);
     const creatives = creativeIds.length ? await creativeRepository.findByIds(creativeIds) : [];
-    const nameById = new Map(creatives.map((creative) => [String(creative._id), creative.name]));
+    const nameById = new Map(creatives.map((creative) => [creative._id.toString(), creative.name]));
 
     const byCreative = byCreativeRaw.map((row) => ({
       creativeId: row.creativeId,

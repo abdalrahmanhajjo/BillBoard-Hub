@@ -32,7 +32,7 @@ import {
   DIGITAL_RESERVATION_DAILY_LIMIT,
   PAYMENT_METHODS,
 } from '@/shared/constants/booking';
-import { MAX_CREATIVE_VIDEO_DURATION_SECONDS } from '@/shared/constants/creative';
+import { MAX_CREATIVE_VIDEO_DURATION_SECONDS } from '@/shared/constants/ad-creative';
 import { computeBookingPricing, inclusiveDays } from '@/shared/pricing/booking-pricing';
 import type { PublicBillboard } from '@/shared/types/billboard';
 import type {

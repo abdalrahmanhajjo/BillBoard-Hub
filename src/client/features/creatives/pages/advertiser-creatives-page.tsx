@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import type { Creative } from '@/shared/types/creative';
+import type { AdCreative } from '@/shared/types/ad-creative';
 import { creativeClientService } from '@/client/features/creatives/services/creative-client.service';
 import { CreativeUploadForm } from '@/client/features/creatives/components/creative-upload-form';
 import { CreativeCard } from '@/client/features/creatives/components/creative-card';
@@ -9,7 +9,7 @@ import { CreativeCard } from '@/client/features/creatives/components/creative-ca
 type LoadStatus = 'loading' | 'ready' | 'error';
 
 export function AdvertiserCreativesPage() {
-  const [creatives, setCreatives] = useState<Creative[]>([]);
+  const [creatives, setCreatives] = useState<AdCreative[]>([]);
   const [status, setStatus] = useState<LoadStatus>('loading');
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -22,7 +22,7 @@ export function AdvertiserCreativesPage() {
       setStatus('error');
       return;
     }
-    setCreatives((result.data?.creatives as Creative[] | undefined) ?? []);
+    setCreatives((result.data?.creatives as AdCreative[] | undefined) ?? []);
     setError(null);
     setStatus('ready');
   }, []);
@@ -33,7 +33,7 @@ export function AdvertiserCreativesPage() {
     })();
   }, [load]);
 
-  const handleDelete = async (creative: Creative) => {
+  const handleDelete = async (creative: AdCreative) => {
     if (!window.confirm(`Delete "${creative.name}"? This cannot be undone.`)) return;
     setActionError(null);
     setPendingId(creative.id);

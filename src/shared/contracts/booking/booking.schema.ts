@@ -6,7 +6,7 @@ import {
   CAMPAIGN_OBJECTIVES,
   PAYMENT_METHODS,
 } from '@/shared/constants/booking';
-import { MAX_CREATIVE_VIDEO_DURATION_SECONDS } from '@/shared/constants/creative';
+import { MAX_CREATIVE_VIDEO_DURATION_SECONDS } from '@/shared/constants/ad-creative';
 
 const RESERVATION_PAYMENT_METHODS = [PAYMENT_METHODS.CARD, PAYMENT_METHODS.E_WALLET] as const;
 

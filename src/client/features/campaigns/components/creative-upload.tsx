@@ -21,18 +21,18 @@ type CreativeUploadProps = {
   onUploaded: () => void | Promise<void>;
 };
 
-function getVideoDurationSeconds(file: File): Promise<number> {
-  return new Promise((resolve, reject) => {
-    const video = document.createElement('video');
-    video.preload = 'metadata';
-    video.onloadedmetadata = () => {
-      URL.revokeObjectURL(video.src);
-      resolve(video.duration);
-    };
-    video.onerror = () => reject(new Error('Could not read video duration.'));
-    video.src = URL.createObjectURL(file);
-  });
-}
+// function getVideoDurationSeconds(file: File): Promise<number> {
+//   return new Promise((resolve, reject) => {
+//     const video = document.createElement('video');
+//     video.preload = 'metadata';
+//     video.onloadedmetadata = () => {
+//       URL.revokeObjectURL(video.src);
+//       resolve(video.duration);
+//     };
+//     video.onerror = () => reject(new Error('Could not read video duration.'));
+//     video.src = URL.createObjectURL(file);
+//   });
+// }
 
 export function CreativeUpload({ campaignId, onUploaded }: CreativeUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -85,16 +85,16 @@ export function CreativeUpload({ campaignId, onUploaded }: CreativeUploadProps) 
           setProgress(Math.round((progressEvent.loaded / progressEvent.total) * 100)),
       });
 
-      const durationSeconds = isVideo
-        ? await getVideoDurationSeconds(file).catch(() => undefined)
-        : undefined;
+      // const durationSeconds = isVideo
+      //   ? await getVideoDurationSeconds(file).catch(() => undefined)
+      //   : undefined;
 
       const createResult = await adCreativeClientService.create(campaignId, {
         campaignId,
         url: uploadResponse.url ?? '',
         fileType: isVideo ? AD_CREATIVE_TYPES.VIDEO : AD_CREATIVE_TYPES.IMAGE,
-        durationSeconds,
-        fileSizeBytes: file.size,
+        // fileSizeBytes: file.size,
+        name: file.name,
       });
 
       if (!createResult.ok) {

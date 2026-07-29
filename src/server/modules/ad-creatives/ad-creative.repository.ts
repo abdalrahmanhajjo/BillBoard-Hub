@@ -25,6 +25,12 @@ export const adCreativeRepository = {
     await connectToDatabase();
     return AdCreativeModel.findById(creativeId).lean<AdCreativeDocument>().exec();
   },
+  async findByIds(creativeIds: string[]): Promise<AdCreativeDocument[]> {
+    await connectToDatabase();
+    return AdCreativeModel.find({ _id: { $in: creativeIds } })
+      .lean<AdCreativeDocument[]>()
+      .exec();
+  },
   async deleteById(creativeId: string): Promise<AdCreativeDocument | null> {
     await connectToDatabase();
     return AdCreativeModel.findByIdAndDelete(creativeId).lean<AdCreativeDocument>().exec();

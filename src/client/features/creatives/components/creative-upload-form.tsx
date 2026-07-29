@@ -2,8 +2,11 @@
 
 import { useRef, useState, useTransition, type FormEvent } from 'react';
 import { Film, ImageIcon, Upload } from 'lucide-react';
-import { CREATIVE_TYPES, MAX_CREATIVE_VIDEO_DURATION_SECONDS } from '@/shared/constants/creative';
-import type { CreativeType } from '@/shared/types/creative';
+import {
+  AD_CREATIVE_TYPES,
+  MAX_CREATIVE_VIDEO_DURATION_SECONDS,
+} from '@/shared/constants/ad-creative';
+import type { AdCreativeType } from '@/shared/types/ad-creative';
 import { uploadCreativeAsset } from '@/client/features/creatives/services/creative-upload.service';
 import { creativeClientService } from '@/client/features/creatives/services/creative-client.service';
 import {
@@ -20,8 +23,8 @@ const inputClassName = 'w-full rounded-md border border-zinc-300 px-3 py-2 text-
 
 export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
   const [name, setName] = useState('');
-  const [assetUrl, setAssetUrl] = useState('');
-  const [type, setType] = useState<CreativeType | null>(null);
+  const [url, setAssetUrl] = useState('');
+  const [type, setType] = useState<AdCreativeType | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -30,7 +33,7 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const busy = uploading || isPending;
-  const isVideo = type === CREATIVE_TYPES.VIDEO;
+  const isVideo = type === AD_CREATIVE_TYPES.VIDEO;
 
   const handleFile = async (file: File | undefined) => {
     if (!file) return;
@@ -62,7 +65,7 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
 
       const url = await uploadCreativeAsset(file, setProgress);
       setAssetUrl(url);
-      setType(video ? CREATIVE_TYPES.VIDEO : CREATIVE_TYPES.IMAGE);
+      setType(video ? AD_CREATIVE_TYPES.VIDEO : AD_CREATIVE_TYPES.IMAGE);
       setDuration(videoDuration);
       if (!name.trim()) setName(file.name.replace(/\.[^.]+$/, ''));
     } catch (uploadError) {
@@ -82,7 +85,7 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
     event.preventDefault();
     setError(null);
 
-    if (!assetUrl || !type) {
+    if (!url || !type) {
       setError('Upload a creative file first.');
       return;
     }
@@ -90,9 +93,10 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
     startTransition(async () => {
       const result = await creativeClientService.create({
         name,
-        type,
-        assetUrl,
-        durationSeconds: isVideo ? (duration ?? undefined) : undefined,
+        fileType: type,
+        url,
+        // durationSeconds: isVideo ? (duration ?? undefined) : undefined,
+        campaignId: 'test', // TODO: associate with a campaign if needed
       });
       if (!result.ok) {
         setError(
@@ -136,14 +140,14 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
           onChange={(event) => void handleFile(event.target.files?.[0])}
         />
 
-        {assetUrl ? (
+        {url ? (
           <div className="mx-auto max-w-xs">
             {isVideo ? (
-              <video src={assetUrl} className="aspect-video w-full rounded-md object-cover" muted />
+              <video src={url} className="aspect-video w-full rounded-md object-cover" muted />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={assetUrl}
+                src={url}
                 alt="Creative preview"
                 className="aspect-video w-full rounded-md object-cover"
               />
@@ -177,7 +181,7 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
         )}
       </div>
 
-      {assetUrl ? (
+      {url ? (
         <button
           type="button"
           onClick={() => {
@@ -206,7 +210,7 @@ export function CreativeUploadForm({ onCreated }: { onCreated?: () => void }) {
 
       <button
         type="submit"
-        disabled={busy || !assetUrl}
+        disabled={busy || !url}
         className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-60"
       >
         {isPending ? 'Saving…' : 'Add creative'}

@@ -10,6 +10,7 @@ export type AdCreative = {
   durationSeconds?: number;
   createdAt?: string;
   updatedAt?: string;
+  name: string;
 };
 
 export type AdCreativeWithCampaign = AdCreative & {

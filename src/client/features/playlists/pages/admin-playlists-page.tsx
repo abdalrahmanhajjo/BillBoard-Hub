@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BILLBOARD_TYPES } from '@/shared/constants/billboard';
 import type { Billboard } from '@/shared/types/billboard';
-import type { Creative } from '@/shared/types/creative';
+import type { AdCreative as Creative } from '@/shared/types/ad-creative';
 import type { Playlist } from '@/shared/types/playlist';
 import { billboardClientService } from '@/client/features/billboards/services/billboard-client.service';
 import { creativeClientService } from '@/client/features/creatives/services/creative-client.service';

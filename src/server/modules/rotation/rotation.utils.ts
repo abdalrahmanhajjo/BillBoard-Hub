@@ -1,5 +1,5 @@
 import { DEFAULT_SLOT_SECONDS } from '@/shared/constants/rotation';
-import type { Creative } from '@/shared/types/creative';
+import type { AdCreative as Creative } from '@/shared/types/ad-creative';
 import type { RotationItem, RotationSummary } from '@/shared/types/rotation';
 import type { Playlist } from '@/shared/types/playlist';
 import type { Schedule } from '@/shared/types/schedule';
@@ -27,8 +27,8 @@ function buildRotationItems(
     items.push({
       creativeId: creative.id,
       name: creative.name,
-      type: creative.type,
-      assetUrl: creative.assetUrl,
+      type: creative.fileType,
+      assetUrl: creative.url,
       durationSeconds: resolveDurationSeconds(creative),
       position: items.length + 1,
     });

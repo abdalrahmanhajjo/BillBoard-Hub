@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
+    "check": "tsc --noEmit",
     "format": "prettier --write ./src/**/*.{ts,tsx,js,jsx,json,css,scss,md}",
     "format:check": "prettier --check ./src/**/*.{ts,tsx,js,jsx,json,css,scss,md}",
     "test": "vitest run",

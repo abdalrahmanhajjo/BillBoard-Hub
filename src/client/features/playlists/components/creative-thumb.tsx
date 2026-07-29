@@ -1,11 +1,17 @@
-import { CREATIVE_TYPES } from '@/shared/constants/creative';
-import type { Creative } from '@/shared/types/creative';
+import { AD_CREATIVE_TYPES } from '@/shared/constants/ad-creative';
+import type { AdCreative } from '@/shared/types/ad-creative';
 
 /** Small preview of a creative (image or muted video). */
-export function CreativeThumb({ creative, className }: { creative: Creative; className?: string }) {
-  if (creative.type === CREATIVE_TYPES.VIDEO) {
-    return <video src={creative.assetUrl} className={className} muted playsInline />;
+export function CreativeThumb({
+  creative,
+  className,
+}: {
+  creative: AdCreative;
+  className?: string;
+}) {
+  if (creative.fileType === AD_CREATIVE_TYPES.VIDEO) {
+    return <video src={creative.url} className={className} muted playsInline />;
   }
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={creative.assetUrl} alt={creative.name} className={className} />;
+  return <img src={creative.url} alt={creative.name} className={className} />;
 }

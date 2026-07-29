@@ -5,6 +5,7 @@ export const createAdCreativeSchema = z.object({
   campaignId: z.string().min(1, 'Campaign id is required.'),
   url: z.url('A valid file URL is required.'),
   fileType: z.enum(AD_CREATIVE_TYPES),
+  name: z.string().min(1, 'Creative name is required.'),
 });
 
 export const updateAdCreativeSchema = z
@@ -12,6 +13,7 @@ export const updateAdCreativeSchema = z
     campaignId: z.string().min(1, 'Campaign id is required.').optional(),
     url: z.url('A valid file URL is required.').optional(),
     fileType: z.enum(AD_CREATIVE_TYPES).optional(),
+    name: z.string().min(1, 'Creative name is required.').optional(),
   })
   .refine(
     (data) => Object.keys(data).length > 0 && Object.values(data).some((v) => v !== undefined),

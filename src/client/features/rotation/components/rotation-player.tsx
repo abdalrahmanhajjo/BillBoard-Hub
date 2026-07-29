@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Pause, Play, SkipBack, SkipForward } from 'lucide-react';
-import { CREATIVE_TYPES } from '@/shared/constants/creative';
+import { AD_CREATIVE_TYPES as CREATIVE_TYPES } from '@/shared/constants/ad-creative';
 import type { RotationItem } from '@/shared/types/rotation';
 
 type RotationPlayerProps = {

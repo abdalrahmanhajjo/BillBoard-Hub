@@ -62,8 +62,7 @@ export const campaignService = {
       }
     }
 
-    const mapped = toCampaign(campaign);
-    return mapped;
+    return toCampaign(campaign);
   },
 
   async update(

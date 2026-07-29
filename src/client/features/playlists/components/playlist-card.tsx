@@ -2,7 +2,7 @@
 
 import { Monitor, Trash2 } from 'lucide-react';
 import { PLAYLIST_STATUSES } from '@/shared/constants/playlist';
-import type { Creative } from '@/shared/types/creative';
+import type { AdCreative as Creative } from '@/shared/types/ad-creative';
 import type { Playlist } from '@/shared/types/playlist';
 import { CreativeThumb } from '@/client/features/playlists/components/creative-thumb';
 

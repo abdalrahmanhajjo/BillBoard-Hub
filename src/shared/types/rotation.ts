@@ -1,10 +1,10 @@
-import type { CreativeType } from '@/shared/types/creative';
+import type { AdCreativeType } from '@/shared/types/ad-creative';
 
 /** A single creative in a screen's rotation, with its resolved on-screen time. */
 export type RotationItem = {
   creativeId: string;
   name: string;
-  type: CreativeType;
+  type: AdCreativeType;
   assetUrl: string;
   durationSeconds: number;
   position: number;

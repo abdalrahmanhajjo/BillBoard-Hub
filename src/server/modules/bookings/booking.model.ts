@@ -6,7 +6,7 @@ import {
   PAYMENT_METHODS,
   PAYMENT_STATUSES,
 } from '@/shared/constants/booking';
-import { MAX_CREATIVE_VIDEO_DURATION_SECONDS } from '@/shared/constants/creative';
+import { MAX_CREATIVE_VIDEO_DURATION_SECONDS } from '@/shared/constants/ad-creative';
 import type { BookingRecord } from '@/server/modules/bookings/booking.types';
 
 const bookingSchema = new Schema(

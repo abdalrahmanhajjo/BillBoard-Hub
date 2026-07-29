@@ -2,14 +2,14 @@ import { scheduleRepository } from '@/server/modules/schedules/schedule.reposito
 import { toSchedule } from '@/server/modules/schedules/schedule.utils';
 import { playlistRepository } from '@/server/modules/playlists/playlist.repository';
 import { toPlaylist } from '@/server/modules/playlists/playlist.utils';
-import { creativeRepository } from '@/server/modules/creatives/creative.repository';
-import { toCreative } from '@/server/modules/creatives/creative.utils';
+import { adCreativeRepository as creativeRepository } from '@/server/modules/ad-creatives/ad-creative.repository';
+import { toAdCreative } from '@/server/modules/ad-creatives/ad-creative.utils';
 import { billboardRepository } from '@/server/modules/billboards/billboard.repository';
 import { buildRotationSummary } from '@/server/modules/rotation/rotation.utils';
 import { authorizationPolicy } from '@/shared/policies';
 import { BadRequestError, NotFoundError } from '@/shared/http/http-error';
 import { BILLBOARD_TYPES } from '@/shared/constants/billboard';
-import type { Creative } from '@/shared/types/creative';
+import type { AdCreative as Creative } from '@/shared/types/ad-creative';
 import type { NowPlaying, RotationSummary } from '@/shared/types/rotation';
 import type { Schedule } from '@/shared/types/schedule';
 import type { User } from '@/shared/types/user';
@@ -22,7 +22,7 @@ async function loadCreativesById(creativeIds: string[]): Promise<Map<string, Cre
   const docs = await creativeRepository.findByIds(distinct);
   return new Map(
     docs.map((doc) => {
-      const creative = toCreative(doc);
+      const creative = toAdCreative(doc);
       return [creative.id, creative];
     }),
   );

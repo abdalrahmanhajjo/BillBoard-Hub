@@ -9,5 +9,6 @@ export function toAdCreative(creative: AdCreativeDocument): AdCreative {
     fileType: creative.fileType as AdCreativeType,
     createdAt: creative.createdAt ? new Date(creative.createdAt).toISOString() : undefined,
     updatedAt: creative.updatedAt ? new Date(creative.updatedAt).toISOString() : undefined,
+    name: creative.name,
   };
 }

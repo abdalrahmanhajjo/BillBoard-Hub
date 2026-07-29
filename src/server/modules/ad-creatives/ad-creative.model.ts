@@ -6,6 +6,7 @@ const adCreativeSchema = new Schema<AdCreativeRecord>(
   {
     campaignId: { type: Schema.Types.ObjectId, ref: 'Campaign', required: true, index: true },
     url: { type: String, required: true, trim: true },
+    name: { type: String, required: true, trim: true },
     fileType: {
       type: String,
       enum: Object.values(AD_CREATIVE_TYPES),
