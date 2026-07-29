@@ -7,7 +7,7 @@ const ADMIN_ROUTES = {
 } as const;
 
 const ADVERTISER_ROUTES = {
-  DASHBOARD: '/user/advertiser',
+  DASHBOARD: '/user/advertiser/dashboard',
   CAMPAIGNS: '/user/advertiser/campaigns',
   BOOKINGS: '/user/advertiser/bookings',
   INVOICES: '/user/advertiser/invoices',
