@@ -27,12 +27,14 @@ export const PERMISSIONS = {
   BILLBOARDS_UPDATE: 'billboards.update',
   BILLBOARDS_DELETE: 'billboards.delete',
 
-  // Creative Permissions
-  CREATIVES_READ: 'creatives.read',
+  // Ad Creative Permissions
+  CREATIVES_READ_OWN: 'creatives.read.own',
+  CREATIVES_READ_ANY: 'creatives.read.any',
   CREATIVES_CREATE: 'creatives.create',
-  CREATIVES_UPDATE: 'creatives.update',
-  CREATIVES_DELETE: 'creatives.delete',
-  CREATIVES_MODERATE: 'creatives.moderate',
+  CREATIVES_UPDATE_OWN: 'creatives.update.own',
+  CREATIVES_UPDATE_ANY: 'creatives.update.any',
+  CREATIVES_DELETE_OWN: 'creatives.delete.own',
+  CREATIVES_DELETE_ANY: 'creatives.delete.any',
 
   // Playlist Permissions
   PLAYLISTS_READ: 'playlists.read',

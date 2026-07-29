@@ -22,10 +22,8 @@ export const ADMIN_PERMISSIONS: Permission[] = [
   PERMISSIONS.BILLBOARDS_UPDATE,
   PERMISSIONS.BILLBOARDS_DELETE,
 
-  // Creative Permissions (admins moderate all)
-  PERMISSIONS.CREATIVES_READ,
-  PERMISSIONS.CREATIVES_MODERATE,
-  PERMISSIONS.CREATIVES_DELETE,
+  // Ad Creative Permissions (admins moderate all)
+  PERMISSIONS.CREATIVES_READ_ANY,
 
   // Playlist Permissions (admins program digital screens)
   PERMISSIONS.PLAYLISTS_READ,

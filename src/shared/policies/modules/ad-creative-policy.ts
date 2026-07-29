@@ -4,47 +4,43 @@ import { PERMISSIONS } from '@/shared/constants/permissions/permissions';
 import { ForbiddenError } from '@/shared/http/http-error';
 
 function canReadAny(actor: User): boolean {
-  return can(actor.role, PERMISSIONS.READ_ADVERTISER_PROFILE_ANY);
+  return can(actor.role, PERMISSIONS.CREATIVES_READ_ANY);
 }
 
 function canReadOwn(actor: User, createdBy: string): boolean {
   if (createdBy !== actor.id) {
     return false;
   }
-  return can(actor.role, PERMISSIONS.READ_ADVERTISER_PROFILE_SELF);
+  return can(actor.role, PERMISSIONS.CREATIVES_READ_OWN);
 }
 
 function canDeleteOwn(actor: User, createdBy: string): boolean {
   if (createdBy !== actor.id) {
     return false;
   }
-  return can(actor.role, PERMISSIONS.DELETE_ADVERTISER_PROFILE_SELF);
+  return can(actor.role, PERMISSIONS.CREATIVES_DELETE_OWN);
 }
 
 function canDeleteAny(actor: User): boolean {
-  return can(actor.role, PERMISSIONS.DELETE_ADVERTISER_PROFILE_ANY);
+  return can(actor.role, PERMISSIONS.CREATIVES_DELETE_ANY);
 }
 
 function canUpdateOwn(actor: User, createdBy: string): boolean {
   if (createdBy !== actor.id) {
     return false;
   }
-  return can(actor.role, PERMISSIONS.UPDATE_ADVERTISER_PROFILE_SELF);
+  return can(actor.role, PERMISSIONS.CREATIVES_UPDATE_OWN);
 }
 
 function canUpdateAny(actor: User): boolean {
-  return can(actor.role, PERMISSIONS.UPDATE_ADVERTISER_PROFILE_ANY);
+  return can(actor.role, PERMISSIONS.CREATIVES_UPDATE_ANY);
 }
 
-export const advertiserProfilePolicy = {
-  assertCanCreate(actor: User, advertiserId: string): void {
-    assert(
-      actor.role,
-      PERMISSIONS.CREATE_ADVERTISER_PROFILE_SELF,
-      'You cannot create an advertiser profile.',
-    );
-    if (advertiserId !== actor.id) {
-      throw new ForbiddenError('You cannot create an advertiser profile for another user.');
+export const adCreativePolicy = {
+  assertCanCreate(actor: User, campainAdvertiser: string): void {
+    assert(actor.role, PERMISSIONS.CREATIVES_CREATE, 'You cannot upload ad creatives.');
+    if (campainAdvertiser !== actor.id) {
+      throw new ForbiddenError('You cannot add creatives to a campaign you do not own.');
     }
   },
 
@@ -54,14 +50,14 @@ export const advertiserProfilePolicy = {
   assertCanRead(actor: User, createdBy: string): boolean {
     if (canReadAny(actor)) return true;
     if (!canReadOwn(actor, createdBy)) {
-      throw new ForbiddenError('You cannot view an advertiser profile you do not own.');
+      throw new ForbiddenError('You cannot view creatives for a campaign you do not own.');
     }
     return true;
   },
   assertCanDelete(actor: User, createdBy: string): boolean {
     if (canDeleteAny(actor)) return true;
     if (!canDeleteOwn(actor, createdBy)) {
-      throw new ForbiddenError('You cannot delete an advertiser profile you do not own.');
+      throw new ForbiddenError('You cannot delete creatives for a campaign you do not own.');
     }
     return true;
   },
@@ -69,7 +65,7 @@ export const advertiserProfilePolicy = {
   assertCanUpdate(actor: User, createdBy: string): boolean {
     if (canUpdateAny(actor)) return true;
     if (!canUpdateOwn(actor, createdBy)) {
-      throw new ForbiddenError('You cannot update an advertiser profile you do not own.');
+      throw new ForbiddenError('You cannot update creatives for a campaign you do not own.');
     }
     return true;
   },
