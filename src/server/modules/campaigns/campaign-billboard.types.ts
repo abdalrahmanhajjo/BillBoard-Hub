@@ -1,4 +1,6 @@
+import { Schema } from 'mongoose';
+
 export interface CampaignBillboardRecord {
-  campaignId: string;
-  billboardId: string;
+  campaignId: Schema.Types.ObjectId;
+  billboardId: Schema.Types.ObjectId;
 }

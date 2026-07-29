@@ -20,8 +20,14 @@ export const campaignBillboardRepository = {
     await CampaignBillboardModel.bulkWrite(operations);
     return CampaignBillboardModel.find({ campaignId }).lean<CampaignBillboardDocument[]>().exec();
   },
+
   async findByCampaignId(campaignId: string): Promise<CampaignBillboardDocument[]> {
     await connectToDatabase();
     return CampaignBillboardModel.find({ campaignId }).lean<CampaignBillboardDocument[]>().exec();
+  },
+
+  async findByBillboardId(billboardId: string): Promise<CampaignBillboardDocument[]> {
+    await connectToDatabase();
+    return CampaignBillboardModel.find({ billboardId }).lean<CampaignBillboardDocument[]>().exec();
   },
 };

@@ -4,6 +4,8 @@ import { adCreativeService } from '@/server/modules/ad-creatives/ad-creative.ser
 import {
   createAdCreativeSchema,
   type CreateAdCreativeSchemaInput,
+  updateAdCreativeSchema,
+  type UpdateAdCreativeSchemaInput,
 } from '@/shared/contracts/ad-creative/ad-creative.schema';
 import type { User } from '@/shared/types/user';
 
@@ -23,15 +25,29 @@ export const adCreativeController = {
     }
   },
 
-  async listCreatives(actor: User, campaignId: string) {
-    if (!campaignId) {
-      return apiResponse.badRequest('Campaign id is required.');
-    }
+  async listCreatives(actor: User, campaignId?: string) {
     try {
+      if (!campaignId) {
+        const creatives = await adCreativeService.listMine(actor);
+        return apiResponse.ok({ creatives });
+      }
       const creatives = await adCreativeService.listByCampaign(actor, campaignId);
       return apiResponse.ok({ creatives });
     } catch (error) {
       return handleControllerError(error, 'Getting ad creatives failed.');
+    }
+  },
+
+  async getCreative(actor: User, creativeId: string) {
+    if (!creativeId) {
+      return apiResponse.badRequest('Creative id is required.');
+    }
+
+    try {
+      const creative = await adCreativeService.getById(actor, creativeId);
+      return apiResponse.ok({ creative });
+    } catch (error) {
+      return handleControllerError(error, 'Getting creative failed.');
     }
   },
 
@@ -52,6 +68,26 @@ export const adCreativeController = {
       return apiResponse.ok({ creatives });
     } catch (error) {
       return handleControllerError(error, 'Getting ad creatives failed.');
+    }
+  },
+
+  async updateCreative(actor: User, creativeId: string, payload: UpdateAdCreativeSchemaInput) {
+    if (!creativeId) {
+      return apiResponse.badRequest('Ad Creative id is required.');
+    }
+
+    const parsed = updateAdCreativeSchema.safeParse(payload);
+    if (!parsed.success) {
+      return apiResponse.badRequest(
+        validationMessage(parsed.error.issues, 'Invalid ad creative data.'),
+      );
+    }
+
+    try {
+      const creative = await adCreativeService.update(actor, creativeId, parsed.data);
+      return apiResponse.ok(creative);
+    } catch (error) {
+      return handleControllerError(error, 'Ad Creative update failed.');
     }
   },
 };

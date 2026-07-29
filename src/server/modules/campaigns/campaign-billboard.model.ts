@@ -3,8 +3,8 @@ import { CampaignBillboardRecord } from './campaign-billboard.types';
 
 const campaignBillboardSchema = new Schema<CampaignBillboardRecord>(
   {
-    campaignId: { type: String, required: true, index: true },
-    billboardId: { type: String, required: true, index: true },
+    campaignId: { type: Schema.Types.ObjectId, ref: 'Campaign', required: true, index: true },
+    billboardId: { type: Schema.Types.ObjectId, ref: 'Billboard', required: true, index: true },
   },
   {
     timestamps: true,

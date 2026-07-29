@@ -11,7 +11,6 @@ export type Campaign = {
   status: CampaignStatus;
   createdBy: string;
   createdAt?: string;
-  updatedAt?: string;
 };
 
 export type CampaignBillboardAssignment = {

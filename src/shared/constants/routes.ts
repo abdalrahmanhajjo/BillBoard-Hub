@@ -8,7 +8,7 @@ const ADMIN_ROUTES = {
 
 const ADVERTISER_ROUTES = {
   HOME: '/',
-  DASHBOARD: '/user/advertiser',
+  DASHBOARD: '/user/advertiser/dashboard',
   CAMPAIGNS: '/user/advertiser/campaigns',
   BOOKINGS: '/user/advertiser/bookings',
 } as const;

@@ -9,8 +9,12 @@ export const createCampaignSchema = z
       .min(2, 'Campaign name is required.')
       .max(200, 'Campaign name is too long.'),
     description: z.string().trim().max(2000, 'Description is too long.').optional(),
-    startDate: z.coerce.date(),
-    endDate: z.coerce.date(),
+    startDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+      message: 'Invalid start date.',
+    }),
+    endDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+      message: 'Invalid end date.',
+    }),
   })
   .refine((data) => data.startDate < data.endDate, {
     message: 'Start date must be before end date.',
@@ -26,8 +30,18 @@ export const updateCampaignSchema = z
       .max(200, 'Campaign name is too long.')
       .optional(),
     description: z.string().trim().max(2000, 'Description is too long.').optional(),
-    startDate: z.coerce.date().optional(),
-    endDate: z.coerce.date().optional(),
+    startDate: z
+      .string()
+      .refine((date) => !isNaN(Date.parse(date)), {
+        message: 'Invalid start date.',
+      })
+      .optional(),
+    endDate: z
+      .string()
+      .refine((date) => !isNaN(Date.parse(date)), {
+        message: 'Invalid end date.',
+      })
+      .optional(),
     status: z.enum(CAMPAIGN_STATUSES).optional(),
   })
   .refine((data) => Object.values(data).some((value) => value !== undefined), {
@@ -39,6 +53,4 @@ export const updateCampaignSchema = z
   });
 
 export type CreateCampaignSchemaInput = z.input<typeof createCampaignSchema>;
-export type CreateCampaignSchemaOutput = z.output<typeof createCampaignSchema>;
 export type UpdateCampaignSchemaInput = z.input<typeof updateCampaignSchema>;
-export type UpdateCampaignSchemaOutput = z.output<typeof updateCampaignSchema>;

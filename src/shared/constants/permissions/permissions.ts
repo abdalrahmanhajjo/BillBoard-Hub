@@ -9,6 +9,14 @@ export const PERMISSIONS = {
   USERS_DELETE_ANY: 'users.delete:any',
   USERS_DELETE_SELF: 'users.delete:self',
 
+  CREATE_ADVERTISER_PROFILE_SELF: 'advertiser.profile.create.self',
+  UPDATE_ADVERTISER_PROFILE_SELF: 'advertiser.profile.update.self',
+  UPDATE_ADVERTISER_PROFILE_ANY: 'advertiser.profile.update.any',
+  READ_ADVERTISER_PROFILE_SELF: 'advertiser.profile.read.self',
+  DELETE_ADVERTISER_PROFILE_SELF: 'advertiser.profile.delete.self',
+  DELETE_ADVERTISER_PROFILE_ANY: 'advertiser.profile.delete.any',
+  READ_ADVERTISER_PROFILE_ANY: 'advertiser.profile.read.any',
+
   // Dashboard Permissions
   DASHBOARD_ACCESS_ADMIN: 'dashboard.access:admin',
   DASHBOARD_ACCESS_ADVERTISER: 'dashboard.access:advertiser',
@@ -19,12 +27,14 @@ export const PERMISSIONS = {
   BILLBOARDS_UPDATE: 'billboards.update',
   BILLBOARDS_DELETE: 'billboards.delete',
 
-  // Creative Permissions
-  CREATIVES_READ: 'creatives.read',
+  // Ad Creative Permissions
+  CREATIVES_READ_OWN: 'creatives.read.own',
+  CREATIVES_READ_ANY: 'creatives.read.any',
   CREATIVES_CREATE: 'creatives.create',
-  CREATIVES_UPDATE: 'creatives.update',
-  CREATIVES_DELETE: 'creatives.delete',
-  CREATIVES_MODERATE: 'creatives.moderate',
+  CREATIVES_UPDATE_OWN: 'creatives.update.own',
+  CREATIVES_UPDATE_ANY: 'creatives.update.any',
+  CREATIVES_DELETE_OWN: 'creatives.delete.own',
+  CREATIVES_DELETE_ANY: 'creatives.delete.any',
 
   // Playlist Permissions
   PLAYLISTS_READ: 'playlists.read',
@@ -53,12 +63,6 @@ export const PERMISSIONS = {
   CAMPAIGNS_UPDATE_SELF: 'campaigns.update:self',
   CAMPAIGNS_ASSIGN_BILLBOARDS: 'campaigns.assign_billboards',
 
-  // Ad Creative Permissions (campaign ad creatives — distinct from the
-  // digital-screen CREATIVES_* module above)
-  AD_CREATIVES_CREATE: 'ad_creatives.create',
-  AD_CREATIVES_READ_ANY: 'ad_creatives.read:any',
-  AD_CREATIVES_READ_SELF: 'ad_creatives.read:self',
-  AD_CREATIVES_DELETE_SELF: 'ad_creatives.delete:self',
   // Payment Permissions
   PAYMENTS_CREATE: 'payments.create',
   PAYMENTS_READ: 'payments.read',

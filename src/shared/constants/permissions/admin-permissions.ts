@@ -10,6 +10,9 @@ export const ADMIN_PERMISSIONS: Permission[] = [
   PERMISSIONS.USERS_UPDATE_SELF,
   PERMISSIONS.USERS_DELETE_ANY,
 
+  // advertiser profile
+  PERMISSIONS.READ_ADVERTISER_PROFILE_ANY,
+
   // Dashboard Permissions
   PERMISSIONS.DASHBOARD_ACCESS_ADMIN,
 
@@ -19,10 +22,8 @@ export const ADMIN_PERMISSIONS: Permission[] = [
   PERMISSIONS.BILLBOARDS_UPDATE,
   PERMISSIONS.BILLBOARDS_DELETE,
 
-  // Creative Permissions (admins moderate all)
-  PERMISSIONS.CREATIVES_READ,
-  PERMISSIONS.CREATIVES_MODERATE,
-  PERMISSIONS.CREATIVES_DELETE,
+  // Ad Creative Permissions (admins moderate all)
+  PERMISSIONS.CREATIVES_READ_ANY,
 
   // Playlist Permissions (admins program digital screens)
   PERMISSIONS.PLAYLISTS_READ,
@@ -46,7 +47,6 @@ export const ADMIN_PERMISSIONS: Permission[] = [
 
   // Campaign & ad-creative Permissions (admins read all)
   PERMISSIONS.CAMPAIGNS_READ_ANY,
-  PERMISSIONS.AD_CREATIVES_READ_ANY,
   // Payment Permissions
   PERMISSIONS.PAYMENTS_READ,
   PERMISSIONS.PAYMENTS_RECONCILE,

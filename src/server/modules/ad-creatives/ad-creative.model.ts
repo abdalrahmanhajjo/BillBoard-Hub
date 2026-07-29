@@ -4,7 +4,7 @@ import { AdCreativeRecord } from './ad-creative.types';
 
 const adCreativeSchema = new Schema<AdCreativeRecord>(
   {
-    campaignId: { type: String, required: true, index: true },
+    campaignId: { type: Schema.Types.ObjectId, ref: 'Campaign', required: true, index: true },
     url: { type: String, required: true, trim: true },
     fileType: {
       type: String,
@@ -12,8 +12,6 @@ const adCreativeSchema = new Schema<AdCreativeRecord>(
       required: true,
       index: true,
     },
-    durationSeconds: { type: Number, min: 0 },
-    createdBy: { type: String, required: true, index: true },
   },
   {
     timestamps: true,

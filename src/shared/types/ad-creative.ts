@@ -8,7 +8,6 @@ export type AdCreative = {
   url: string;
   fileType: AdCreativeType;
   durationSeconds?: number;
-  createdBy: string;
   createdAt?: string;
   updatedAt?: string;
 };

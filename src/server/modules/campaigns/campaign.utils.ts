@@ -6,11 +6,10 @@ export function toCampaign(campaign: CampaignDocument): Campaign {
     id: String(campaign._id),
     name: campaign.name,
     description: campaign.description ?? undefined,
-    startDate: new Date(campaign.startDate).toISOString(),
-    endDate: new Date(campaign.endDate).toISOString(),
+    startDate: campaign.startDate,
+    endDate: campaign.endDate,
     status: campaign.status as CampaignStatus,
-    createdBy: campaign.createdBy,
+    createdBy: campaign.createdBy.toString(),
     createdAt: campaign.createdAt ? new Date(campaign.createdAt).toISOString() : undefined,
-    updatedAt: campaign.updatedAt ? new Date(campaign.updatedAt).toISOString() : undefined,
   };
 }

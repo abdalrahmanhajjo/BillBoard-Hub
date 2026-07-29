@@ -6,8 +6,8 @@ const campaignSchema = new Schema<CampaignRecord>(
   {
     name: { type: String, required: true, trim: true },
     description: { type: String, trim: true },
-    startDate: { type: Date, required: true },
-    endDate: { type: Date, required: true },
+    startDate: { type: String, required: true },
+    endDate: { type: String, required: true },
     status: {
       type: String,
       enum: Object.values(CAMPAIGN_STATUSES),
@@ -16,7 +16,8 @@ const campaignSchema = new Schema<CampaignRecord>(
       index: true,
     },
     createdBy: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'Advertiser',
       required: true,
       index: true,
     },

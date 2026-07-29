@@ -1,8 +1,8 @@
 import { adCreativePolicy } from './modules/ad-creative-policy';
 import { billboardPolicy } from './modules/billboard-policy';
+import { advertiserProfilePolicy } from './modules/advertiser-profile-policy';
 import { bookingPolicy } from './modules/booking-policy';
 import { campaignPolicy } from './modules/campaign-policy';
-import { creativePolicy } from './modules/creative-policy';
 import { dashboardPolicy } from './modules/dashboard-policy';
 import { impressionPolicy } from './modules/impression-policy';
 import { playlistPolicy } from './modules/playlist-policy';
@@ -12,9 +12,9 @@ import { paymentPolicy } from './modules/payment-policy';
 
 export const authorizationPolicy = {
   user: userPolicy,
+  advertiserProfile: advertiserProfilePolicy,
   dashboard: dashboardPolicy,
   billboard: billboardPolicy,
-  creative: creativePolicy,
   playlist: playlistPolicy,
   schedule: schedulePolicy,
   impression: impressionPolicy,

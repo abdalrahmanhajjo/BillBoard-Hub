@@ -1,7 +1,7 @@
+import { Schema } from 'mongoose';
+
 export interface AdCreativeRecord {
-  campaignId: string;
+  campaignId: Schema.Types.ObjectId;
   url: string;
   fileType: 'image' | 'video';
-  durationSeconds?: number;
-  createdBy: string;
 }
