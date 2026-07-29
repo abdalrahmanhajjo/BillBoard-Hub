@@ -3,7 +3,7 @@ import { Navbar } from '@/client/features/home/components/navbar';
 import { Footer } from '@/client/features/home/components/footer';
 import { PageBackground } from '@/client/features/home/components/page-background';
 import { redirect } from 'next/navigation';
-import { ROLE_LANDING_ROUTES } from '@/shared/constants/routes';
+import { ADVERTISER_ROUTES, ADMIN_ROUTES } from '@/shared/constants/routes';
 import { USER_ROLES } from '@/shared/constants/user-roles';
 import { JsonLd } from '@/client/ui/components/seo/json-ld';
 import { organizationSchema, websiteSchema } from '@/shared/seo/schema';
@@ -17,7 +17,11 @@ export default async function PublicLayout({
 
   if (session?.user?.id && session.user.isActive) {
     if (session.user.role === USER_ROLES.ADMIN) {
-      redirect(ROLE_LANDING_ROUTES.admin);
+      redirect(ADMIN_ROUTES.DASHBOARD);
+    }
+
+    if (session.user.role === USER_ROLES.ADVERTISER) {
+      redirect(ADVERTISER_ROUTES.DASHBOARD);
     }
   }
 

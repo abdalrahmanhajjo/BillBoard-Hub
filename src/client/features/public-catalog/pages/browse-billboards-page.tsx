@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 import type { PublicBillboard } from '@/shared/types/billboard';
 import { BILLBOARD_TYPES } from '@/shared/constants/billboard';
-import { BillboardGrid } from '@/client/features/public-catalog/components/billboard-grid';
 import { Button } from '@/client/ui/components/ui/button';
 import { Checkbox } from '@/client/ui/components/ui/checkbox';
 import {
@@ -36,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/client/ui/components/ui/select';
+import { BillBoardList } from '../components/billbaord-list';
 
 const PAGE_SIZE = 9;
 
@@ -141,7 +141,7 @@ export function BrowseBillboardsPage({
 
   return (
     <section className="text-zinc-950">
-      <div className="mx-auto w-full max-w-[1600px] px-4 pt-7 pb-28 sm:px-8 sm:py-10 lg:px-16 lg:py-12 xl:px-24">
+      <div className="mx-auto w-full px-2 pt-7 pb-28 sm:px-8 sm:py-10">
         <div className="mb-6 sm:hidden">
           <h1 className="text-[2rem] leading-[1.05] font-semibold tracking-[-0.04em] text-zinc-950">
             Lebanon Billboard Locations
@@ -161,17 +161,22 @@ export function BrowseBillboardsPage({
           onSubmit={submitSearch}
           className="flex items-center gap-2 rounded-2xl border border-zinc-200 bg-white p-2 shadow-[0_10px_35px_rgba(24,24,27,.05)]"
         >
-          <Search className="ml-2 size-5 shrink-0 text-zinc-400 sm:ml-3" aria-hidden />
-          <label htmlFor="catalog-search" className="sr-only">
-            Search billboards
-          </label>
-          <Input
-            id="catalog-search"
-            value={draftQuery}
-            onChange={(event) => setDraftQuery(event.target.value)}
-            placeholder="Search by city, road, or billboard name"
-            className="h-12 min-w-0 flex-1 bg-transparent px-1 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 sm:text-base"
-          />
+          <div className="relative flex w-full">
+            <Search
+              className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 shrink-0 -translate-y-1/2 text-zinc-400"
+              aria-hidden
+            />
+            <label htmlFor="catalog-search" className="sr-only">
+              Search billboards
+            </label>
+            <Input
+              id="catalog-search"
+              value={draftQuery}
+              onChange={(event) => setDraftQuery(event.target.value)}
+              placeholder="Search by city, road, or billboard name"
+              className="h-11 pl-10"
+            />
+          </div>
           <Button
             type="submit"
             className="inline-flex h-12 shrink-0 items-center justify-center rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700 sm:px-7"
@@ -328,7 +333,7 @@ export function BrowseBillboardsPage({
                 </div>
               </div>
 
-              <BillboardGrid
+              <BillBoardList
                 billboards={visibleBillboards}
                 emptyMessage={
                   searchQuery
