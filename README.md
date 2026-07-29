@@ -1,35 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Boardly — BillBoard Hub
 
-## Getting Started
+Boardly is a full-stack billboard marketplace and operations platform for Lebanon. It combines a
+public inventory catalog with role-based administration, advertiser reservations, creative
+management, digital-screen playlists, scheduling, playback rotation, and impression analytics.
 
-First, run the development server:
+## What is implemented
+
+- Public marketing site and database-backed billboard catalog
+- Static and digital billboard inventory management
+- Advertiser reservation requests, pricing, conflict checks, moderation, and cancellation
+- Creative uploads and admin moderation
+- Digital-screen playlists and non-overlapping schedules
+- Public now-playing and impression-ingestion endpoints
+- Admin impression analytics and playback preview
+- Credentials authentication with admin and advertiser roles
+
+## Technology
+
+- Next.js 16 App Router and React 19
+- TypeScript and Zod
+- Tailwind CSS 4 and customized shadcn components
+- Auth.js 5 with JWT sessions
+- MongoDB, Mongoose, and the Auth.js MongoDB adapter
+- React Hook Form, Motion, and ImageKit
+
+## Routes
+
+- Guest
+  - `/login`
+  - `/register`
+  - `/forgot-password`
+- Authenticated Dashboard
+  - `/user/admin/*`
+  - `/user/advertiser/*`
+
+## Quick start
+
+Prerequisites: Node.js 20+, Corepack, pnpm, and MongoDB.
 
 ```bash
+corepack enable
 pnpm install
+cp .env.example .env.local
 pnpm dev
 ```
 
-This project uses [pnpm](https://pnpm.io) — the version is pinned via the
-`packageManager` field in `package.json`, so [Corepack](https://nodejs.org/api/corepack.html)
-will use the right one automatically.
+The application is available at [http://localhost:3000](http://localhost:3000).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Required environment configuration is documented in
+[Configuration](docs/reference/configuration.md).
 
-You can start editing the page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
+## Validation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm quality
+pnpm audit --prod
+pnpm peers check
+pnpm build
+```
 
-## Learn More
+## Documentation
 
-To learn more about Next.js, take a look at the following resources:
+Start with the [documentation index](docs/README.md).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Area                            | Document                                                                         |
+| ------------------------------- | -------------------------------------------------------------------------------- |
+| Project documentation           | [Project documentation](docs/PROJECT_DOCUMENTATION.md)                           |
+| Complete developer handover     | [Developer handover](docs/HANDOVER.md)                                           |
+| System design                   | [Architecture](docs/architecture/overview.md)                                    |
+| Domain behavior                 | [Modules](docs/architecture/modules.md)                                          |
+| Collections and relationships   | [Data model](docs/architecture/data-model.md)                                    |
+| HTTP endpoints                  | [API reference](docs/reference/api.md)                                           |
+| Environment variables           | [Configuration](docs/reference/configuration.md)                                 |
+| Authentication and permissions  | [Authentication and security](docs/security/authentication-and-authorization.md) |
+| Local workflow                  | [Development guide](docs/guides/development.md)                                  |
+| Quality assurance               | [Testing strategy](docs/guides/testing.md)                                       |
+| Production delivery             | [Deployment guide](docs/guides/deployment.md)                                    |
+| Incident response               | [Operations runbook](docs/operations/runbook.md)                                 |
+| Current gaps                    | [Known limitations](docs/known-limitations.md)                                   |
+| SEO research and implementation | [SEO documentation](docs/seo/README.md)                                          |
+| Code cleanliness and refactors  | [Code quality audit](docs/code-quality/README.md)                                |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Repository structure
 
-## Deploy on Vercel
+```text
+src/
+├── app/                  # Thin pages, layouts, and route handlers
+├── client/features/      # Feature-owned UI, hooks, services, and pages
+├── client/ui/            # Shared customized shadcn primitives
+├── server/db/            # Database connection helpers
+├── server/http/          # API envelopes and error normalization
+├── server/modules/       # Domain controllers, services, repositories, and models
+└── shared/               # Contracts, constants, policies, pricing, types, and utilities
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contribution policy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before modifying the system. App Router files stay thin,
+business logic belongs in services, database access belongs in repositories, and cross-layer
+validation belongs in shared Zod contracts.
+
+## License
+
+No public license is currently declared. Treat this repository as proprietary unless the project
+owner specifies otherwise.
