@@ -1,6 +1,5 @@
-import { redirect } from 'next/navigation';
-import { ADVERTISER_ROUTES } from '@/shared/constants/routes';
+import { AdvertiserDashboardFeaturePage } from '@/client/features/dashboard/pages/advertiser-dashboard-page';
 
 export default function AdvertiserDashboardAliasPage() {
-  redirect(ADVERTISER_ROUTES.DASHBOARD);
+  return <AdvertiserDashboardFeaturePage />;
 }
