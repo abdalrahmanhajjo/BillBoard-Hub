@@ -18,6 +18,7 @@ import {
   PAYMENT_STATUSES,
   STRIPE_CHECKOUT_TTL_SECONDS,
 } from '@/shared/constants/payment';
+import { appUrl } from '@/shared/config/app-url';
 import { authorizationPolicy } from '@/shared/policies';
 import type { Currency } from '@/shared/types/currency';
 import type { CheckoutVerification, PaymentStatus } from '@/shared/types/payment';
@@ -219,7 +220,7 @@ export const paymentService = {
     const currency = booking.invoice.currency.toLowerCase() as Currency;
     const checkoutAttempt = (existingPayment?.checkoutAttempt ?? 0) + 1;
     const expiresAt = Math.floor(Date.now() / 1000) + STRIPE_CHECKOUT_TTL_SECONDS;
-    const baseUrl = process.env.NEXTAUTH_URL ?? 'http://localhost:3000';
+    const baseUrl = appUrl();
 
     const session = await stripe.checkout.sessions.create(
       {

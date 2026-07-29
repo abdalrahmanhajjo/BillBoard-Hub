@@ -10,6 +10,13 @@ const ADMIN_ROUTES = {
   IMPRESSIONS: '/user/admin/impressions',
   ADVERTISERS: '/user/admin/advertisers',
   USERS: '/user/admin/users',
+  // Company-side finance. Nested under the existing /user/admin prefix so the
+  // middleware guard and admin shell apply without a new protected root.
+  FINANCE: '/user/admin/finance',
+  FINANCE_EXPENSES: '/user/admin/finance/expenses',
+  FINANCE_PAYMENTS: '/user/admin/finance/payments',
+  FINANCE_REPORTS: '/user/admin/finance/reports',
+  OWNERS: '/user/admin/owners',
   SETTINGS: '/user/admin/settings',
 } as const;
 

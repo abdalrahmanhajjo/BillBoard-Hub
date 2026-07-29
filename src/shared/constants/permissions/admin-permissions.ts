@@ -61,4 +61,11 @@ export const ADMIN_PERMISSIONS: Permission[] = [
   PERMISSIONS.PAYMENTS_READ,
   PERMISSIONS.PAYMENTS_RECONCILE,
   PERMISSIONS.PAYMENTS_REFUND,
+
+  // Finance Permissions. Admin-only by design: no advertiser role may ever hold
+  // these, because they expose company margins and supplier costs.
+  PERMISSIONS.FINANCE_VIEW,
+  PERMISSIONS.FINANCE_CREATE,
+  PERMISSIONS.FINANCE_UPDATE,
+  PERMISSIONS.FINANCE_DELETE,
 ];

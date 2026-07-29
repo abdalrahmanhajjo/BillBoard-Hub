@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { request as playwrightRequest, type FullConfig } from '@playwright/test';
-import { buildAdvertiser } from './support/auth';
+import { buildAdvertiser, registerAdvertiser } from './support/auth';
 
 export const STORAGE_STATE = path.join(process.cwd(), 'e2e/.auth/advertiser.json');
 
@@ -17,22 +17,10 @@ export default async function globalSetup(config: FullConfig) {
   const advertiser = buildAdvertiser();
   const context = await playwrightRequest.newContext({ baseURL });
 
-  const registration = await context.post('/api/v1/auth/register', {
-    data: {
-      firstName: advertiser.firstName,
-      lastName: advertiser.lastName,
-      email: advertiser.email,
-      password: advertiser.password,
-      confirmPassword: advertiser.password,
-      acceptTerms: true,
-    },
-  });
-
-  if (!registration.ok()) {
-    throw new Error(
-      `e2e setup: registration failed (${registration.status()}): ${await registration.text()}`,
-    );
-  }
+  // Registers through the shared helper rather than a second copy of the
+  // payload: this setup previously drifted from the real contract and broke
+  // every e2e run when registration started requiring the company fields.
+  await registerAdvertiser(context, advertiser);
 
   const login = await context.post('/api/v1/auth/login', {
     data: { email: advertiser.email, password: advertiser.password },

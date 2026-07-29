@@ -99,11 +99,6 @@ export const createBookingSchema = z
     paymentMethod: z.enum(RESERVATION_PAYMENT_METHODS, {
       error: 'Choose Visa through Stripe or Cash / Whish.',
     }),
-    stripeSetupIntentId: z
-      .string()
-      .trim()
-      .regex(/^seti_[A-Za-z0-9_]+$/, 'Verify your Visa details securely with Stripe.')
-      .optional(),
     invoice: z.object({
       currency: z.enum(BOOKING_CURRENCIES).default('USD'),
       email: z.email('Enter a valid invoice email address.').trim().toLowerCase(),
@@ -121,20 +116,6 @@ export const createBookingSchema = z
     path: ['endDate'],
   })
   .superRefine((data, context) => {
-    if (data.paymentMethod === PAYMENT_METHODS.CARD && !data.stripeSetupIntentId) {
-      context.addIssue({
-        code: 'custom',
-        message: 'Verify your Visa details securely with Stripe before submitting.',
-        path: ['stripeSetupIntentId'],
-      });
-    }
-    if (data.paymentMethod !== PAYMENT_METHODS.CARD && data.stripeSetupIntentId) {
-      context.addIssue({
-        code: 'custom',
-        message: 'Stripe card details are only valid when Visa is selected.',
-        path: ['stripeSetupIntentId'],
-      });
-    }
     if (data.creativeUrl && !data.creativeType) {
       context.addIssue({
         code: 'custom',

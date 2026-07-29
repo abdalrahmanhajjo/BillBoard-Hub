@@ -66,19 +66,20 @@ const heroContent: HeroContent = {
   ],
 };
 
-// These brands intentionally use the local generated wordmark treatment. Add a
-// `logo` path only after the matching file exists in `public/brands/`; this
-// avoids failed asset requests while keeping the carousel data API extensible.
+// Each brand points at its real logo asset in `public/brands/` (see the README
+// there for sourcing and rights notes). Add a `logo` path only after the
+// matching file exists; entries without one fall back to the generated wordmark
+// instead of requesting a missing asset.
 const brands: BrandItem[] = [
-  { name: 'alfa' },
-  { name: 'touch' },
-  { name: 'ABC' },
-  { name: 'Spinneys' },
-  { name: 'BeitMisk' },
-  { name: 'OMT' },
-  { name: 'CMA CGM' },
-  { name: 'mtv' },
-  { name: 'KIA' },
+  { name: 'alfa', logo: '/brands/alfa.png' },
+  { name: 'touch', logo: '/brands/touch.svg' },
+  { name: 'ABC', logo: '/brands/abc.svg' },
+  { name: 'Spinneys', logo: '/brands/spinneys.png' },
+  { name: 'BeitMisk', logo: '/brands/beitmisk.png' },
+  { name: 'OMT', logo: '/brands/omt.svg' },
+  { name: 'CMA CGM', logo: '/brands/cma-cgm.svg' },
+  { name: 'mtv', logo: '/brands/mtv.svg' },
+  { name: 'KIA', logo: '/brands/kia.svg' },
 ];
 
 const howItWorksSteps: HowItWorksStep[] = [

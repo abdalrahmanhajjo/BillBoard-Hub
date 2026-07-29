@@ -67,6 +67,16 @@ Login body:
 { "email": "rami@example.com", "password": "correct-horse-battery" }
 ```
 
+## Health
+
+| Method | Path      | Authorization | Description                        |
+| ------ | --------- | ------------- | ---------------------------------- |
+| `GET`  | `/health` | Public        | Liveness plus a MongoDB ping check |
+
+Returns `200` with `"status":"ok"`, or `503` with `"status":"degraded"` when the database is
+unreachable. The body reports environment, region, short commit SHA, and check latency — never
+secrets — so an uptime monitor can poll it unauthenticated.
+
 ## Public billboards
 
 | Method | Path                                            | Description                  |
@@ -183,9 +193,10 @@ Create body:
 
 Valid objectives: `awareness`, `product_launch`, `store_visits`, `engagement`.
 
-New reservations accept `card` (Visa through Stripe) or `e_wallet` (Cash/Whish). A card request
-must include the `stripeSetupIntentId` returned after Stripe Elements completes verification.
-Legacy booking records may still contain `bank_transfer` or `cash`.
+New reservations accept `card` (Visa through Stripe) or `e_wallet` (Cash/Whish). This is an
+intended payment method only — no card data is collected at request time, and a card reservation is
+charged through Stripe Checkout after an administrator approves it. Legacy booking records may
+still contain `bank_transfer` or `cash`.
 
 Valid booking statuses: `pending`, `approved`, `rejected`, `completed`, `cancelled`.
 
@@ -208,7 +219,6 @@ the billboard's date capacity.
 
 | Method  | Path                                  | Authorization    | Description                                        |
 | ------- | ------------------------------------- | ---------------- | -------------------------------------------------- |
-| `POST`  | `/payments/setup`                     | Advertiser       | Create a SetupIntent for Step 3 Visa verification  |
 | `POST`  | `/payments/checkout`                  | Advertiser       | Create/reuse Checkout for an approved card booking |
 | `GET`   | `/payments/{bookingId}`               | Owner/admin      | Read the local payment record                      |
 | `PATCH` | `/payments/{bookingId}`               | Admin            | Reconcile an offline payment                       |

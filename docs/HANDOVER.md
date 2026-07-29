@@ -115,7 +115,7 @@ Before diagnosing application code, confirm MongoDB is running and the database 
 | `NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT`  | Uploads only           | ImageKit delivery endpoint                   |
 | `STRIPE_SECRET_KEY`                  | Card payments          | Server-side Stripe API key                   |
 | `STRIPE_WEBHOOK_SECRET`              | Card payments          | Stripe webhook signature verification        |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Card payments          | Public key used by Stripe Elements           |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Unused                 | Reserved; Checkout runs as a server redirect |
 
 Generate `AUTH_SECRET` with:
 
@@ -314,10 +314,10 @@ Do not treat the following as production guarantees:
 - Account deactivation does not immediately revoke an existing JWT session.
 - Reservation approval is application-level and can race under simultaneous approvals.
 - No automated unit, integration, or end-to-end tests exist.
-- There is no migration framework, health endpoint, background job runner, or structured tracing.
+- There is no background job runner or structured tracing.
 - Public and some internal lists lack pagination.
-- Visa details are verified in reservation Step 3 with Stripe Elements, and approved reservations
-  are charged through Stripe Checkout. Cash/Whish remains manually reconciled.
+- No card details are collected before approval; approved reservations are charged through Stripe
+  Checkout. Cash/Whish remains manually reconciled.
 - Password recovery is a placeholder.
 - Playlist creation does not require every creative to be approved.
 - Delete operations do not consistently enforce cross-module cascades.

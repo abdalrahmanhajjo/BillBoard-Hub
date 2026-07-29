@@ -27,8 +27,6 @@ import type { BillboardType } from '@/shared/types/billboard';
 import type { Booking, BookingStatus } from '@/shared/types/booking';
 import type { User } from '@/shared/types/user';
 import { permissionDenied } from '@/shared/messages/user-messages';
-import { paymentSetupService } from '@/server/modules/payments/payment-setup.service';
-import { PAYMENT_METHODS } from '@/shared/constants/booking';
 
 function todayIsoDate(): string {
   return new Date().toISOString().slice(0, 10);
@@ -89,11 +87,9 @@ export const bookingService = {
     }
 
     const pricing = computeBookingPricing(billboard.monthlyPrice, days);
-    const stripeSetup =
-      input.paymentMethod === PAYMENT_METHODS.CARD
-        ? await paymentSetupService.verifyVisaSetup(input.stripeSetupIntentId ?? '', actor)
-        : undefined;
 
+    // No card is collected here: a request is only a request. Card details are
+    // entered in Stripe Checkout once an admin approves the dates.
     const record: BookingRecord = {
       billboardId: input.billboardId,
       advertiserId: actor.id,
@@ -110,7 +106,6 @@ export const bookingService = {
       billing: input.billing,
       company: input.company,
       paymentMethod: input.paymentMethod,
-      ...stripeSetup,
       paymentStatus: PAYMENT_STATUSES.PENDING,
       invoice: input.invoice,
       pricing: { ...pricing, currency: input.invoice.currency },

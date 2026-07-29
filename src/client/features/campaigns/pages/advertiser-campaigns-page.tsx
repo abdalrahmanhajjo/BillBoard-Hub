@@ -1,10 +1,18 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { Archive, Layers3, Megaphone, RefreshCw } from 'lucide-react';
 
 import { CreateCampaignForm } from '@/client/features/campaigns/components/create-campaign-form';
 import { CampaignList } from '@/client/features/campaigns/components/campaign-list';
 import { campaignClientService } from '@/client/features/campaigns/services/campaign-client.service';
+import {
+  SectionCard,
+  StatCard,
+  WorkspacePage,
+} from '@/client/features/dashboard/components/workspace-page';
+import { Button } from '@/client/ui/components/ui/button';
+import { CAMPAIGN_STATUSES } from '@/shared/constants/campaign';
 import type { Campaign } from '@/shared/types/campaign';
 
 type LoadStatus = 'loading' | 'ready' | 'error';
@@ -53,31 +61,70 @@ export function AdvertiserCampaignsPage() {
     };
   }, []);
 
+  const active = campaigns.filter(
+    (campaign) => campaign.status === CAMPAIGN_STATUSES.ACTIVE,
+  ).length;
+
   return (
-    <section className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 py-10">
-      <header className="space-y-1">
-        <h1 className="text-3xl font-semibold tracking-tight">Campaigns</h1>
-        <p className="text-muted-foreground text-sm">
-          Create campaigns and assign billboards to organize your advertising activity.
-        </p>
-      </header>
+    <WorkspacePage
+      eyebrow="Advertising"
+      title="Campaigns"
+      description="Group billboards under a campaign so briefs, creatives, and reporting stay together."
+      actions={
+        <Button variant="outline" onClick={loadCampaigns} disabled={status === 'loading'}>
+          <RefreshCw
+            className={status === 'loading' ? 'size-4 animate-spin' : 'size-4'}
+            aria-hidden
+          />
+          Refresh
+        </Button>
+      }
+      canvas
+    >
+      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <StatCard
+          index={0}
+          icon={Megaphone}
+          accent="bg-cyan-50 text-cyan-700"
+          label="Active campaigns"
+          value={String(active)}
+          hint="Currently running"
+        />
+        <StatCard
+          index={1}
+          icon={Layers3}
+          accent="bg-blue-50 text-blue-700"
+          label="Total campaigns"
+          value={String(campaigns.length)}
+          hint="All time"
+        />
+        <StatCard
+          index={2}
+          icon={Archive}
+          accent="bg-muted text-muted-foreground"
+          label="Not running"
+          value={String(campaigns.length - active)}
+          hint="Draft, paused, or finished"
+        />
+      </div>
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-        <div className="space-y-4">
-          <h2 className="text-lg font-medium">New campaign</h2>
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+        <SectionCard
+          title="New campaign"
+          description="Name the campaign and set the window it should cover."
+        >
           <CreateCampaignForm onCreated={loadCampaigns} />
-        </div>
+        </SectionCard>
 
-        <div className="space-y-4">
-          <h2 className="text-lg font-medium">Your campaigns</h2>
+        <SectionCard title="Your campaigns" description="Everything you have created so far.">
           <CampaignList
             campaigns={campaigns}
             isLoading={status === 'loading'}
             error={status === 'error' ? error : null}
             onRefresh={loadCampaigns}
           />
-        </div>
+        </SectionCard>
       </div>
-    </section>
+    </WorkspacePage>
   );
 }

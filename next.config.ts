@@ -31,17 +31,36 @@ const SECURITY_HEADERS = [
   { key: 'X-DNS-Prefetch-Control', value: 'off' },
 ];
 
+/**
+ * Every uploaded billboard image and creative is served from the configured
+ * ImageKit account, and `next/image` refuses any host it was not told about.
+ * The host is derived from the same variable the uploader uses so a deployment
+ * cannot allow-list one account while uploading to another.
+ */
+function imageKitHostname(): string | null {
+  const endpoint = process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT?.trim();
+  if (!endpoint) return null;
+
+  try {
+    return new URL(endpoint).hostname;
+  } catch {
+    return null;
+  }
+}
+
+const REMOTE_IMAGE_HOSTS = ['images.unsplash.com', imageKitHostname() ?? 'ik.imagekit.io'].filter(
+  (hostname, index, all) => all.indexOf(hostname) === index,
+);
+
 const nextConfig: NextConfig = {
   // Hides the framework version from responses.
   poweredByHeader: false,
 
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
-    ],
+    remotePatterns: REMOTE_IMAGE_HOSTS.map((hostname) => ({
+      protocol: 'https' as const,
+      hostname,
+    })),
   },
 
   async headers() {

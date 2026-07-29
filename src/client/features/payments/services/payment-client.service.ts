@@ -3,14 +3,6 @@ import type { Booking, PaymentStatus as BookingPaymentStatus } from '@/shared/ty
 import type { CheckoutVerification, Payment } from '@/shared/types/payment';
 
 export const paymentClientService = {
-  /** Create a Stripe SetupIntent for secure Visa collection in reservation Step 3. */
-  createCardSetup() {
-    return apiRequest<{ clientSecret: string; setupIntentId: string }>('/api/v1/payments/setup', {
-      method: 'POST',
-      credentials: 'include',
-    });
-  },
-
   /** Create (or reuse) a Stripe Checkout session for an approved booking. */
   createCheckoutSession(bookingId: string) {
     return apiRequest<{ url: string }>('/api/v1/payments/checkout', {

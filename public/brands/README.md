@@ -1,36 +1,38 @@
 # Brand logos ("Trusted by leading brands and agencies")
 
-The home page logo strip uses generated local wordmarks by default. This avoids
-requesting files that are not present and keeps the page free of asset 404s.
+The home page logo strip renders these files. Each one is the company's real
+logo, taken from the owner's own site (or, where the site ships no usable
+asset, from Wikimedia Commons).
 
-## Expected files
+## Current files
 
-If the project has permission to display a company's real logo, drop it here and
-then add its `logo` path in `src/client/features/home/data/homepage.ts`:
+| Company  | File           | Source                                              |
+| -------- | -------------- | --------------------------------------------------- |
+| alfa     | `alfa.png`     | alfa.com.lb                                         |
+| touch    | `touch.svg`    | touch.com.lb                                        |
+| ABC      | `abc.svg`      | shopwithabc.com (white variant recoloured to black) |
+| Spinneys | `spinneys.png` | spinneyslebanon.com                                 |
+| BeitMisk | `beitmisk.png` | beitmisk.com                                        |
+| OMT      | `omt.svg`      | omt.com.lb                                          |
+| CMA CGM  | `cma-cgm.svg`  | Wikimedia Commons (`CMA CGM logo.svg`)              |
+| mtv      | `mtv.svg`      | mtv.com.lb                                          |
+| KIA      | `kia.svg`      | Wikimedia Commons (`KIA logo3.svg`, 2021 identity)  |
 
-| Company  | File           |
-| -------- | -------------- |
-| Alfa     | `alfa.svg`     |
-| touch    | `touch.svg`    |
-| ABC      | `abc.svg`      |
-| Spinneys | `spinneys.svg` |
-| BeitMisk | `beitmisk.svg` |
-| OMT      | `omt.svg`      |
-| CMA CGM  | `cma-cgm.svg`  |
-| MTV      | `mtv.svg`      |
-| KIA      | `kia.svg`      |
+Paths are wired in `src/client/features/home/data/homepage.ts`.
 
 ## Guidelines
 
 - **Format:** prefer `.svg` (crisp at any size). PNG works too — if you use a
   different extension, update the matching `logo:` path in `homepage.ts`.
-- **Color:** single-color or full-color both work. The strip renders logos in
-  grayscale and reveals full color on hover, so a solid dark or monochrome logo
-  looks best.
+- **Color:** ship the variant that reads on a white strip. Knock-out (white)
+  logos disappear there; use the brand's positive/dark variant instead. The
+  strip renders logos in grayscale and reveals full color on hover.
 - **Padding:** trim surrounding whitespace so logos sit on a consistent visual
   height (the strip fixes height at ~28–32px and lets width flow).
 - **Rights:** only use logos you have permission to display. Client/partner
-  "trusted by" walls are common, but confirm usage rights per brand.
+  "trusted by" walls are common, but confirm usage rights per brand — and only
+  list companies that are actually customers.
 
-Do not add a `logo` path before its file exists. To add or remove a company,
-edit the `brands` array in `src/client/features/home/data/homepage.ts`.
+Do not add a `logo` path before its file exists; brands without one fall back to
+a generated wordmark. To add or remove a company, edit the `brands` array in
+`src/client/features/home/data/homepage.ts`.

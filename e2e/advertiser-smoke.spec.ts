@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test';
 
 const ADVERTISER_ROUTES = [
-  { path: '/user/advertiser', heading: /dashboard/i },
+  // The overview leads with a greeting rather than the word "Dashboard", which
+  // is the sidebar's label for it.
+  { path: '/user/advertiser', heading: /welcome back/i },
   { path: '/user/advertiser/campaigns', heading: /campaigns/i },
   { path: '/user/advertiser/bookings', heading: /reservations/i },
   { path: '/user/advertiser/creatives', heading: /creatives/i },

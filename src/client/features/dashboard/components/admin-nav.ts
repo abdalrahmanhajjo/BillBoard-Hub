@@ -1,4 +1,5 @@
 import {
+  Banknote,
   Building2,
   CalendarCheck,
   CalendarClock,
@@ -7,8 +8,10 @@ import {
   MapPinned,
   Megaphone,
   MonitorPlay,
+  Receipt,
   Settings,
   TrendingUp,
+  Wallet,
   UserRound,
 } from 'lucide-react';
 import { ADMIN_ROUTES } from '@/shared/constants/routes';
@@ -40,6 +43,16 @@ export const ADMIN_NAV: WorkspaceNavGroup[] = [
     items: [
       { label: 'Campaigns', href: ADMIN_ROUTES.CAMPAIGNS, icon: Megaphone },
       { label: 'Reservations', href: ADMIN_ROUTES.BOOKINGS, icon: CalendarCheck },
+    ],
+  },
+  {
+    label: 'Finance',
+    items: [
+      { label: 'Overview', href: ADMIN_ROUTES.FINANCE, icon: Wallet },
+      { label: 'Expenses', href: ADMIN_ROUTES.FINANCE_EXPENSES, icon: Receipt },
+      { label: 'Payments', href: ADMIN_ROUTES.FINANCE_PAYMENTS, icon: Banknote },
+      { label: 'Profitability', href: ADMIN_ROUTES.FINANCE_REPORTS, icon: TrendingUp },
+      { label: 'Billboard owners', href: ADMIN_ROUTES.OWNERS, icon: Building2 },
     ],
   },
   {

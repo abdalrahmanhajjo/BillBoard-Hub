@@ -1,0 +1,20 @@
+# Files the Vercel CLI must never upload into a deployment.
+#
+# `vercel deploy` uploads the working directory, and it does NOT apply
+# .gitignore to dotfiles: without this list a local .env is baked into the
+# deployment source, where it both overrides the project's configured
+# environment variables and leaves credentials sitting in the build.
+# Environment values must come from the Vercel project settings only.
+.env
+.env.*
+!.env.example
+
+# Not part of the running application.
+docs/
+e2e/
+test-results/
+playwright-report/
+.github/
+.claude/
+migrations/
+scripts/

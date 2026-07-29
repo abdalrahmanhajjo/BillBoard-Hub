@@ -4,6 +4,7 @@ import { userRepository } from '@/server/modules/users/user.repository';
 import { userService } from '@/server/modules/users/user.service';
 import { mailer } from '@/server/mail/mailer';
 import { buildPasswordResetEmail } from '@/server/mail/templates/password-reset-email';
+import { absoluteAppUrl } from '@/shared/config/app-url';
 import { BadRequestError } from '@/shared/http/http-error';
 import type {
   ForgotPasswordSchemaOutput,
@@ -42,13 +43,7 @@ function hashToken(token: string): string {
 }
 
 function resetUrlFor(token: string): string {
-  const baseUrl = (
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    process.env.NEXTAUTH_URL ??
-    'http://localhost:3000'
-  ).replace(/\/+$/, '');
-
-  return `${baseUrl}/reset-password?token=${encodeURIComponent(token)}`;
+  return absoluteAppUrl(`/reset-password?token=${encodeURIComponent(token)}`);
 }
 
 /**

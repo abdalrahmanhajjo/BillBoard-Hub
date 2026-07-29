@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useForm, useWatch, type UseFormRegisterReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
@@ -53,10 +53,6 @@ import {
 import { bookingClientService } from '@/client/features/bookings/services/booking-client.service';
 import { trackEvent } from '@/client/features/analytics/lib/track-event';
 import { Card } from '@/client/ui/components/ui/card';
-import {
-  VisaPaymentDetails,
-  type ConfirmVisaSetup,
-} from '@/client/features/payments/components/visa-payment-details';
 
 type Viewer = { fullName: string; email: string; role: string } | null;
 
@@ -67,7 +63,7 @@ type ReservationCheckoutPageProps = {
   initialEnd?: string;
 };
 
-const STEPS = ['Booking Details', 'Review & Confirm', 'Payment & Invoice', 'Confirmation'];
+const STEPS = ['Booking Details', 'Review & Confirm', 'Invoice & Terms', 'Confirmation'];
 
 const BOOKING_DETAILS_FIELDS: (keyof CreateBookingSchemaInput)[] = [
   'billboardId',
@@ -103,13 +99,13 @@ const PAYMENT_OPTIONS: {
   {
     value: PAYMENT_METHODS.CARD,
     label: 'Visa through Stripe',
-    hint: 'Secure online payment',
+    hint: 'Pay online after approval',
     icon: CreditCard,
   },
   {
     value: PAYMENT_METHODS.E_WALLET,
     label: 'Cash / Whish',
-    hint: 'Pay after date approval',
+    hint: 'Pay in person after approval',
     icon: Wallet,
   },
 ];
@@ -151,6 +147,10 @@ const FAQ_ITEMS = [
   {
     q: 'What file formats are accepted?',
     a: `JPG, PNG, WebP, or PDF files up to ${MAX_RESERVATION_CREATIVE_SIZE_MB}MB. Digital billboards also accept MP4, WebM, and MOV videos shorter than ${MAX_CREATIVE_VIDEO_DURATION_SECONDS} seconds.`,
+  },
+  {
+    q: 'When do I pay?',
+    a: 'Never at request time. Once our team approves your dates, you pay the full amount — by card from your reservations page, or by cash / Whish using the instructions we email you.',
   },
 ];
 
@@ -229,7 +229,6 @@ export function ReservationCheckoutPage({
       },
       company: { name: '', commercialRegister: '', address: '', country: 'Lebanon' },
       paymentMethod: PAYMENT_METHODS.CARD,
-      stripeSetupIntentId: undefined,
       invoice: { currency: 'USD', email: viewer?.email ?? '', poNumber: '' },
       termsAccepted: false,
     },
@@ -240,8 +239,6 @@ export function ReservationCheckoutPage({
   const endDate = useWatch({ control, name: 'endDate' }) ?? defaultEnd;
   const currency = (useWatch({ control, name: 'invoice.currency' }) ?? 'USD') as BookingCurrency;
   const paymentMethod = useWatch({ control, name: 'paymentMethod' }) ?? PAYMENT_METHODS.CARD;
-  const billingName = useWatch({ control, name: 'billing.contactName' }) ?? '';
-  const billingEmail = useWatch({ control, name: 'billing.email' }) ?? '';
   const campaignName = useWatch({ control, name: 'campaignName' }) ?? '';
   const targetAudienceValue = useWatch({ control, name: 'targetAudience' }) ?? '';
   const briefValue = useWatch({ control, name: 'brief' }) ?? '';
@@ -262,8 +259,6 @@ export function ReservationCheckoutPage({
   const [status, setStatus] = useState<'idle' | 'submitting'>('idle');
   const [serverError, setServerError] = useState<string | null>(null);
   const [booking, setBooking] = useState<Booking | null>(null);
-  const [visaReady, setVisaReady] = useState(false);
-  const visaConfirmRef = useRef<ConfirmVisaSetup | null>(null);
 
   const days = inclusiveDays(startDate, endDate);
   const pricing = computeBookingPricing(billboard.monthlyPrice, Math.max(days, 0));
@@ -279,12 +274,6 @@ export function ReservationCheckoutPage({
   const paymentLabel =
     PAYMENT_OPTIONS.find((option) => option.value === paymentMethod)?.label ?? 'Payment method';
   const isCardPayment = paymentMethod === PAYMENT_METHODS.CARD;
-  const setVisaConfirm = useCallback((confirm: ConfirmVisaSetup | null) => {
-    visaConfirmRef.current = confirm;
-  }, []);
-  const setVisaDetailsReady = useCallback((ready: boolean) => {
-    setVisaReady(ready);
-  }, []);
 
   const onCreativeSelected = async (file: File | null) => {
     if (!file) return;
@@ -371,14 +360,15 @@ export function ReservationCheckoutPage({
     scrollTop();
   };
 
-  const continueToPayment = () => {
+  const continueToInvoice = () => {
     setServerError(null);
     setStep(3);
     scrollTop();
   };
 
   // Step 3 → 4 validates the complete payload, creates the pending
-  // reservation, and then shows confirmation.
+  // reservation, and then shows confirmation. No money moves here: the full
+  // payment is collected only after an admin approves the dates.
   const confirmReservation = handleSubmit(async () => {
     setServerError(null);
     setStatus('submitting');
@@ -414,49 +404,19 @@ export function ReservationCheckoutPage({
     scrollTop();
   }, onInvalid);
 
-  const securePaymentAndSubmit = async () => {
-    setServerError(null);
-
-    if (isCardPayment) {
-      if (!visaConfirmRef.current) {
-        setServerError('Secure Visa details are still loading. Wait a moment and try again.');
-        return;
-      }
-
-      setStatus('submitting');
-      const setupIntentId = await visaConfirmRef.current();
-      if (!setupIntentId) {
-        setStatus('idle');
-        return;
-      }
-      setValue('stripeSetupIntentId', setupIntentId, {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-    } else {
-      setValue('stripeSetupIntentId', undefined, { shouldValidate: true });
-    }
-
-    await confirmReservation();
-  };
-
   const sidebarPrimary = () => {
     if (step === 1) return void startReview();
-    if (step === 2) return continueToPayment();
-    if (step === 3) return void securePaymentAndSubmit();
+    if (step === 2) return continueToInvoice();
+    if (step === 3) return void confirmReservation();
   };
   const sidebarLabel =
     step === 1
       ? 'Continue to review'
       : step === 2
-        ? 'Continue to payment'
+        ? 'Continue to invoice'
         : status === 'submitting'
-          ? isCardPayment
-            ? 'Securing Visa…'
-            : 'Submitting…'
-          : isCardPayment
-            ? 'Secure Visa & submit'
-            : 'Submit reservation';
+          ? 'Submitting…'
+          : 'Submit reservation';
 
   return (
     <div className="min-h-full text-zinc-950">
@@ -940,11 +900,11 @@ export function ReservationCheckoutPage({
                     </button>
                     <button
                       type="button"
-                      onClick={continueToPayment}
+                      onClick={continueToInvoice}
                       disabled={!isBookable}
                       className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-60"
                     >
-                      Continue to payment
+                      Continue to invoice &amp; terms
                       <ArrowRight className="size-4" aria-hidden />
                     </button>
                   </div>
@@ -961,11 +921,12 @@ export function ReservationCheckoutPage({
                       </span>
                       <div>
                         <h2 className="text-base font-semibold text-blue-950">
-                          Choose how you want to pay
+                          No payment today — tell us how you plan to pay
                         </h2>
                         <p className="mt-1 max-w-2xl text-sm leading-6 text-blue-900/70">
-                          Your reservation is submitted after this step. Card payments are only
-                          collected after our team confirms the requested billboard dates.
+                          This step submits your request. Nothing is charged and no card details are
+                          taken now — you pay the full amount only after our team confirms the
+                          requested billboard dates.
                         </p>
                       </div>
                     </div>
@@ -987,10 +948,6 @@ export function ReservationCheckoutPage({
                                 shouldDirty: true,
                                 shouldValidate: true,
                               });
-                              setValue('stripeSetupIntentId', undefined, {
-                                shouldValidate: false,
-                              });
-                              setVisaReady(false);
                             }}
                             className={`flex min-h-28 flex-col gap-2 rounded-xl border p-4 text-left transition-all duration-200 active:scale-[0.99] ${
                               selected
@@ -1026,24 +983,32 @@ export function ReservationCheckoutPage({
                     <p className="mt-4 flex items-start gap-2 text-xs leading-5 text-zinc-500">
                       <Info className="mt-0.5 size-3.5 shrink-0 text-blue-600" aria-hidden />
                       {isCardPayment
-                        ? 'Stripe verifies and saves your Visa now without charging it. Payment is collected only after the dates are approved.'
+                        ? 'Once the dates are approved, a secure Stripe Checkout link opens from My reservations, where you enter your Visa and pay the full amount.'
                         : `Our team will send the ${paymentLabel.toLowerCase()} instructions after the requested dates are approved.`}
                     </p>
                   </Section>
 
-                  <Section
-                    number={8}
-                    title={
-                      isCardPayment ? 'Visa & Invoice Details' : 'Cash / Whish & Invoice Details'
-                    }
-                  >
+                  <Section number={8} title="How payment works & Invoice Details">
                     {isCardPayment ? (
-                      <VisaPaymentDetails
-                        billingName={billingName}
-                        billingEmail={billingEmail}
-                        onConfirmReady={setVisaConfirm}
-                        onReadyChange={setVisaDetailsReady}
-                      />
+                      <div className="rounded-2xl border border-blue-200 bg-blue-50/70 p-5">
+                        <div className="flex items-start gap-3">
+                          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white text-blue-700 shadow-sm">
+                            <CreditCard className="size-4.5" aria-hidden />
+                          </span>
+                          <div>
+                            <p className="font-semibold text-blue-950">
+                              Pay by Visa after approval
+                            </p>
+                            <p className="mt-1 text-sm leading-6 text-blue-900/75">
+                              We are not asking for your card now. Once the billboard dates are
+                              approved, a <span className="font-medium">Pay securely</span> button
+                              appears on your reservation in{' '}
+                              <span className="font-medium">My reservations</span>, and you enter
+                              your Visa on Stripe&apos;s secure page to pay the full amount.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     ) : (
                       <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-5">
                         <div className="flex items-start gap-3">
@@ -1106,7 +1071,6 @@ export function ReservationCheckoutPage({
                         />
                       </div>
                     </div>
-                    <FieldError message={errors.stripeSetupIntentId?.message} />
                   </Section>
 
                   <Section number={9} title="Terms & Conditions">
@@ -1163,19 +1127,11 @@ export function ReservationCheckoutPage({
                     </button>
                     <button
                       type="button"
-                      onClick={() => void securePaymentAndSubmit()}
-                      disabled={
-                        status === 'submitting' || !isBookable || (isCardPayment && !visaReady)
-                      }
+                      onClick={() => void confirmReservation()}
+                      disabled={status === 'submitting' || !isBookable}
                       className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-60"
                     >
-                      {status === 'submitting'
-                        ? isCardPayment
-                          ? 'Securing Visa…'
-                          : 'Submitting…'
-                        : isCardPayment
-                          ? 'Secure Visa & submit'
-                          : 'Submit reservation'}
+                      {status === 'submitting' ? 'Submitting…' : 'Submit reservation'}
                       <ArrowRight className="size-4" aria-hidden />
                     </button>
                   </div>
@@ -1279,18 +1235,16 @@ export function ReservationCheckoutPage({
                 <button
                   type="button"
                   onClick={sidebarPrimary}
-                  disabled={
-                    !isBookable ||
-                    status === 'submitting' ||
-                    (step === 3 && isCardPayment && !visaReady)
-                  }
+                  disabled={!isBookable || status === 'submitting'}
                   className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-60"
                 >
                   <Lock className="size-4" aria-hidden />
                   {sidebarLabel}
                 </button>
                 <p className="mt-2 text-center text-[11px] text-zinc-400">
-                  Secure &amp; encrypted checkout
+                  {step === 3
+                    ? 'No payment is taken until approval'
+                    : 'Secure & encrypted checkout'}
                 </p>
               </div>
 
@@ -1542,8 +1496,8 @@ function ReservationReview({
                 Review your reservation
               </h2>
               <p className="mt-1.5 max-w-xl text-xs leading-5 text-zinc-500">
-                Confirm the location, campaign dates, campaign, and creative before choosing
-                payment.
+                Confirm the location, campaign dates, campaign, and creative before submitting your
+                request.
               </p>
             </div>
             <div className="shrink-0 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3">
@@ -1600,7 +1554,7 @@ function ReservationReview({
                   Next step
                 </p>
                 <p className="text-sm font-semibold text-blue-950">
-                  Choose payment and invoice details
+                  Add invoice details — no payment yet
                 </p>
               </div>
             </div>
@@ -1757,7 +1711,7 @@ function ConfirmationPanel({
             <dt className="text-xs text-zinc-400">Payment method</dt>
             <dd className="font-medium text-zinc-800">
               {booking.paymentMethod === PAYMENT_METHODS.CARD
-                ? 'Visa verified securely by Stripe · payment after approval'
+                ? 'Visa through Stripe · pay from My reservations after approval'
                 : 'Cash / Whish · instructions after approval'}
             </dd>
           </div>

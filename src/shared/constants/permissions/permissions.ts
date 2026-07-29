@@ -73,4 +73,11 @@ export const PERMISSIONS = {
   PAYMENTS_READ: 'payments.read',
   PAYMENTS_RECONCILE: 'payments.reconcile',
   PAYMENTS_REFUND: 'payments.refund',
+
+  // Finance Permissions (company-side costs, owner payouts, and profitability).
+  // Separate from PAYMENTS_* above, which covers advertiser money coming in.
+  FINANCE_VIEW: 'finance.view',
+  FINANCE_CREATE: 'finance.create',
+  FINANCE_UPDATE: 'finance.update',
+  FINANCE_DELETE: 'finance.delete',
 } as const;

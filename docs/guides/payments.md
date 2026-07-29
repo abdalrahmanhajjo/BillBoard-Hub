@@ -1,57 +1,58 @@
 # Payments
 
-Boardly accepts Visa through Stripe or an offline Cash/Whish payment. Stripe Elements verifies and
-saves Visa details during reservation Step 3; raw card data never enters Boardly. This document
-describes the implemented workflow and the production setup required to operate it safely.
+Boardly accepts Visa through Stripe or an offline Cash/Whish payment. No card details are collected
+before an administrator approves the reservation, and raw card data never enters Boardly. This
+document describes the implemented workflow and the production setup required to operate it safely.
 
 ## Business workflow
 
-1. The advertiser selects Visa or Cash/Whish in reservation Step 3.
-2. For Visa, the browser loads Stripe Elements from a server-created SetupIntent. Stripe verifies
-   and saves the card without charging it.
-3. The booking service retrieves that SetupIntent from Stripe, verifies its owner, completion
-   state, and Visa network, then stores only Stripe reference IDs with the reservation.
-4. An administrator checks inventory conflicts and approves the reservation.
-5. Approval reserves the billboard dates and unlocks payment in **My bookings**.
-6. For Visa payments, the server creates or reuses a 30-minute Stripe Checkout Session for the
-   saved Stripe customer. Checkout blocks non-Visa card networks.
-7. Stripe sends signed webhook events to Boardly. Boardly reconciles the `payments` record and the
+1. The advertiser picks Visa or Cash/Whish in reservation Step 3. This records an intended payment
+   method only — no card fields are shown and nothing is charged or authorised.
+2. The reservation is created as `pending` with `paymentStatus: pending`.
+3. An administrator checks inventory conflicts and approves the reservation.
+4. Approval reserves the billboard dates and unlocks payment in **My bookings**.
+5. For Visa payments, the server creates or reuses a 30-minute Stripe Checkout Session. The
+   advertiser enters their card on Stripe's hosted page and pays the full amount there. Checkout
+   blocks non-Visa card networks.
+6. Stripe sends signed webhook events to Boardly. Boardly reconciles the `payments` record and the
    booking's payment status.
-8. The Stripe success redirect also calls the same idempotent reconciliation logic. This makes the
+7. The Stripe success redirect also calls the same idempotent reconciliation logic. This makes the
    result screen immediate without replacing the webhook.
-9. Cash/Whish payments are reconciled by an administrator from reservation details.
+8. Cash/Whish payments are reconciled by an administrator from reservation details.
 
-Pending reservations cannot be charged. This prevents two advertisers from paying for the same
-dates before conflict resolution.
+Pending reservations cannot be charged — `createCheckoutSession` rejects any booking that is not
+`approved`. This prevents two advertisers from paying for the same dates before conflict
+resolution, and means an unapproved request never costs the advertiser anything.
 
 ## Source of truth
 
 - Stripe is the source of truth for card charge and refund results.
 - MongoDB is the application ledger used by the reservation and administration interfaces.
-- The booking stores the Stripe customer, SetupIntent, and PaymentMethod IDs needed to reuse the
-  verified Visa. These values are provider references, not card credentials.
+- Bookings created before the pre-approval card step was removed may still carry
+  `stripeCustomerId`, `stripeSetupIntentId`, and `stripePaymentMethodId`. These are provider
+  references, not card credentials; new reservations no longer set them.
 - The `bookings.paymentStatus` field is a denormalized operational status.
 - The `payments` collection stores provider identifiers, expected amount, received amount,
   attempts, timestamps, method, and reconciliation notes.
 - The `payment_events` collection stores processed Stripe event IDs to make webhook handling
   idempotent.
 
-Card details never pass through or persist in Boardly. Stripe Elements and Checkout collect them
-inside Stripe-hosted fields.
+Card details never pass through or persist in Boardly. Stripe Checkout collects them inside
+Stripe-hosted fields, after approval.
 
 ## Required environment variables
 
 ```dotenv
 STRIPE_SECRET_KEY=sk_test_replace_me
 STRIPE_WEBHOOK_SECRET=whsec_replace_me
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_replace_me
 NEXTAUTH_URL=http://localhost:3000
 ```
 
-Use matching test publishable/secret keys locally and matching live keys only in production. The
-publishable key is safe for the browser; the secret key and webhook secret must remain server-only.
-The webhook signing secret is different for each Stripe endpoint and differs between test and live
-mode.
+Use test keys locally and live keys only in production. The secret key and webhook secret must
+remain server-only. The webhook signing secret is different for each Stripe endpoint and differs
+between test and live mode. `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` is no longer read by any code —
+Checkout is a server-created redirect — but it is still present in `.env.example` for a future
+in-page Stripe integration.
 
 `NEXTAUTH_URL` must be the public HTTPS origin in production because it is used to create Stripe
 success and cancellation URLs.
@@ -104,8 +105,8 @@ stripe listen \
 ```
 
 Copy the displayed `whsec_...` value into `.env.local` as `STRIPE_WEBHOOK_SECRET`, restart the
-development server, enter the Visa in reservation Step 3, approve the reservation, and open **Pay
-securely** from My bookings.
+development server, submit a card reservation, approve it as an administrator, then open **Pay
+securely** from My bookings and enter the Visa on the Stripe Checkout page.
 
 Stripe test card:
 
@@ -164,7 +165,7 @@ leave the reservation active with a partially-paid balance. Review such cases op
 
 - **Checkout will not open:** confirm the reservation is approved, uses card payment, and has not
   already been paid or refunded.
-- **Visa fields do not open:** confirm both the secret and publishable Stripe keys are configured,
+- **Stripe rejects the key:** confirm both the secret and publishable Stripe keys are configured,
   belong to the same Stripe mode, and restart the server.
 - **Success page remains pending:** inspect the webhook delivery, then use **Check again**. The
   page retrieves the Checkout Session server-side and can reconcile a successful payment.
@@ -180,7 +181,6 @@ checked.
 
 - [ ] Eligible Stripe merchant entity confirmed
 - [ ] Live secret key stored in the production secret manager
-- [ ] Live publishable key configured as `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
 - [ ] Live webhook endpoint created with only the required events
 - [ ] Live webhook secret stored separately from the test secret
 - [ ] `NEXTAUTH_URL` is the canonical HTTPS origin

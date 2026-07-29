@@ -27,6 +27,7 @@ describe the current implementation; proposed behavior is explicitly marked as f
 - [Testing](guides/testing.md) — current checks and recommended test layers
 - [Deployment](guides/deployment.md) — production preparation and release verification
 - [Payments](guides/payments.md) — Stripe Checkout, webhooks, refunds, and offline reconciliation
+- [Finance](guides/finance.md) — company expenses, billboard owners, and profitability (admin only)
 - [User messages](guides/user-messages.md) — actionable copy, recovery, and accessibility
 - [Code cleanliness audit](code-quality/README.md) — verified cleanup, risk register, refactor plan
 

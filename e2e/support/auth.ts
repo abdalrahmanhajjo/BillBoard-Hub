@@ -5,6 +5,9 @@ export type TestAdvertiser = {
   password: string;
   firstName: string;
   lastName: string;
+  companyName: string;
+  phone: string;
+  address: string;
 };
 
 const PASSWORD = 'Str0ngPassphrase!';
@@ -18,6 +21,11 @@ export function buildAdvertiser(): TestAdvertiser {
     password: PASSWORD,
     firstName: 'Smoke',
     lastName: 'Tester',
+    // Registration creates the account and its advertiser profile in one call,
+    // so the company fields are required, not optional extras.
+    companyName: 'Smoke Test SAL',
+    phone: '+961 70 000 000',
+    address: 'Hamra Street 1, Beirut, Lebanon',
   };
 }
 
@@ -34,6 +42,9 @@ export async function registerAdvertiser(
       password: advertiser.password,
       confirmPassword: advertiser.password,
       acceptTerms: true,
+      companyName: advertiser.companyName,
+      phone: advertiser.phone,
+      address: advertiser.address,
     },
   });
 

@@ -15,22 +15,8 @@ import {
   type RecordManualPaymentSchemaInput,
   type RefundPaymentSchemaInput,
 } from '@/shared/contracts/payments/payment.schema';
-import { paymentSetupService } from '@/server/modules/payments/payment-setup.service';
 
 export const paymentController = {
-  async createCardSetup() {
-    try {
-      const session = await requireSession();
-      const result = await paymentSetupService.createCardSetup(session.user);
-      return apiResponse.ok(result);
-    } catch (error) {
-      return handleControllerError(
-        error,
-        'We could not open secure Visa verification. Check Stripe configuration and try again.',
-      );
-    }
-  },
-
   async createCheckoutSession(payload: CreateCheckoutSessionSchemaInput) {
     const parsed = createCheckoutSessionSchema.safeParse(payload);
 

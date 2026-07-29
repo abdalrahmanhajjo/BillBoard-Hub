@@ -89,9 +89,9 @@ Indexes:
 - `status`
 - compound `{ billboardId, startDate, endDate }` for conflict detection
 
-For Visa reservations, `stripeCustomerId`, `stripeSetupIntentId`, and
-`stripePaymentMethodId` contain provider references only. Card number, expiry, and CVC remain
-inside Stripe Elements and are never stored in MongoDB.
+`stripeCustomerId`, `stripeSetupIntentId`, and `stripePaymentMethodId` contain provider references
+only, and are populated solely on reservations created before card collection moved after approval.
+Card number, expiry, and CVC are entered on Stripe Checkout and are never stored in MongoDB.
 
 ### `creatives`
 

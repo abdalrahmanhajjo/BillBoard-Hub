@@ -1,12 +1,22 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { CheckCircle2, Clock3, FileImage, RefreshCw } from 'lucide-react';
 import type { Creative } from '@/shared/types/creative';
 import { CREATIVE_STATUSES, CREATIVE_TYPES } from '@/shared/constants/creative';
 import { creativeClientService } from '@/client/features/creatives/services/creative-client.service';
 import { CreativeUploadForm } from '@/client/features/creatives/components/creative-upload-form';
 import { CreativeCard } from '@/client/features/creatives/components/creative-card';
 import { ListToolbar } from '@/client/features/dashboard/components/list-toolbar';
+import {
+  EmptyState,
+  SectionCard,
+  StatCard,
+  WorkspaceError,
+  WorkspacePage,
+} from '@/client/features/dashboard/components/workspace-page';
+import { Button } from '@/client/ui/components/ui/button';
+import { Skeleton } from '@/client/ui/components/ui/skeleton';
 
 type LoadStatus = 'loading' | 'ready' | 'error';
 
@@ -60,50 +70,92 @@ export function AdvertiserCreativesPage() {
     await load();
   };
 
+  const approved = creatives.filter(
+    (creative) => creative.status === CREATIVE_STATUSES.APPROVED,
+  ).length;
+  const awaiting = creatives.filter(
+    (creative) => creative.status === CREATIVE_STATUSES.PENDING,
+  ).length;
+
   return (
-    <section className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-10">
-      <header className="space-y-1">
-        <h1 className="text-3xl font-semibold tracking-tight">Creatives</h1>
-        <p className="text-sm text-zinc-600">
-          Upload the image and video assets you&apos;ll use across campaigns. New creatives are
-          submitted for review before they can run.
-        </p>
-      </header>
+    <WorkspacePage
+      eyebrow="Advertising"
+      title="Creatives"
+      description="Upload the image and video assets you'll use across campaigns. New creatives are submitted for review before they can run."
+      actions={
+        <Button variant="outline" onClick={load} disabled={status === 'loading'}>
+          <RefreshCw
+            className={status === 'loading' ? 'size-4 animate-spin' : 'size-4'}
+            aria-hidden
+          />
+          Refresh
+        </Button>
+      }
+      canvas
+    >
+      <div className="mb-6 grid gap-4 sm:grid-cols-3">
+        <StatCard
+          index={0}
+          icon={CheckCircle2}
+          accent="bg-emerald-50 text-emerald-700"
+          label="Approved"
+          value={String(approved)}
+          hint="Ready to schedule"
+        />
+        <StatCard
+          index={1}
+          icon={Clock3}
+          accent="bg-amber-50 text-amber-700"
+          label="In review"
+          value={String(awaiting)}
+          hint="Awaiting the team"
+        />
+        <StatCard
+          index={2}
+          icon={FileImage}
+          accent="bg-blue-50 text-blue-700"
+          label="Uploaded"
+          value={String(creatives.length)}
+          hint="All assets"
+        />
+      </div>
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
-        <div className="space-y-4">
-          <h2 className="text-lg font-medium">Upload creative</h2>
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
+        <SectionCard
+          title="Upload creative"
+          description="Images and video up to 50MB; video must be under 10 seconds."
+        >
           <CreativeUploadForm onCreated={load} />
-        </div>
+        </SectionCard>
 
-        <div className="space-y-4">
-          <h2 className="text-lg font-medium">Your creatives</h2>
+        <SectionCard title="Your creatives" description="Filter by type or review status.">
           {actionError ? (
             <p
               role="alert"
-              className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+              className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
             >
               {actionError}
             </p>
           ) : null}
 
           {status === 'loading' ? (
-            <p className="text-sm text-zinc-600">Loading creatives…</p>
+            <div className="space-y-3">
+              <Skeleton className="h-10 w-full rounded-lg" />
+              <Skeleton className="h-28 w-full rounded-xl" />
+              <Skeleton className="h-28 w-full rounded-xl" />
+            </div>
           ) : null}
 
           {status === 'error' ? (
-            <p
-              role="alert"
-              className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
-            >
-              {error}
-            </p>
+            <WorkspaceError message={error ?? 'Unknown error.'} onRetry={load} />
           ) : null}
 
           {status === 'ready' && creatives.length === 0 ? (
-            <p className="rounded-md border border-dashed border-zinc-300 px-4 py-10 text-center text-sm text-zinc-500">
-              No creatives yet. Upload your first asset to get started.
-            </p>
+            <EmptyState
+              icon={FileImage}
+              title="No creatives yet"
+              description="Upload your first asset so it can be reviewed before your campaign starts."
+            />
           ) : null}
 
           {status === 'ready' && creatives.length > 0 ? (
@@ -141,13 +193,15 @@ export function AdvertiserCreativesPage() {
           ) : null}
 
           {status === 'ready' && creatives.length > 0 && visibleCreatives.length === 0 ? (
-            <p className="rounded-md border border-dashed border-zinc-300 px-4 py-10 text-center text-sm text-zinc-500">
-              No creatives match those filters.
-            </p>
+            <EmptyState
+              icon={FileImage}
+              title="No matches"
+              description="No creatives match those filters. Clear the search or pick another status."
+            />
           ) : null}
 
           {status === 'ready' && visibleCreatives.length > 0 ? (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
               {visibleCreatives.map((creative) => (
                 <CreativeCard
                   key={creative.id}
@@ -159,8 +213,8 @@ export function AdvertiserCreativesPage() {
               ))}
             </div>
           ) : null}
-        </div>
+        </SectionCard>
       </div>
-    </section>
+    </WorkspacePage>
   );
 }

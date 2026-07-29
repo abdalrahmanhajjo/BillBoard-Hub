@@ -9,8 +9,9 @@ Create `.env.local` for development. Never commit `.env`, `.env.local`, or produ
 | `MONGODB_URI`                        | Yes         | Server        | MongoDB connection string                    | `mongodb://127.0.0.1:27017` |
 | `MONGODB_DB_NAME`                    | Yes         | Server        | Shared application/Auth.js database name     | `billboard_hub`             |
 | `AUTH_SECRET`                        | Yes         | Server        | Auth.js signing/encryption secret            | Generated random value      |
-| `NEXTAUTH_URL`                       | Production  | Server        | Canonical application URL                    | `https://boardly.example`   |
-| `NEXT_PUBLIC_SITE_URL`               | Production  | Public/client | SEO canonical and sitemap origin             | `https://boardly.example`   |
+| `NEXTAUTH_URL`                       | Non-Vercel  | Server        | Base-URL fallback; unused on Vercel          | `https://boardly.example`   |
+| `AUTH_TRUST_HOST`                    | Non-Vercel  | Server        | Trust the proxy `Host`; automatic on Vercel  | `true`                      |
+| `NEXT_PUBLIC_SITE_URL`               | Production  | Public/client | Canonical origin; inlined at build time      | `https://boardly.example`   |
 | `ACCESS_TOKEN_TTL_MS`                | Yes         | Server        | Opaque access token lifetime in milliseconds | `900000`                    |
 | `REFRESH_TOKEN_TTL_MS`               | Yes         | Server        | Refresh metadata lifetime in milliseconds    | `2592000000`                |
 | `SALT_ROUNDS`                        | Recommended | Server        | bcrypt work factor                           | `12`                        |
@@ -19,7 +20,7 @@ Create `.env.local` for development. Never commit `.env`, `.env.local`, or produ
 | `NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT`  | For uploads | Public/client | ImageKit delivery endpoint                   | `https://ik.imagekit.io/id` |
 | `STRIPE_SECRET_KEY`                  | For cards   | Server        | Stripe test or live secret API key           | `sk_test_...`               |
 | `STRIPE_WEBHOOK_SECRET`              | For cards   | Server        | Signing secret for the configured webhook    | `whsec_...`                 |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | For cards   | Public/client | Stripe Elements publishable API key          | `pk_test_...`               |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Unused      | Public/client | Reserved; Checkout is server-side redirect   | `pk_test_...`               |
 | `GOOGLE_SITE_VERIFICATION`           | Optional    | Server        | Search Console verification token            | Token only                  |
 | `NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID`  | Optional    | Public/client | Google Tag Manager container id              | `GTM-XXXXXXX`               |
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID`      | Optional    | Public/client | Direct GA4 measurement id                    | `G-XXXXXXXXXX`              |

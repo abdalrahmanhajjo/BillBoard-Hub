@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   CalendarDays,
   CheckCircle2,
+  Clock3,
   CreditCard,
   Loader2,
   MapPin,
@@ -17,6 +18,14 @@ import type { Booking, BookingStatus, PaymentMethod, PaymentStatus } from '@/sha
 import { billboardClientService } from '@/client/features/billboards/services/billboard-client.service';
 import { bookingClientService } from '@/client/features/bookings/services/booking-client.service';
 import { paymentClientService } from '@/client/features/payments/services/payment-client.service';
+import {
+  EmptyState,
+  StatCard,
+  WorkspaceError,
+  WorkspacePage,
+} from '@/client/features/dashboard/components/workspace-page';
+import { Button } from '@/client/ui/components/ui/button';
+import { Skeleton } from '@/client/ui/components/ui/skeleton';
 
 type LoadStatus = 'loading' | 'ready' | 'error';
 
@@ -166,55 +175,104 @@ export function AdvertiserBookingsPage() {
     window.location.assign(result.data.url);
   };
 
+  const awaiting = bookings.filter((booking) => booking.status === BOOKING_STATUSES.PENDING).length;
+  const live = bookings.filter(
+    (booking) => booking.status === BOOKING_STATUSES.APPROVED && booking.endDate >= today,
+  ).length;
+  const duePayment = bookings.filter(
+    (booking) =>
+      booking.status === BOOKING_STATUSES.APPROVED &&
+      (booking.paymentStatus === PAYMENT_STATUSES.PENDING ||
+        booking.paymentStatus === PAYMENT_STATUSES.UNPAID),
+  ).length;
+
   return (
-    <section className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-10">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-semibold tracking-tight">My reservations</h1>
-          <p className="text-sm text-zinc-600">
-            Track the status of your billboard reservation requests.
-          </p>
-        </div>
-        <button
-          type="button"
+    <WorkspacePage
+      eyebrow="Commercial"
+      title="My reservations"
+      description="Track every billboard reservation request, its approval state, and what still needs paying."
+      actions={
+        <Button
+          variant="outline"
           onClick={handleRefresh}
           disabled={refreshing || status === 'loading'}
-          className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-50"
         >
-          <RefreshCw className={`size-4 ${refreshing ? 'animate-spin' : ''}`} aria-hidden />
+          <RefreshCw className={refreshing ? 'size-4 animate-spin' : 'size-4'} aria-hidden />
           {refreshing ? 'Refreshing…' : 'Refresh'}
-        </button>
-      </header>
+        </Button>
+      }
+      canvas
+    >
+      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          index={0}
+          icon={CalendarDays}
+          accent="bg-blue-50 text-blue-700"
+          label="Reservations"
+          value={String(bookings.length)}
+          hint="All requests"
+        />
+        <StatCard
+          index={1}
+          icon={Clock3}
+          accent="bg-amber-50 text-amber-700"
+          label="Awaiting approval"
+          value={String(awaiting)}
+          hint="With our team"
+        />
+        <StatCard
+          index={2}
+          icon={CheckCircle2}
+          accent="bg-emerald-50 text-emerald-700"
+          label="Approved & upcoming"
+          value={String(live)}
+          hint="Dates are held"
+        />
+        <StatCard
+          index={3}
+          icon={CreditCard}
+          accent="bg-rose-50 text-rose-700"
+          label="Payment due"
+          value={String(duePayment)}
+          hint="Ready to pay"
+        />
+      </div>
 
       {actionError ? (
         <p
           role="alert"
-          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+          className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
         >
           {actionError}
         </p>
       ) : null}
 
-      {status === 'loading' ? <p className="text-sm text-zinc-600">Loading…</p> : null}
+      {status === 'loading' ? (
+        <div className="grid gap-4">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Skeleton key={index} className="h-40 w-full rounded-2xl" />
+          ))}
+        </div>
+      ) : null}
+
       {status === 'error' ? (
-        <p
-          role="alert"
-          className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
-        >
-          We could not load your reservations. Check your connection and try again.
-        </p>
+        <WorkspaceError
+          message="We could not load your reservations. Check your connection and try again."
+          onRetry={() => void handleRefresh()}
+        />
       ) : null}
 
       {status === 'ready' && bookings.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-zinc-300 px-6 py-14 text-center">
-          <p className="text-sm text-zinc-500">You have no reservations yet.</p>
-          <Link
-            href="/billboards"
-            className="mt-4 inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-          >
-            Browse billboards
-          </Link>
-        </div>
+        <EmptyState
+          icon={CalendarDays}
+          title="No reservations yet"
+          description="Browse the marketplace and reserve your first placement."
+          action={
+            <Button render={<Link href="/billboards" />} nativeButton={false}>
+              Browse billboards
+            </Button>
+          }
+        />
       ) : null}
 
       {status === 'ready' && bookings.length > 0 ? (
@@ -332,6 +390,6 @@ export function AdvertiserBookingsPage() {
           })}
         </div>
       ) : null}
-    </section>
+    </WorkspacePage>
   );
 }
